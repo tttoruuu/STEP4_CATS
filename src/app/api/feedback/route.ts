@@ -1,3 +1,12 @@
+/**
+ * このファイルは現在使用されていません。
+ * アプリケーションは代わりにバックエンドの `/conversation-feedback` エンドポイント
+ * (backend/main.py の @app.post("/conversation-feedback")) を使用しています。
+ * 
+ * これは実験的または代替実装として残されています。
+ */
+
+/* 
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
@@ -236,3 +245,4 @@ ${conversation}`
     }, { status: 200 }); // エラー時でも200を返してフロントエンドでエラー表示を避ける
   }
 } 
+*/ 

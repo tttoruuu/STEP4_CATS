@@ -1,3 +1,12 @@
+/**
+ * このファイルは現在使用されていません。
+ * アプリケーションは代わりにバックエンドの `/conversation` エンドポイント
+ * (backend/main.py の @app.post("/conversation")) を使用しています。
+ * 
+ * これは実験的または代替実装として残されています。
+ */
+
+/* 
 const getCharacterContext = (level: number, partnerInfo: any) => {
   const baseContext = `あなたは${partnerInfo.age}歳の${partnerInfo.gender}、${partnerInfo.name}です。これはカフェでのお見合いの場面での会話です。本日の季節も意識してください。
 
@@ -150,3 +159,4 @@ export async function POST(request: Request) {
     });
   }
 } 
+*/ 

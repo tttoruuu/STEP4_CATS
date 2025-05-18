@@ -17,8 +17,6 @@ from routers import conversation_partners, posts
 from fastapi.responses import JSONResponse
 import random
 from urllib.parse import urlparse
-from fastapi.staticfiles import StaticFiles
-from initial_data import init_db
 
 # データベースのテーブルを作成
 Base.metadata.create_all(bind=engine)
@@ -111,24 +109,10 @@ async def process_x_forwarded_proto(request: Request, call_next):
     response = await call_next(request)
     return response
 
-# 静的ファイル用のディレクトリを作成
-os.makedirs("uploads/profile_images", exist_ok=True)
-os.makedirs("uploads/posts", exist_ok=True)
-
-# 静的ファイルのルートを設定
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-# 初期データの作成
-@app.on_event("startup")
-async def startup_event():
-    db = next(get_db())
-    try:
-        init_db(db)
-    finally:
-        db.close()
-
-# ルーターを登録
+# 会話相手APIルーターの追加
 app.include_router(conversation_partners.router)
+
+# 投稿APIルーターの追加
 app.include_router(posts.router)
 
 # データベースセッションの依存関係
@@ -559,15 +543,6 @@ async def simulate_conversation(
 ・「です・ます」調で丁寧に
 ・深い個人的な話題は避ける
 ・結婚を意識した交際であることを念頭に置く
-・会話の最初はユーザーの名前を呼んで話しかける
-・以下の話題から一つ選んで積極的に質問する：
-  - 休日の過ごし方
-  - 趣味・好きなこと
-  - 出身地や学生時代の話
-  - 家族の話
-  - 好きな食べ物・お店・最近行った場所
-  - 旅行・行ってみたいところ
-  - お仕事のやりがいや環境
 
 会話例：
 Q: お仕事は何をされていますか？
@@ -575,11 +550,6 @@ A: IT企業でシステムエンジニアとして働いています。
 
 Q: 趣味は何かありますか？
 A: カフェ巡りと写真撮影が趣味です。休日によく出かけています。
-
-会話の始め方例：
-「〇〇さん、はじめまして！趣味や休日の過ごし方について教えていただけますか？」
-「〇〇さん、こんにちは！出身はどちらですか？学生時代の思い出などあれば教えてください。」
-「〇〇さん、お会いできて嬉しいです！最近行かれた素敵なお店などはありますか？」
 
 避けるべき話題：
 - 過去の恋愛経験の詳細
@@ -598,17 +568,6 @@ A: カフェ巡りと写真撮影が趣味です。休日によく出かけて�
 ・共感を示しながら会話を深める
 ・時には冗談も交えて
 ・将来のパートナーとしての価値観の一致を探る
-・以下の話題から積極的に選んで質問や会話を展開する：
-  - 日々の暮らしのスタイル（起床時間、家事の分担感覚など）
-  - 結婚後の生活イメージ（住む場所・共働き希望の有無など）
-  - お互いの家族のこと（仲の良さ・行事など）
-  - お金の使い方（貯金意識・価値の置き方）
-  - 将来の夢・理想のライフスタイル
-  - 「子どもができたら何を一緒にしたい？」などほっこり系未来話
-  - 料理や家事についての「自分なりのこだわり・苦手なこと」
-  - 「結婚しても大事にしたい趣味や時間」
-  - 「パートナーにされてうれしかったこと（理想の関わり方）」
-・会話の中で自然に話題を切り替えても良い
 
 会話例：
 Q: お仕事は何をされていますか？
@@ -689,7 +648,7 @@ A: カフェ巡りと写真撮影が好きです。特に静かな雰囲気の�
                 client.max_retries = 3  # リトライ回数を増やす
                 
                 response = client.chat.completions.create(
-                    model="gpt-4o",
+                    model="gpt-3.5-turbo",
                     messages=messages,
                     temperature=0.7,
                     max_tokens=150,
