@@ -164,7 +164,7 @@ docker compose exec backend alembic history -v
 
 ### 例1: 新しいフィールドの追加
 
-ユーザーモデルに新しいフィールド（bio）を追加する場合：
+ユーザーモデルに新しいフィールド（profile_image_url）を追加する場合：
 
 1. モデルの変更
 
@@ -175,14 +175,17 @@ class User(Base):
     # 既存のフィールド
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(255), unique=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    full_name = Column(String(255), nullable=False)
+    email = Column(String(255), unique=True, nullable=False)
     # 新しいフィールドを追加
-    bio = Column(String(500), nullable=True)
+    profile_image_url = Column(String(255), nullable=True)
 ```
 
 2. マイグレーションの作成
 
 ```bash
-docker compose exec backend alembic revision --autogenerate -m "ユーザーモデルにbioフィールドを追加"
+docker compose exec backend alembic revision --autogenerate -m "ユーザーモデルにprofile_image_urlフィールドを追加"
 ```
 
 3. マイグレーションの適用
@@ -193,25 +196,32 @@ docker compose exec backend alembic upgrade head
 
 ### 例2: テーブルの作成
 
-まったく新しいモデル（例：Post）を追加する場合：
+まったく新しいモデル（例：ConversationPartner）を追加する場合：
 
 1. モデルの定義
 
 ```python
-# models/post.py
+# models/conversation_partner.py
 from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from database import Base
 
-class Post(Base):
-    __tablename__ = "posts"
+class ConversationPartner(Base):
+    __tablename__ = "conversation_partners"
     
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), nullable=False)
-    content = Column(Text, nullable=False)
+    name = Column(String(255), nullable=False)
+    age = Column(Integer, nullable=False)
+    hometown = Column(String(255), nullable=False)
+    hobbies = Column(Text, nullable=False)
+    daily_routine = Column(Text, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    
+    # リレーションシップ
+    user = relationship("User", back_populates="conversation_partners")
 ```
 
 2. モデルをenv.pyにインポート
@@ -219,14 +229,14 @@ class Post(Base):
 ```python
 # migrations/env.py
 from models.user import User
-from models.post import Post  # 新しいモデルをインポート
+from models.conversation_partner import ConversationPartner  # 新しいモデルをインポート
 from database import Base
 ```
 
 3. マイグレーションの作成と適用
 
 ```bash
-docker compose exec backend alembic revision --autogenerate -m "Postテーブルを追加"
+docker compose exec backend alembic revision --autogenerate -m "ConversationPartnerテーブルを追加"
 docker compose exec backend alembic upgrade head
 ```
 

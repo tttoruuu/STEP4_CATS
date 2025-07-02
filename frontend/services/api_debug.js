@@ -369,9 +369,9 @@ const getAuthenticatedClient = () => {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
       'Accept': 'application/json',
-      'Origin': typeof window !== 'undefined' ? window.location.origin : undefined
     },
-    timeout: 120000, // タイムアウトを120秒に延長
+    withCredentials: false, // CORSリクエストでCredentialsを送信しない
+    timeout: 10000, // タイムアウトを10秒に短縮
     // リダイレクトを追跡しない設定を追加
     maxRedirects: 0, 
     validateStatus: function (status) {
@@ -406,11 +406,6 @@ const getAuthenticatedClient = () => {
         throw new Error('トークンの有効期限が切れています');
       }
       
-      // 確実にOriginヘッダーを設定
-      if (typeof window !== 'undefined' && !config.headers['Origin']) {
-        config.headers['Origin'] = window.location.origin;
-      }
-      
       return config;
     },
     (error) => {
@@ -435,7 +430,6 @@ export const authAPI = {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Origin': typeof window !== 'undefined' ? window.location.origin : undefined
         }
       });
       return response.data;
@@ -463,7 +457,6 @@ export const authAPI = {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Origin': typeof window !== 'undefined' ? window.location.origin : undefined
         }
       });
       const { access_token, token_type } = response.data;
@@ -608,7 +601,6 @@ export const partnerAPI = {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
-          'Origin': typeof window !== 'undefined' ? window.location.origin : undefined
         }
       });
       
@@ -683,6 +675,8 @@ export const partnerAPI = {
         apiProtocol: FINAL_API_BASE_URL.startsWith('https') ? 'HTTPS' : 'HTTP'
       });
       
+      // --- 複雑なHTTPS強制ロジックを一時的にコメントアウト ---
+      /* 
       // 本番環境では常にHTTPSを強制する
       let apiBaseUrl = FINAL_API_BASE_URL;
       
@@ -712,7 +706,11 @@ export const partnerAPI = {
       // 完全なURLをログ出力
       const fullUrl = `${apiBaseUrl}/conversation-partners`;
       console.log('4. 最終リクエストURL:', fullUrl);
+      */
+      // --- 複雑なHTTPS強制ロジックここまで ---
       
+      // --- axios直接呼び出しをコメントアウト --- 
+      /*
       // 標準的な方法でリクエスト - 変換後のURLを使用
       const token = localStorage.getItem('token');
       console.log('5. トークン存在:', !!token);
@@ -721,24 +719,37 @@ export const partnerAPI = {
       }
       
       // axios直接使用でエンドポイント完全指定
-      const response = await axios.post(`${apiBaseUrl}/conversation-partners`, partnerData, {
+      const response_direct = await axios.post(`${apiBaseUrl}/conversation-partners`, partnerData, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
         }
       });
+      */
+      // --- axios直接呼び出しここまで ---
 
-      // getAuthenticatedClient を使用してリクエストを送信
+      // getAuthenticatedClient を使用してリクエストを送信 (こちらをメインにする)
       const client = getAuthenticatedClient();
       console.log('6. Client Base URL:', client.defaults.baseURL);
       
-      const response = await client.post('/conversation-partners', partnerData);
+      // --- 追加ログ --- 
+      console.log('7. [重要確認] client.post 直前の BaseURL:', client.defaults.baseURL);
+      if (!client.defaults.baseURL.startsWith('https')) {
+        console.error('🚨 エラー: client の baseURL が HTTPS ではありません！');
+      }
+      // --- 追加ログここまで ---
+
+      // response 変数の重複宣言を避ける
+      const partnerResponse = await client.post('/conversation-partners', partnerData);
       
-      console.log('会話相手登録成功:', response.status);
-      return response.data;
+      console.log('会話相手登録成功:', partnerResponse.status);
+      return partnerResponse.data;
     } catch (error) {
       console.error('会話相手登録エラー:', error.message);
+      
+      // --- 複雑なエラーハンドリングと再試行ロジックを一時的にコメントアウト ---
+      /*
       console.error('ネットワークエラー詳細:', error);
       
       // Mixed Contentエラーの可能性をチェック
@@ -756,7 +767,7 @@ export const partnerAPI = {
           const httpsUrl = FINAL_API_BASE_URL.replace(/^http:/i, 'https:');
           console.log('HTTPSに変換して再試行:', httpsUrl);
           
-          const response = await axios.post(`${httpsUrl}/conversation-partners`, partnerData, {
+          const httpsResponse = await axios.post(`${httpsUrl}/conversation-partners`, partnerData, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`,
@@ -764,8 +775,8 @@ export const partnerAPI = {
             }
           });
           
-          console.log('HTTPS変換後のリクエスト成功:', response.status);
-          return response.data;
+          console.log('HTTPS変換後のリクエスト成功:', httpsResponse.status);
+          return httpsResponse.data;
         } catch (retryError) {
           console.error('HTTPS変換後も失敗:', retryError.message);
           // throw retryError; // 再試行失敗時は下のエラー処理に任せる
@@ -823,8 +834,23 @@ export const partnerAPI = {
           // 再試行失敗時のエラー情報を元のエラーに追加するなどの処理も検討
         }
       }
+      */
+      // --- 複雑なエラーハンドリングここまで ---
       
-      // 各種エラーの詳細な処理
+      // シンプルなエラーログ出力
+      if (error.response) {
+        console.error('エラー詳細:', {
+          status: error.response.status,
+          data: error.response.data
+        });
+      } else if (error.request) {
+        console.error('ネットワークリクエストエラー:', error.request);
+      } else {
+        console.error('リクエスト設定またはその他のエラー:', error.message);
+      }
+      
+      // 各種エラーの詳細な処理 (必要に応じてコメント解除)
+      /*
       if (error.response) {
         console.error('エラー詳細:', {
           status: error.response.status,
@@ -844,9 +870,10 @@ export const partnerAPI = {
         // リクエスト設定中にエラーが発生した場合
         console.error('リクエスト設定エラー:', error.message);
       }
+      */
       
-      // エラーオブジェクトをスロー
-      throw error.response?.data || { detail: 'ネットワークエラーが発生しました: ' + error.message };
+      // エラーオブジェクトをスロー（UI側でエラー表示できるように）
+      throw error.response?.data || { detail: '会話相手の登録中にエラーが発生しました: ' + error.message };
     }
   },
   

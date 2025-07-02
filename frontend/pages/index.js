@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
 import Layout from '../components/Layout';
-import { MessageSquare, CheckSquare, Users } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { authAPI } from '../services/api';
 
 export default function MainPage() {
@@ -122,20 +122,6 @@ export default function MainPage() {
             <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-gradient-to-r from-[#FF8551] to-[#FFA46D] text-white rounded-3xl shadow-md mb-6 transition-all hover:opacity-90">
               <MessageSquare className="w-5 h-5" />
               <span className="text-lg font-medium">会話の練習をしよう</span>
-            </div>
-          </Link>
-
-          <Link href="/checklist">
-            <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-white/90 backdrop-blur-sm border border-white/40 text-[#FF8551] rounded-3xl shadow-md mb-6 transition-colors hover:bg-[#FFF1E9]">
-              <CheckSquare className="w-5 h-5" />
-              <span className="text-lg font-medium">チェックリストを見る</span>
-            </div>
-          </Link>
-
-          <Link href="/community">
-            <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-white/90 backdrop-blur-sm border border-white/40 text-[#FF8551] rounded-3xl shadow-md mb-12 transition-colors hover:bg-[#FFF1E9]">
-              <Users className="w-5 h-5" />
-              <span className="text-lg font-medium">コミュニティへ行こう</span>
             </div>
           </Link>
         </nav>

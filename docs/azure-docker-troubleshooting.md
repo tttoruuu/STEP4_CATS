@@ -34,21 +34,10 @@
    };
    ```
 
-3. **ヘッダー検証エンドポイントの追加**
-   ```python
-   @app.get("/headers")
-   def get_headers(request: Request):
-       headers = dict(request.headers)
-       protocol = headers.get("x-forwarded-proto", "未設定")
-       secure = protocol == "https"
-       
-       return {
-           "all_headers": headers,
-           "x_forwarded_proto": protocol,
-           "is_secure": secure,
-           "request_protocol": request.url.scheme
-       }
-   ```
+3. **本番環境での検証**
+   - `/env`エンドポイントで環境変数の確認
+   - ログでX-Forwarded-Protoヘッダーの値を確認
+   - Azure Container Appsの設定で「HTTPSのみ」を確認
 
 ## 2. コンテナレジストリへのイメージプッシュエラー
 
@@ -137,10 +126,13 @@
 
 ## トラブルシューティングツール
 
-1. **ヘッダー検証スクリプト**
+1. **デバッグツール（開発環境用）**
    ```bash
-   # X-Forwarded-Proto確認
-   ./scripts/verify-headers.sh
+   # X-Forwarded-Proto確認ツール
+   ./scripts/tools/verify-headers.sh
+   
+   # ネットワーク設定更新ツール
+   ./scripts/tools/update-network-policy.sh
    ```
 
 2. **アプリケーションログの確認**
@@ -177,7 +169,7 @@
 
 5. 検証
    ```bash
-   ./scripts/verify-headers.sh
+   ./scripts/tools/verify-headers.sh
    ```
 
 この順序で行うことで、多くの一般的な問題を回避できます。 

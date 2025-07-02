@@ -11,30 +11,13 @@
 1. ヘッダー検証用エンドポイント `/headers` の追加
 2. X-Forwarded-Protoヘッダー処理ミドルウェアの実装
 
-### ヘッダー検証エンドポイント
+### 現在の実装状況
 
-```python
-@app.get("/headers")
-def get_headers(request: Request):
-    """
-    リクエストヘッダーを確認するためのエンドポイント
-    X-Forwarded-Proto ヘッダーの存在と値を検証します
-    
-    - **戻り値**: リクエストヘッダー情報
-    """
-    headers = dict(request.headers)
-    protocol = headers.get("x-forwarded-proto", "未設定")
-    secure = protocol == "https"
-    
-    return {
-        "all_headers": headers,
-        "x_forwarded_proto": protocol,
-        "is_secure": secure,
-        "host": headers.get("host", "未設定"),
-        "origin": headers.get("origin", "未設定"),
-        "request_protocol": request.url.scheme
-    }
-```
+本アプリケーションでは、以下の機能でHTTPS対応を行っています：
+
+1. **X-Forwarded-Proto ヘッダー処理ミドルウェア**（main.pyに実装済み）
+2. **環境変数確認エンドポイント** (`/env`) でHTTPS設定の確認
+3. **フロントエンドでのHTTPS強制変換**（api.jsに実装済み）
 
 ### X-Forwarded-Proto処理ミドルウェア
 
@@ -86,13 +69,12 @@ curl -v http://localhost:8000/headers | json_pp
 2. デプロイ後、ブラウザまたはcurlで以下のエンドポイントにアクセスします：
 
 ```
-https://[your-app-name].azurecontainerapps.io/headers
+https://[your-app-name].azurecontainerapps.io/env
 ```
 
 3. レスポンスを確認して、以下のことを検証します：
-   - `x_forwarded_proto` の値が `https` であること
-   - `request_protocol` の値が `https` であること（ミドルウェアが機能している証拠）
-   - `is_secure` が `true` であること
+   - 環境変数が正しく設定されていること
+   - HTTPS環境で動作していること
 
 ## Azure Container Appsの設定確認
 

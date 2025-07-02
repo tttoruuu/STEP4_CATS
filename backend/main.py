@@ -4,16 +4,15 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 import shutil
 import os
+import logging
 from dotenv import load_dotenv
 from database import SessionLocal, engine, Base, get_db
 from models.user import User
 from models.conversation_partner import ConversationPartner
-from models.post import Post
-from models.like import Like
 from models import schemas
 from auth.password import get_password_hash, verify_password
 from auth.jwt import create_access_token, get_current_user
-from routers import conversation_partners, posts
+from routers import conversation_partners
 from fastapi.responses import JSONResponse
 import random
 from urllib.parse import urlparse
@@ -25,6 +24,13 @@ load_dotenv()  # .env読み込み
 
 ENV = os.getenv("ENV", "development")
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
+
+# ログレベル設定
+logging.basicConfig(
+    level=logging.ERROR if ENV == "production" else logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # CORS設定: 具体的なオリジンのリストを指定する
 origins = [
@@ -45,12 +51,10 @@ if ENV == "production" and FRONTEND_ORIGIN:
         https_origin = 'https://' + FRONTEND_ORIGIN[7:]
         if https_origin not in origins:
             origins.append(https_origin)
-            print(f"HTTPS origin added: {https_origin}")
     
     # 元のURLをそのまま追加（もし存在しない場合）
     if FRONTEND_ORIGIN not in origins:
         origins.append(FRONTEND_ORIGIN)
-        print(f"Original origin added: {FRONTEND_ORIGIN}")
     
     # FRONTEND_ORIGINからドメイン部分を抽出してワイルドカードパターンも追加
     try:
@@ -61,18 +65,14 @@ if ENV == "production" and FRONTEND_ORIGIN:
             wildcard_domain = f"{parsed_url.scheme}://*.{'.'.join(domain_parts[1:])}"
             if wildcard_domain not in origins:
                 origins.append(wildcard_domain)
-                print(f"Wildcard domain added: {wildcard_domain}")
     except Exception as e:
-        print(f"Failed to parse domain for wildcard pattern: {e}")
+        logger.error(f"Failed to parse domain for wildcard pattern: {e}")
 
 app = FastAPI(
     title="お見合い会話練習API",
     description="お見合いの会話練習をサポートするRESTful API",
     version="1.0.0",
 )
-
-print("ENV:", ENV)
-print("FRONTEND_ORIGIN:", FRONTEND_ORIGIN)
 
 # CORS設定 - 具体的なオリジンリストを指定
 app.add_middleware(
@@ -85,9 +85,6 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-# デバッグ用
-print("CORS allow_origins:", origins)
-
 # X-Forwarded-Proto ヘッダー処理ミドルウェア
 @app.middleware("http")
 async def process_x_forwarded_proto(request: Request, call_next):
@@ -95,13 +92,9 @@ async def process_x_forwarded_proto(request: Request, call_next):
     X-Forwarded-Proto ヘッダーを処理するミドルウェア
     Azure Container AppsのリバースプロキシからのHTTPSリクエストを適切に処理します
     """
-    # ヘッダーのログ記録
-    print(f"リクエストヘッダー: {dict(request.headers)}")
-    
     # X-Forwarded-Protoヘッダーが'https'の場合、request.url.schemeを'https'に設定
     forwarded_proto = request.headers.get("x-forwarded-proto")
     if forwarded_proto == "https":
-        print(f"X-Forwarded-Proto: {forwarded_proto} - リクエストをHTTPSとして処理します")
         # FastAPIのリクエストオブジェクトのスキームを更新
         request.scope["scheme"] = "https"
     
@@ -111,9 +104,6 @@ async def process_x_forwarded_proto(request: Request, call_next):
 
 # 会話相手APIルーターの追加
 app.include_router(conversation_partners.router)
-
-# 投稿APIルーターの追加
-app.include_router(posts.router)
 
 # データベースセッションの依存関係
 def get_db():
@@ -216,28 +206,14 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     - **戻り値**: 作成されたユーザー情報（パスワードを除く）
     - **エラー**: ユーザー名が既に登録されている場合 (400)
     """
-    print(f"ユーザー登録リクエスト受信: username={user.username}, email={user.email}")
-    print(f"生年月日データ: {user.birth_date} (タイプ: {type(user.birth_date)})")
-    
-    # リクエストデータをJSON形式で出力
-    import json
-    try:
-        user_dict = user.dict()
-        user_dict["birth_date"] = str(user_dict["birth_date"])  # dateオブジェクトを文字列に変換
-        print(f"ユーザーデータ: {json.dumps(user_dict, indent=2, ensure_ascii=False)}")
-    except Exception as e:
-        print(f"データ出力エラー: {str(e)}")
-    
     # ユーザー名の重複チェック
     db_user = db.query(User).filter(User.username == user.username).first()
     if db_user:
-        print(f"エラー: Username {user.username} は既に登録されています")
         raise HTTPException(status_code=400, detail="Username already registered")
     
     # メールアドレスの重複チェック
     db_email = db.query(User).filter(User.email == user.email).first()
     if db_email:
-        print(f"エラー: Email {user.email} は既に登録されています")
         raise HTTPException(status_code=400, detail="このメールアドレスは既に登録されています。違うアドレスを使用するか、ログインをお試しください。")
     
     try:
@@ -255,10 +231,9 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
-        print(f"ユーザー登録成功: {user.username}")
         return db_user
     except Exception as e:
-        print(f"ユーザー登録エラー: {str(e)}")
+        logger.error(f"ユーザー登録エラー: {str(e)}")
         db.rollback()
         # IntegrityErrorの場合は、メールアドレス重複エラーの可能性が高い
         if "Duplicate entry" in str(e) and "email" in str(e):
@@ -363,11 +338,6 @@ async def simulate_conversation(
     message = data.get('message', '')
     chat_history = data.get('chatHistory', [])
     
-    # リクエストデータをデバッグ用に出力
-    print(f"会話シミュレーションリクエスト: partnerId={partner_id}, meetingCount={meeting_count}, level={level}")
-    print(f"ユーザーメッセージ: {message}")
-    print(f"チャット履歴: {len(chat_history)}件")
-    
     # 緊急フォールバック応答 (APIでエラーが起きた場合の対応)
     fallback_responses = [
         "申し訳ありません、少し考え中です...また話しかけてみてください。",
@@ -388,19 +358,8 @@ async def simulate_conversation(
         # OpenAI APIキーを設定
         api_key = os.environ.get("OPENAI_API_KEY")
         
-        # APIキー情報をデバッグ用に安全に出力
-        if api_key:
-            masked_key = api_key[:5] + "..." + api_key[-5:] if len(api_key) > 10 else "***" 
-            print(f"OpenAI APIキー: {masked_key}")
-            
-            # APIキーの形式を確認
-            import re
-            if re.match(r'^sk-[A-Za-z0-9]+$', api_key):
-                print("APIキー形式: 有効")
-            else:
-                print(f"APIキー形式が不正な可能性があります。キーの長さ: {len(api_key)}")
-        else:
-            print("OpenAI APIキーが設定されていません")
+        if not api_key:
+            logger.error("OpenAI APIキーが設定されていません")
             raise HTTPException(
                 status_code=500,
                 detail="サーバー設定エラー: OpenAI APIキーが設定されていません。サーバー管理者に連絡してください。"
@@ -409,9 +368,8 @@ async def simulate_conversation(
         # OpenAIクライアントを初期化
         try:
             client = OpenAI(api_key=api_key)
-            print("OpenAIクライアント初期化成功")
         except Exception as e:
-            print(f"OpenAIクライアント初期化エラー: {type(e).__name__}: {str(e)}")
+            logger.error(f"OpenAIクライアント初期化エラー: {type(e).__name__}: {str(e)}")
             raise HTTPException(
                 status_code=500,
                 detail=f"OpenAIクライアント初期化エラー: {str(e)}"
@@ -479,14 +437,12 @@ async def simulate_conversation(
 ・出身：{user_info.hometown if user_info.hometown else "不明"}
 ・趣味：{user_info.hobbies if user_info.hobbies else "特になし"}
 """
-                print(f"データベースから会話相手情報を取得: {partner.name}, {partner.age}歳")
-                print(f"ユーザー情報: {user_info.full_name}, 出身: {user_info.hometown}")
             else:
-                print(f"指定されたID: {partner_id_int}の会話相手が見つかりません")
+                logger.error(f"指定されたID: {partner_id_int}の会話相手が見つかりません")
                 raise Exception("会話相手が見つかりません")
                 
         except Exception as e:
-            print(f"会話相手情報取得エラー: {str(e)}")
+            logger.error(f"会話相手情報取得エラー: {str(e)}")
             # エラー時はデフォルト情報を使用
             partner_info = """
 あなたは以下の情報を持つ人物として会話してください：
@@ -630,15 +586,10 @@ A: カフェ巡りと写真撮影が好きです。特に静かな雰囲気の�
         
         # ChatGPT APIを呼び出して応答を生成
         try:
-            print("OpenAI APIリクエスト開始...")
-            print(f"送信するプロンプト内容: {messages[0]['content'][:100]}...")
-            print(f"メッセージ数: {len(messages)}")
-            
             # タイムアウト時間を設定（秒単位）- 長めに設定
             timeout_seconds = 120
             
             # API呼び出しを実行
-            print(f"OpenAI API呼び出し開始... タイムアウト: {timeout_seconds}秒")
             start_time = __import__('time').time()
             
             try:
@@ -648,34 +599,29 @@ A: カフェ巡りと写真撮影が好きです。特に静かな雰囲気の�
                 client.max_retries = 3  # リトライ回数を増やす
                 
                 response = client.chat.completions.create(
-                    model="gpt-3.5-turbo",
+                    model="gpt-4o",
                     messages=messages,
                     temperature=0.7,
                     max_tokens=150,
                     timeout=timeout_seconds
                 )
                 
-                end_time = __import__('time').time()
-                print(f"OpenAI API呼び出し完了: {end_time - start_time:.2f}秒")
-                
                 if response and response.choices:
                     assistant_message = response.choices[0].message.content
-                    print(f"OpenAI API応答: {assistant_message}")
                     return {"response": assistant_message}
                 else:
-                    print("OpenAI API応答が空です")
                     return {"response": random.choice(fallback_responses)}
                     
             except Exception as e:
-                print(f"OpenAI API呼び出しエラー: {type(e).__name__}: {str(e)}")
+                logger.error(f"OpenAI API呼び出しエラー: {type(e).__name__}: {str(e)}")
                 return {"response": random.choice(fallback_responses)}
                 
         except Exception as e:
-            print(f"会話シミュレーションエラー: {type(e).__name__}: {str(e)}")
+            logger.error(f"会話シミュレーションエラー: {type(e).__name__}: {str(e)}")
             return {"response": random.choice(fallback_responses)}
             
     except Exception as e:
-        print(f"予期せぬエラー: {type(e).__name__}: {str(e)}")
+        logger.error(f"予期せぬエラー: {type(e).__name__}: {str(e)}")
         return {"response": random.choice(fallback_responses)}
 
 # ヘルスチェックエンドポイント
@@ -711,10 +657,6 @@ async def generate_conversation_feedback(
     meeting_count = data.get('meetingCount', '')
     chat_history = data.get('chatHistory', [])
     
-    # リクエストデータをデバッグ用に出力
-    print(f"会話フィードバックリクエスト: partnerId={partner_id}, meetingCount={meeting_count}")
-    print(f"チャット履歴: {len(chat_history)}件")
-    
     # 緊急フォールバック応答 (APIでエラーが起きた場合の対応)
     fallback_feedback = {
         "score": 65,
@@ -743,12 +685,8 @@ async def generate_conversation_feedback(
         # OpenAI APIキーを設定
         api_key = os.environ.get("OPENAI_API_KEY")
         
-        # APIキー情報をデバッグ用に安全に出力
-        if api_key:
-            masked_key = api_key[:5] + "..." + api_key[-5:] if len(api_key) > 10 else "***" 
-            print(f"OpenAI APIキー: {masked_key}")
-        else:
-            print("OpenAI APIキーが設定されていません")
+        if not api_key:
+            logger.error("OpenAI APIキーが設定されていません")
             raise HTTPException(
                 status_code=500,
                 detail="サーバー設定エラー: OpenAI APIキーが設定されていません。サーバー管理者に連絡してください。"
@@ -757,9 +695,8 @@ async def generate_conversation_feedback(
         # OpenAIクライアントを初期化
         try:
             client = OpenAI(api_key=api_key)
-            print("OpenAIクライアント初期化成功")
         except Exception as e:
-            print(f"OpenAIクライアント初期化エラー: {type(e).__name__}: {str(e)}")
+            logger.error(f"OpenAIクライアント初期化エラー: {type(e).__name__}: {str(e)}")
             raise HTTPException(
                 status_code=500,
                 detail=f"OpenAIクライアント初期化エラー: {str(e)}"
@@ -832,29 +769,22 @@ async def generate_conversation_feedback(
 
         # ChatGPT APIを呼び出してフィードバックを生成
         try:
-            print("OpenAI APIリクエスト開始（フィードバック生成）...")
-            
             # タイムアウト時間を設定（秒単位）
             timeout_seconds = 120
             
             # API呼び出しを実行
-            print(f"OpenAI API呼び出し開始... タイムアウト: {timeout_seconds}秒")
             start_time = __import__('time').time()
             
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o",
                 messages=[{"role": "system", "content": feedback_prompt}],
                 temperature=0.7,
                 max_tokens=500,
                 timeout=timeout_seconds
             )
             
-            end_time = __import__('time').time()
-            print(f"OpenAI API呼び出し完了: {end_time - start_time:.2f}秒")
-            
             if response and response.choices:
                 feedback_text = response.choices[0].message.content
-                print(f"生成されたフィードバック: {feedback_text}")
                 
                 # JSONをパース
                 try:
@@ -873,22 +803,19 @@ async def generate_conversation_feedback(
                         if isinstance(feedback_data["score"], (int, float)):
                             return feedback_data
                         else:
-                            print("スコアが数値ではありません。フォールバックを使用します。")
                             return fallback_feedback
                     else:
-                        print("フィードバックデータに必要なフィールドが含まれていません。フォールバックを使用します。")
                         return fallback_feedback
                 except json.JSONDecodeError as e:
-                    print(f"JSON解析エラー: {str(e)}")
+                    logger.error(f"JSON解析エラー: {str(e)}")
                     return fallback_feedback
             else:
-                print("OpenAI API応答が空です")
                 return fallback_feedback
                 
         except Exception as e:
-            print(f"OpenAI API呼び出しエラー: {type(e).__name__}: {str(e)}")
+            logger.error(f"OpenAI API呼び出しエラー: {type(e).__name__}: {str(e)}")
             return fallback_feedback
             
     except Exception as e:
-        print(f"フィードバック生成エラー: {type(e).__name__}: {str(e)}")
+        logger.error(f"フィードバック生成エラー: {type(e).__name__}: {str(e)}")
         return fallback_feedback
