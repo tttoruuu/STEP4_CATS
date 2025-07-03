@@ -6,13 +6,16 @@ import Link from 'next/link';
 import Layout from '../../components/Layout';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import ErrorAlert from '../../components/common/ErrorAlert';
 import Image from 'next/image';
 import { authAPI } from '../../services/api';
+import { translateErrorMessage, getErrorDetails } from '../../utils/errorMessages';
 
 export default function Login() {
   const router = useRouter();
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [error, setError] = useState('');
+  const [errorDetails, setErrorDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
@@ -37,6 +40,7 @@ export default function Login() {
     try {
       setIsLoading(true);
       setError('');
+      setErrorDetails(null);
       console.log('ログイン開始:', data.username);
       
       // ログイン処理
@@ -56,14 +60,10 @@ export default function Login() {
     } catch (err) {
       console.error('ログインエラー:', err);
       
-      // エラーメッセージの設定
-      if (err.detail) {
-        setError(err.detail);
-      } else if (err.message) {
-        setError(err.message);
-      } else {
-        setError('ログインに失敗しました。ユーザー名とパスワードをご確認ください。');
-      }
+      // エラーの詳細情報を取得
+      const details = getErrorDetails(err);
+      setErrorDetails(details);
+      setError(details.message);
     } finally {
       setIsLoading(false);
     }
@@ -104,7 +104,12 @@ export default function Login() {
             </div>
 
             {error && (
-              <div className="text-red-500 text-sm text-center">{error}</div>
+              <ErrorAlert 
+                error={error}
+                onRetry={errorDetails?.showRetry ? () => handleSubmit(onSubmit)() : null}
+                showRetry={errorDetails?.showRetry}
+                className="mb-4"
+              />
             )}
 
             <div>

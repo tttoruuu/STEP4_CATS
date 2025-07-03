@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
 import Layout from '../components/Layout';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Heart, Palette, User } from 'lucide-react';
 import { authAPI } from '../services/api';
 
 export default function MainPage() {
@@ -117,11 +117,36 @@ export default function MainPage() {
         <h2 className="text-[#FF8551] text-xl font-medium mb-8">今日は何をしますか？</h2>
 
         {/* メニューボタン */}
-        <nav className="flex flex-col">
+        <nav className="flex flex-col space-y-4">
+          {/* パーソナルカウンセラー */}
+          <Link href="/counselor">
+            <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-gradient-to-r from-[#FF8551] to-[#FFA46D] text-white rounded-3xl shadow-md transition-all hover:opacity-90">
+              <User className="w-5 h-5" />
+              <span className="text-lg font-medium">AIカウンセラー</span>
+            </div>
+          </Link>
+
+          {/* 会話練習機能 */}
           <Link href="/conversation">
-            <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-gradient-to-r from-[#FF8551] to-[#FFA46D] text-white rounded-3xl shadow-md mb-6 transition-all hover:opacity-90">
+            <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white rounded-3xl shadow-md transition-all hover:opacity-90">
               <MessageSquare className="w-5 h-5" />
-              <span className="text-lg font-medium">会話の練習をしよう</span>
+              <span className="text-lg font-medium">会話練習</span>
+            </div>
+          </Link>
+
+          {/* 相性診断機能 */}
+          <Link href="/compatibility">
+            <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-gradient-to-r from-[#EC4899] to-[#F97316] text-white rounded-3xl shadow-md transition-all hover:opacity-90">
+              <Heart className="w-5 h-5" />
+              <span className="text-lg font-medium">相性診断</span>
+            </div>
+          </Link>
+
+          {/* スタイリング提案機能 */}
+          <Link href="/styling">
+            <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-gradient-to-r from-[#059669] to-[#0891B2] text-white rounded-3xl shadow-md transition-all hover:opacity-90">
+              <Palette className="w-5 h-5" />
+              <span className="text-lg font-medium">スタイリング提案</span>
             </div>
           </Link>
         </nav>
