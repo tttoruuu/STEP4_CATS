@@ -1,0 +1,1221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2024-01-01T00:00:00.000Z" agent="Claude Code" etag="complete-app-activity" version="22.1.16" type="device">
+  <diagram id="complete-activity-diagrams" name="Complete App Activity Diagrams">
+    <mxGraphModel dx="1422" dy="3000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="2000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- 1. 初回ユーザー登録フロー -->
+        <mxCell id="registration-title" value="1. 初回ユーザー登録フロー" style="text;html=1;strokeColor=none;fillColor=#e1d5e7;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=18;fontStyle=1;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="50" y="20" width="400" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Start Node -->
+        <mxCell id="reg-start" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="240" y="80" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- Registration Flow -->
+        <mxCell id="reg-app-launch" value="アプリ起動" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="120" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-oauth" value="OAuth認証" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="190" y="180" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-auth-decision" value="認証成功？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="200" y="240" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-terms" value="利用規約・プライバシー&lt;br&gt;ポリシー確認" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="320" width="120" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-profile-screen" value="プロフィール設定画面" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="390" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-basic-info" value="基本情報入力&lt;br&gt;年齢・職業・居住地等" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="450" width="120" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-marriage-info" value="婚活状況入力&lt;br&gt;結婚相談所利用状況等" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="520" width="120" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-self-pr" value="自己PR・趣味入力" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="590" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-profile-complete" value="プロフィール完了？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="200" y="650" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-temp-save" value="一時保存" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="380" y="660" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-continue-later" value="後で続きから&lt;br&gt;入力可能" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="380" y="720" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-diagnosis-invitation" value="相性診断への誘導画面" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="190" y="730" width="120" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-take-diagnosis" value="診断を受ける？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="200" y="800" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-diagnosis-start" value="相性診断開始" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="60" y="820" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-mbti" value="MBTI診断&lt;br&gt;10問形式" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="60" y="880" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-values" value="価値観診断" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="60" y="940" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-diagnosis-results" value="診断結果表示" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1000" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-feature-intro" value="おすすめ機能紹介" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1060" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-main-dashboard" value="メインダッシュボード" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1120" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="reg-complete" value="初回登録完了" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1180" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- End Node -->
+        <mxCell id="reg-end" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1240" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- Registration Flow Connections -->
+        <mxCell id="reg-edge-1" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-start" target="reg-app-launch">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="110" as="sourcePoint" />
+            <mxPoint x="250" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-2" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-app-launch" target="reg-oauth">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="170" as="sourcePoint" />
+            <mxPoint x="250" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-3" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-oauth" target="reg-auth-decision">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="230" as="sourcePoint" />
+            <mxPoint x="250" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-4" value="失敗" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-auth-decision" target="reg-oauth">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="160" y="270" as="sourcePoint" />
+            <mxPoint x="160" y="200" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="160" y="270" />
+              <mxPoint x="160" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-5" value="成功" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-auth-decision" target="reg-terms">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="310" as="sourcePoint" />
+            <mxPoint x="250" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-6" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-terms" target="reg-profile-screen">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="380" as="sourcePoint" />
+            <mxPoint x="250" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-7" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-profile-screen" target="reg-basic-info">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="440" as="sourcePoint" />
+            <mxPoint x="250" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-8" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-basic-info" target="reg-marriage-info">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="510" as="sourcePoint" />
+            <mxPoint x="250" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-9" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-marriage-info" target="reg-self-pr">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="580" as="sourcePoint" />
+            <mxPoint x="250" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-10" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-self-pr" target="reg-profile-complete">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="640" as="sourcePoint" />
+            <mxPoint x="250" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-11" value="未完了" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-profile-complete" target="reg-temp-save">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="310" y="680" as="sourcePoint" />
+            <mxPoint x="380" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-12" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-temp-save" target="reg-continue-later">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="430" y="710" as="sourcePoint" />
+            <mxPoint x="430" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-13" value="完了" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-profile-complete" target="reg-diagnosis-invitation">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="720" as="sourcePoint" />
+            <mxPoint x="250" y="730" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-14" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-diagnosis-invitation" target="reg-take-diagnosis">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="790" as="sourcePoint" />
+            <mxPoint x="250" y="800" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-15" value="はい" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-take-diagnosis" target="reg-diagnosis-start">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="190" y="830" as="sourcePoint" />
+            <mxPoint x="170" y="830" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-16" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-diagnosis-start" target="reg-mbti">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="110" y="870" as="sourcePoint" />
+            <mxPoint x="110" y="880" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-17" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-mbti" target="reg-values">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="110" y="930" as="sourcePoint" />
+            <mxPoint x="110" y="940" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-18" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-values" target="reg-diagnosis-results">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="110" y="990" as="sourcePoint" />
+            <mxPoint x="110" y="1000" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-19" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-diagnosis-results" target="reg-feature-intro">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="110" y="1050" as="sourcePoint" />
+            <mxPoint x="110" y="1060" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-20" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-feature-intro" target="reg-main-dashboard">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="170" y="1080" as="sourcePoint" />
+            <mxPoint x="190" y="1140" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="110" y="1140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-21" value="いいえ" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-take-diagnosis" target="reg-main-dashboard">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="830" as="sourcePoint" />
+            <mxPoint x="350" y="1140" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="350" y="830" />
+              <mxPoint x="350" y="1140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-22" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-continue-later" target="reg-main-dashboard">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="430" y="770" as="sourcePoint" />
+            <mxPoint x="350" y="1140" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="430" y="1140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-23" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-main-dashboard" target="reg-complete">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="1170" as="sourcePoint" />
+            <mxPoint x="250" y="1180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg-edge-24" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="reg-complete" target="reg-end">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="1230" as="sourcePoint" />
+            <mxPoint x="250" y="1240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 2. 日常利用フロー -->
+        <mxCell id="daily-title" value="2. 日常利用フロー" style="text;html=1;strokeColor=none;fillColor=#d5e8d4;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=18;fontStyle=1;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="600" y="20" width="300" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Daily Use Flow -->
+        <mxCell id="daily-start" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="740" y="80" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-app-launch" value="アプリ起動" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="690" y="120" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-login-check" value="ログイン確認" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="690" y="180" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-login-status" value="ログイン状態？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="700" y="240" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-login-screen" value="ログイン画面" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="540" y="250" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-dashboard" value="メインダッシュボード" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="690" y="320" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-feature-select" value="4つの主要機能選択" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="690" y="380" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- 4 Main Features -->
+        <mxCell id="daily-counselor" value="パーソナル&lt;br&gt;カウンセラー" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="520" y="460" width="100" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-practice" value="会話練習" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="640" y="460" width="100" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-diagnosis" value="相性診断" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="760" y="460" width="100" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-styling" value="スタイリング提案" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="880" y="460" width="100" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- Counselor Sub-features -->
+        <mxCell id="daily-counselor-24h" value="24時間相談" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="470" y="540" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-counselor-profile" value="自己紹介文作成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="570" y="540" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Practice Sub-features -->
+        <mxCell id="daily-practice-topic" value="話題提案練習" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="590" y="540" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-practice-response" value="相槌スキル向上" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="590" y="585" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-practice-mistake" value="失言防止訓練" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="680" y="540" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-practice-relax" value="緊張緩和サポート" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="680" y="585" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Diagnosis Sub-features -->
+        <mxCell id="daily-diagnosis-mbti" value="MBTI診断" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="710" y="540" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-diagnosis-values" value="価値観診断" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="710" y="585" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-diagnosis-results" value="診断結果確認" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="800" y="540" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Styling Sub-features -->
+        <mxCell id="daily-styling-skincare" value="スキンケア提案" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="830" y="540" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-styling-hair" value="髪型・服装提案" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="830" y="585" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-styling-tpo" value="TPO別&lt;br&gt;コーディネート" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="920" y="540" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-styling-grooming" value="身だしなみ&lt;br&gt;アドバイス" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="920" y="585" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-styling-products" value="マンダム製品&lt;br&gt;おすすめ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="540" width="80" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Feature Usage -->
+        <mxCell id="daily-feature-use" value="機能利用" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="690" y="660" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-continue" value="継続利用？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="700" y="720" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-exit" value="アプリ終了" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="880" y="740" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="daily-end" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="920" y="800" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- Daily Flow Connections -->
+        <mxCell id="daily-edge-1" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-start" target="daily-app-launch">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="750" y="110" as="sourcePoint" />
+            <mxPoint x="750" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-2" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-app-launch" target="daily-login-check">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="750" y="170" as="sourcePoint" />
+            <mxPoint x="750" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-3" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-login-check" target="daily-login-status">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="750" y="230" as="sourcePoint" />
+            <mxPoint x="750" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-4" value="未ログイン" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-login-status" target="daily-login-screen">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="690" y="270" as="sourcePoint" />
+            <mxPoint x="650" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-5" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-login-screen" target="daily-login-check">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="590" y="250" as="sourcePoint" />
+            <mxPoint x="690" y="200" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="590" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-6" value="ログイン済み" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-login-status" target="daily-dashboard">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="750" y="310" as="sourcePoint" />
+            <mxPoint x="750" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-7" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-dashboard" target="daily-feature-select">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="750" y="370" as="sourcePoint" />
+            <mxPoint x="750" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Feature Selection Connections -->
+        <mxCell id="daily-edge-8" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-feature-select" target="daily-counselor">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="650" y="430" as="sourcePoint" />
+            <mxPoint x="570" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-9" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-feature-select" target="daily-practice">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="720" y="430" as="sourcePoint" />
+            <mxPoint x="690" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-10" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-feature-select" target="daily-diagnosis">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="780" y="430" as="sourcePoint" />
+            <mxPoint x="810" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-11" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-feature-select" target="daily-styling">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="820" y="430" as="sourcePoint" />
+            <mxPoint x="930" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Sub-feature Connections (simplified) -->
+        <mxCell id="daily-edge-12" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-counselor" target="daily-counselor-24h">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="540" y="520" as="sourcePoint" />
+            <mxPoint x="510" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-13" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-counselor" target="daily-counselor-profile">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="590" y="520" as="sourcePoint" />
+            <mxPoint x="610" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- All sub-features connect to feature use -->
+        <mxCell id="daily-edge-14" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-counselor-24h" target="daily-feature-use">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="510" y="580" as="sourcePoint" />
+            <mxPoint x="690" y="660" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="510" y="620" />
+              <mxPoint x="700" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-15" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-counselor-profile" target="daily-feature-use">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="610" y="580" as="sourcePoint" />
+            <mxPoint x="730" y="650" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="610" y="620" />
+              <mxPoint x="730" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="daily-edge-16" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-feature-use" target="daily-continue">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="750" y="710" as="sourcePoint" />
+            <mxPoint x="750" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-17" value="はい" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-continue" target="daily-feature-select">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="650" y="750" as="sourcePoint" />
+            <mxPoint x="650" y="400" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="650" y="750" />
+              <mxPoint x="650" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-18" value="いいえ" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-continue" target="daily-exit">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="810" y="750" as="sourcePoint" />
+            <mxPoint x="880" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="daily-edge-19" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="daily-exit" target="daily-end">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="930" y="790" as="sourcePoint" />
+            <mxPoint x="930" y="800" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 3. 会話練習セッションフロー -->
+        <mxCell id="practice-title" value="3. 会話練習セッションフロー" style="text;html=1;strokeColor=none;fillColor=#fff2cc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=18;fontStyle=1;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1300" width="400" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Practice Session Flow -->
+        <mxCell id="practice-start" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1360" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-select" value="会話練習選択" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1400" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-type-select" value="練習タイプ選択" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1460" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Practice Types -->
+        <mxCell id="practice-topic" value="話題提案練習" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1540" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-response" value="相槌スキル向上" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="170" y="1540" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-mistake" value="失言防止訓練" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="290" y="1540" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-relax" value="緊張緩和サポート" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="410" y="1540" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-situation" value="シチュエーション選択&lt;br&gt;初回面談・デート・合コン等" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1600" width="120" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-difficulty" value="難易度選択&lt;br&gt;初心者・中級者・上級者" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1670" width="120" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-ai-character" value="AIキャラクター設定&lt;br&gt;年齢・職業・性格" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1740" width="120" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-begin" value="練習開始&lt;br&gt;AI第一声" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1810" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Practice Loop -->
+        <mxCell id="practice-user-input" value="ユーザー発言入力" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1870" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-ai-response" value="AI応答・&lt;br&gt;リアルタイム評価" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1930" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-count" value="ラリー数カウント" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1990" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-continue-decision" value="続ける？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="200" y="2050" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-end-decision" value="最低ラリー数&lt;br&gt;達成？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="380" y="2050" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-encourage" value="継続促進メッセージ&lt;br&gt;「もう少し練習しませんか？」" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="550" y="2040" width="140" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-user-choice" value="ユーザー選択" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="570" y="2110" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-simple-feedback" value="簡易フィードバック&lt;br&gt;「次回はもう少し長く&lt;br&gt;練習してみましょう」" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="720" y="2100" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-evaluation" value="総合評価生成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="370" y="2130" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-detailed-feedback" value="詳細フィードバック表示" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="370" y="2190" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-improvement" value="改善点・次回への提案" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="370" y="2250" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-save" value="練習結果保存" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="370" y="2310" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-session-end" value="セッション終了" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="520" y="2310" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-dashboard-return" value="メインダッシュボード&lt;br&gt;に戻る" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="520" y="2370" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="practice-end" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="570" y="2430" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- Practice Flow Connections -->
+        <mxCell id="practice-edge-1" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-start" target="practice-select">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="1390" as="sourcePoint" />
+            <mxPoint x="250" y="1400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-2" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-select" target="practice-type-select">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="1450" as="sourcePoint" />
+            <mxPoint x="250" y="1460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Type selections -->
+        <mxCell id="practice-edge-3" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-type-select" target="practice-topic">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="190" y="1510" as="sourcePoint" />
+            <mxPoint x="100" y="1540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-4" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-type-select" target="practice-response">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="220" y="1510" as="sourcePoint" />
+            <mxPoint x="220" y="1540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-5" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-type-select" target="practice-mistake">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="270" y="1510" as="sourcePoint" />
+            <mxPoint x="340" y="1540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-6" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-type-select" target="practice-relax">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="310" y="1510" as="sourcePoint" />
+            <mxPoint x="460" y="1540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- All types converge -->
+        <mxCell id="practice-edge-7" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-topic" target="practice-situation">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="100" y="1590" as="sourcePoint" />
+            <mxPoint x="190" y="1625" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="100" y="1625" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-8" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-response" target="practice-situation">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="220" y="1590" as="sourcePoint" />
+            <mxPoint x="250" y="1600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-9" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-mistake" target="practice-situation">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="340" y="1590" as="sourcePoint" />
+            <mxPoint x="310" y="1600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-10" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-relax" target="practice-situation">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="460" y="1590" as="sourcePoint" />
+            <mxPoint x="310" y="1625" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="460" y="1625" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Linear flow continues -->
+        <mxCell id="practice-edge-11" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-situation" target="practice-difficulty">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="1660" as="sourcePoint" />
+            <mxPoint x="250" y="1670" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-12" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-difficulty" target="practice-ai-character">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="1730" as="sourcePoint" />
+            <mxPoint x="250" y="1740" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-13" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-ai-character" target="practice-begin">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="1800" as="sourcePoint" />
+            <mxPoint x="250" y="1810" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-14" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-begin" target="practice-user-input">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="1860" as="sourcePoint" />
+            <mxPoint x="250" y="1870" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-15" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-user-input" target="practice-ai-response">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="1920" as="sourcePoint" />
+            <mxPoint x="250" y="1930" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-16" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-ai-response" target="practice-count">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="1980" as="sourcePoint" />
+            <mxPoint x="250" y="1990" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-17" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-count" target="practice-continue-decision">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="2040" as="sourcePoint" />
+            <mxPoint x="250" y="2050" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Loop back -->
+        <mxCell id="practice-edge-18" value="続ける" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-continue-decision" target="practice-user-input">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="150" y="2080" as="sourcePoint" />
+            <mxPoint x="150" y="1890" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="150" y="2080" />
+              <mxPoint x="150" y="1890" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- End decision -->
+        <mxCell id="practice-edge-19" value="終了したい" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-continue-decision" target="practice-end-decision">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="310" y="2080" as="sourcePoint" />
+            <mxPoint x="380" y="2080" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Rally count check -->
+        <mxCell id="practice-edge-20" value="未達成" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-end-decision" target="practice-encourage">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="490" y="2080" as="sourcePoint" />
+            <mxPoint x="550" y="2065" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-21" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-encourage" target="practice-user-choice">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="620" y="2100" as="sourcePoint" />
+            <mxPoint x="620" y="2110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-22" value="続ける" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-user-choice" target="practice-user-input">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="570" y="2140" as="sourcePoint" />
+            <mxPoint x="310" y="1890" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="520" y="2140" />
+              <mxPoint x="520" y="1850" />
+              <mxPoint x="310" y="1850" />
+              <mxPoint x="310" y="1890" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-23" value="強制終了" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-user-choice" target="practice-simple-feedback">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="680" y="2140" as="sourcePoint" />
+            <mxPoint x="720" y="2130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Achievement path -->
+        <mxCell id="practice-edge-24" value="達成" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-end-decision" target="practice-evaluation">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="430" y="2120" as="sourcePoint" />
+            <mxPoint x="430" y="2130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-25" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-evaluation" target="practice-detailed-feedback">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="430" y="2180" as="sourcePoint" />
+            <mxPoint x="430" y="2190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-26" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-detailed-feedback" target="practice-improvement">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="430" y="2240" as="sourcePoint" />
+            <mxPoint x="430" y="2250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-27" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-improvement" target="practice-save">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="430" y="2300" as="sourcePoint" />
+            <mxPoint x="430" y="2310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Convergence -->
+        <mxCell id="practice-edge-28" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-save" target="practice-session-end">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="500" y="2330" as="sourcePoint" />
+            <mxPoint x="520" y="2330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-29" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-simple-feedback" target="practice-session-end">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="780" y="2170" as="sourcePoint" />
+            <mxPoint x="580" y="2310" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="780" y="2280" />
+              <mxPoint x="580" y="2280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-30" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-session-end" target="practice-dashboard-return">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="580" y="2360" as="sourcePoint" />
+            <mxPoint x="580" y="2370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="practice-edge-31" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="practice-dashboard-return" target="practice-end">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="580" y="2420" as="sourcePoint" />
+            <mxPoint x="580" y="2430" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 4. エラーハンドリングフロー -->
+        <mxCell id="error-title" value="4. エラーハンドリングフロー" style="text;html=1;strokeColor=none;fillColor=#f8cecc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=18;fontStyle=1;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="1300" width="350" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Error Handling Flow -->
+        <mxCell id="error-start" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1165" y="1360" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-user-action" value="ユーザーアクション" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1115" y="1400" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-api-call" value="API呼び出し" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1115" y="1460" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-success-check" value="通信成功？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1125" y="1520" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-normal-process" value="正常処理継続" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="980" y="1530" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-type-check" value="エラー種別判定" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1115" y="1600" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Error Types -->
+        <mxCell id="error-network" value="ネットワーク&lt;br&gt;エラー？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="950" y="1670" width="90" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-ai-api" value="AI API&lt;br&gt;エラー？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="1670" width="90" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-server" value="サーバー&lt;br&gt;エラー？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1170" y="1670" width="90" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-auth" value="認証&lt;br&gt;エラー？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="1670" width="90" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Error Messages -->
+        <mxCell id="error-network-msg" value="「通信環境のエラーで&lt;br&gt;ただいま使用できません&lt;br&gt;しばらく待ってから&lt;br&gt;再度お試しください」" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#ff6666;" vertex="1" parent="1">
+          <mxGeometry x="930" y="1760" width="130" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-ai-msg" value="「AIサービスが&lt;br&gt;一時的に利用できません&lt;br&gt;しばらく待ってから&lt;br&gt;再度お試しください」" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#ff6666;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="1760" width="130" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-server-msg" value="「サーバーメンテナンス中です&lt;br&gt;しばらく待ってから&lt;br&gt;再度お試しください」" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#ff6666;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="1760" width="130" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-auth-msg" value="「ログインが必要です」" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#ff6666;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="1780" width="130" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-retry-button" value="再試行ボタン表示" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1115" y="1860" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-login-screen" value="ログイン画面へ遷移" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="1860" width="130" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-user-action-decision" value="ユーザーアクション" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1125" y="1920" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-retry" value="リトライ処理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="1930" width="90" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-back" value="前画面に戻る" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="1930" width="90" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-retry-success" value="リトライ成功？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1015" y="1990" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-retry-limit" value="リトライ回数&lt;br&gt;上限？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1125" y="2070" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-admin-contact" value="「システム管理者に&lt;br&gt;お問い合わせください&lt;br&gt;エラーコード: XXX」" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#ff6666;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="2065" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-support" value="サポート連絡先表示" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="2145" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-login-process" value="ログイン処理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="2010" width="130" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-return" value="元の機能に戻る" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1115" y="2220" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="error-end" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1165" y="2280" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- Error Flow Connections -->
+        <mxCell id="error-edge-1" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-start" target="error-user-action">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1175" y="1390" as="sourcePoint" />
+            <mxPoint x="1175" y="1400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-2" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-user-action" target="error-api-call">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1175" y="1450" as="sourcePoint" />
+            <mxPoint x="1175" y="1460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-3" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-api-call" target="error-success-check">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1175" y="1510" as="sourcePoint" />
+            <mxPoint x="1175" y="1520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-4" value="成功" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-success-check" target="error-normal-process">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1115" y="1550" as="sourcePoint" />
+            <mxPoint x="1100" y="1550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-5" value="失敗" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-success-check" target="error-type-check">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1175" y="1590" as="sourcePoint" />
+            <mxPoint x="1175" y="1600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Error type branches -->
+        <mxCell id="error-edge-6" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-type-check" target="error-network">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1070" y="1650" as="sourcePoint" />
+            <mxPoint x="995" y="1670" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-7" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-type-check" target="error-ai-api">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1140" y="1650" as="sourcePoint" />
+            <mxPoint x="1105" y="1670" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-8" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-type-check" target="error-server">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1200" y="1650" as="sourcePoint" />
+            <mxPoint x="1215" y="1670" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-9" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-type-check" target="error-auth">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1240" y="1650" as="sourcePoint" />
+            <mxPoint x="1325" y="1670" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Error messages -->
+        <mxCell id="error-edge-10" value="はい" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-network" target="error-network-msg">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="995" y="1740" as="sourcePoint" />
+            <mxPoint x="995" y="1760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-11" value="はい" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-ai-api" target="error-ai-msg">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1105" y="1740" as="sourcePoint" />
+            <mxPoint x="1105" y="1760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-12" value="はい" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-server" target="error-server-msg">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1215" y="1740" as="sourcePoint" />
+            <mxPoint x="1215" y="1760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-13" value="はい" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-auth" target="error-auth-msg">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1325" y="1740" as="sourcePoint" />
+            <mxPoint x="1325" y="1780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Retry and login paths -->
+        <mxCell id="error-edge-14" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-network-msg" target="error-retry-button">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="995" y="840" as="sourcePoint" />
+            <mxPoint x="1115" y="1880" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="995" y="1880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-15" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-ai-msg" target="error-retry-button">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1105" y="1840" as="sourcePoint" />
+            <mxPoint x="1175" y="1860" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1105" y="1880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-16" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-server-msg" target="error-retry-button">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1215" y="1840" as="sourcePoint" />
+            <mxPoint x="1175" y="1860" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1215" y="1880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-17" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-auth-msg" target="error-login-screen">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1325" y="1830" as="sourcePoint" />
+            <mxPoint x="1325" y="1860" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-18" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-retry-button" target="error-user-action-decision">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1175" y="1910" as="sourcePoint" />
+            <mxPoint x="1175" y="1920" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-19" value="再試行" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-user-action-decision" target="error-retry">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1115" y="1950" as="sourcePoint" />
+            <mxPoint x="1110" y="1950" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="error-edge-20" value="キャンセル" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-user-action-decision" target="error-back">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1235" y="1950" as="sourcePoint" />
+            <mxPoint x="1260" y="1950" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-21" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-retry" target="error-retry-success">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1065" y="1980" as="sourcePoint" />
+            <mxPoint x="1065" y="1990" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-22" value="成功" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-retry-success" target="error-normal-process">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="990" y="2020" as="sourcePoint" />
+            <mxPoint x="990" y="1570" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="920" y="2020" />
+              <mxPoint x="920" y="1550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-23" value="失敗" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-retry-success" target="error-retry-limit">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1120" y="2030" as="sourcePoint" />
+            <mxPoint x="1125" y="2070" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1120" y="2100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-24" value="未達" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-retry-limit" target="error-retry-button">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1125" y="2070" as="sourcePoint" />
+            <mxPoint x="1125" y="1900" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1070" y="2100" />
+              <mxPoint x="1070" y="1880" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-25" value="上限到達" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-retry-limit" target="error-admin-contact">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1235" y="2100" as="sourcePoint" />
+            <mxPoint x="1300" y="2095" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-26" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-admin-contact" target="error-support">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1370" y="2135" as="sourcePoint" />
+            <mxPoint x="1370" y="2145" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-27" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-login-screen" target="error-login-process">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1325" y="1910" as="sourcePoint" />
+            <mxPoint x="1325" y="2010" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-28" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-login-process" target="error-normal-process">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1260" y="2030" as="sourcePoint" />
+            <mxPoint x="1100" y="1550" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1260" y="2030" />
+              <mxPoint x="880" y="2030" />
+              <mxPoint x="880" y="1550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-29" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-support" target="error-return">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1300" y="2185" as="sourcePoint" />
+            <mxPoint x="1235" y="2240" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1300" y="2240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-30" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-back" target="error-return">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1305" y="1980" as="sourcePoint" />
+            <mxPoint x="1175" y="2220" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1305" y="2200" />
+              <mxPoint x="1175" y="2200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="error-edge-31" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error-return" target="error-end">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1175" y="2270" as="sourcePoint" />
+            <mxPoint x="1175" y="2280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

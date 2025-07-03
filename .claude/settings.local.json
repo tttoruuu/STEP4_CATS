@@ -7,7 +7,13 @@
       "Bash(mv:*)",
       "Bash(grep:*)",
       "Bash(cp:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git push:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker-compose:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": []
   }
