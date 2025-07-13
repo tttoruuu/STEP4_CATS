@@ -1,0 +1,27 @@
+# 開発環境用 Dockerfile
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# 開発用パッケージをインストール
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# 依存関係のインストール
+COPY requirements.txt .
+COPY requirements-dev.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-dev.txt
+
+# 開発環境用設定
+ENV ENV=development
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# ソースコードのマウント用にボリュームを作成
+VOLUME ["/app"]
+
+# 開発サーバーの起動（ホットリロード有効）
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--log-level", "debug"]

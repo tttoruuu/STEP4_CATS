@@ -1,0 +1,133 @@
+name: Deploy to Development
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: wildcats9999.azurecr.io
+  RESOURCE_GROUP: miraim-dev-rg
+  CONTAINER_APP_NAME: miraim-dev-app
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+      
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+      
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          npm test
+      
+      - name: Run backend tests
+        run: |
+          cd backend
+          pytest
+      
+      - name: Run linting
+        run: |
+          cd frontend
+          npm run lint
+          cd ../backend
+          flake8 .
+          black --check .
+      
+      - name: Run type checking
+        run: |
+          cd frontend
+          npm run type-check
+          cd ../backend
+          mypy .
+
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup development environment
+        run: |
+          # 開発環境用の設定ファイルを使用
+          cp config/.env.development .env
+      
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
+      
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      
+      - name: Build and push Docker images
+        run: |
+          # Development build
+          docker build -f ./frontend/Dockerfile.development \
+            -t ${{ env.REGISTRY }}/frontend:dev-${{ github.sha }} \
+            -t ${{ env.REGISTRY }}/frontend:dev-latest \
+            ./frontend
+          
+          docker build -f ./backend/Dockerfile.development \
+            -t ${{ env.REGISTRY }}/backend:dev-${{ github.sha }} \
+            -t ${{ env.REGISTRY }}/backend:dev-latest \
+            ./backend
+          
+          # Push images
+          docker push ${{ env.REGISTRY }}/frontend:dev-${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/frontend:dev-latest
+          docker push ${{ env.REGISTRY }}/backend:dev-${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/backend:dev-latest
+      
+      - name: Deploy to development environment
+        run: |
+          # 開発環境へのデプロイ
+          az containerapp update \
+            --name ${{ env.CONTAINER_APP_NAME }}-frontend \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.REGISTRY }}/frontend:dev-${{ github.sha }} \
+            --set-env-vars NODE_ENV=development
+          
+          az containerapp update \
+            --name ${{ env.CONTAINER_APP_NAME }}-backend \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.REGISTRY }}/backend:dev-${{ github.sha }} \
+            --set-env-vars ENV=development
+      
+      - name: Run integration tests
+        run: |
+          # 統合テストの実行
+          sleep 30
+          curl -f ${{ secrets.DEV_API_URL }}/health || exit 1

@@ -1,0 +1,59 @@
+# 本番環境用 Dockerfile
+FROM node:18-alpine AS base
+
+# 依存関係のインストール
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# 依存関係ファイルをコピー
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production
+
+# ビルドステージ
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# 本番環境用のビルド
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# ビルド時の環境変数（buildtime）
+ARG NEXT_PUBLIC_API_URL
+ARG DATABASE_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV DATABASE_URL=${DATABASE_URL}
+
+RUN npm run build
+
+# 本番ランタイム
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# 実行用ユーザーを作成
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# 必要なファイルのみをコピー
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
+
+# 自動出力トレーシングを活用して、実行に必要なファイルのみをコピー
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# 実行用ユーザーに切り替え
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+# セキュリティのため、本番環境では非特権ユーザーで実行
+CMD ["node", "server.js"]
