@@ -1,27 +1,78 @@
+# 本番環境用 Docker Compose
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8
-    environment:
-      - MYSQL_ROOT_PASSWORD=rootpassword
-      - MYSQL_DATABASE=testdb
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
-    ports:
-      - "3306:3306"
-
-  backend:
-    image: wildcats9999.azurecr.io/backend:latest
-    environment:
-      - DATABASE_URL=mysql+pymysql://user:password@mysql:3306/testdb
-    ports:
-      - "8000:8000"
-
   frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.production
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+        - DATABASE_URL=${DATABASE_URL}
     image: wildcats9999.azurecr.io/frontend:latest
-    environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=https://backend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io
     ports:
       - "3000:3000"
+    env_file:
+      - ./config/.env.production
+    depends_on:
+      - backend
+    networks:
+      - miraim-network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    image: wildcats9999.azurecr.io/backend:latest
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./config/.env.production
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - miraim-network
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_prod_data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - miraim-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_prod_data:/data
+    networks:
+      - miraim-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+networks:
+  miraim-network:
+    driver: bridge
+
+volumes:
+  mysql_prod_data:
+  redis_prod_data:

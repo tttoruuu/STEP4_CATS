@@ -3,20 +3,60 @@ node_modules/
 __pycache__/
 *.pyc
 
-# 環境変数系
-
+# 環境変数系（機密情報保護）
 .env
 .env.production
 .env.local
+config/.env.production
+
+# セキュリティ関連
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# 暗号化されていない本番設定
+config/secrets/*.env
+!config/secrets/*.encrypted
 
 # OSごとの不要ファイル
 .DS_Store
+Thumbs.db
 
 # Docker関連
 *.log
 
+# ビルド成果物
 frontend/.next
+frontend/out
+backend/__pycache__/
+backend/.pytest_cache/
+backend/htmlcov/
+
+# IDE設定
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 一時ファイル
+*.tmp
+*.temp
 
 # ZIPファイル（バックアップなど）
 *.zip
-.next/
+*.tar.gz
+
+# テスト関連
+coverage/
+.coverage
+.nyc_output
+
+# ログファイル
+logs/
+*.log
+
+# 開発用データベース
+*.db
+*.sqlite3
