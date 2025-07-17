@@ -60,8 +60,6 @@ FRONTEND_ORIGIN=https://your-frontend-domain.com
 NEXT_PUBLIC_API_URL=https://your-api-domain.com
 INTERNAL_API_URL=http://backend:8000
 
-# Redis設定
-REDIS_URL=$(az keyvault secret show --vault-name $VAULT_NAME --name "redis-url" --query value -o tsv)
 EOF
 
 if [ $? -eq 0 ]; then

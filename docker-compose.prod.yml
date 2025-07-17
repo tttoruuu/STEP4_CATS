@@ -58,16 +58,6 @@ services:
       - miraim-network
     restart: unless-stopped
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_prod_data:/data
-    networks:
-      - miraim-network
-    restart: unless-stopped
-    command: redis-server --appendonly yes
 
 networks:
   miraim-network:
@@ -75,4 +65,3 @@ networks:
 
 volumes:
   mysql_prod_data:
-  redis_prod_data:

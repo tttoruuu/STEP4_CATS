@@ -57,14 +57,6 @@ services:
     networks:
       - miraim-network
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_dev_data:/data
-    networks:
-      - miraim-network
 
 networks:
   miraim-network:
@@ -72,4 +64,3 @@ networks:
 
 volumes:
   mysql_dev_data:
-  redis_dev_data:
