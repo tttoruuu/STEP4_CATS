@@ -66,10 +66,8 @@
 - 環境停止: `docker-compose down`
 
 ### セキュリティ関連
-- 本番環境変数生成: `./config/secrets/azure-keyvault.sh`
-- 環境変数暗号化: `./config/secrets/encrypt.sh`
-- 環境変数復号化: `./config/secrets/decrypt.sh`
-- Azure Key Vaultセットアップ: `./config/secrets/setup-keyvault.sh`
+- 本番環境変数: GitHub Secretsで管理
+- 環境変数設定: GitHub Actionsで自動生成
 
 ### デプロイ関連
 - 開発環境デプロイ: GitHub Actions (developブランチ)
@@ -121,7 +119,7 @@ docker-compose.*.yml
 - 個人情報（婚活データ）の適切な暗号化と保護
 - 音声データの匿名化処理
 - GDPR/個人情報保護法への準拠
-- Azure Key Vault による機密情報管理
+- GitHub Secretsによる機密情報管理
 - JWT認証 + OAuth2による認可制御
 
 ## Docker開発環境詳細
@@ -140,7 +138,6 @@ docker-compose.*.yml
 
 ### データ永続化
 - MySQL データ: `./docker/mysql/data`
-- Redis データ: `./docker/redis/data`
 
 ## 開発ルール・規約
 
