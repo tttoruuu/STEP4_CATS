@@ -13,7 +13,25 @@
       "Bash(git push:*)",
       "Bash(docker-compose up:*)",
       "Bash(docker-compose:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(brew install:*)",
+      "Bash(pandoc:*)",
+      "Bash(ls:*)",
+      "Bash(for file in *.md)",
+      "Bash(do pandoc \"$file\" -o \"$file%.md.docx\")",
+      "Bash(done)",
+      "Bash(true)",
+      "Bash(echo:*)",
+      "Bash(make:*)",
+      "Bash(touch:*)",
+      "Bash(docker start:*)",
+      "Bash(docker logs:*)",
+      "Bash(curl:*)",
+      "Bash(docker exec:*)",
+      "Bash(pkill:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": []
   }

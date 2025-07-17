@@ -1,6 +1,11 @@
+# 開発環境用 Docker Compose
+version: '3.8'
+
 services:
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.development
     ports:
       - "3000:3000"
     volumes:
@@ -10,26 +15,28 @@ services:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://localhost:8000
       - INTERNAL_API_URL=http://backend:8000
+    env_file:
+      - ./config/.env.development
     depends_on:
       - backend
-    command: npm run dev
+    networks:
+      - miraim-network
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.development
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
     env_file:
-      - .env
-    environment:
-      - DATABASE_URL=mysql+pymysql://root:password@db:3306/testdb
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ENV=development
-      - FRONTEND_ORIGIN=http://localhost:3000
+      - ./config/.env.development
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - miraim-network
 
   db:
     image: mysql:8.0
@@ -39,7 +46,7 @@ services:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_DATABASE=testdb
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_dev_data:/var/lib/mysql
       - ./db/init:/docker-entrypoint-initdb.d
     command: --default-authentication-plugin=mysql_native_password
     healthcheck:
@@ -47,6 +54,22 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - miraim-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - miraim-network
+
+networks:
+  miraim-network:
+    driver: bridge
 
 volumes:
-  mysql_data:
+  mysql_dev_data:
+  redis_dev_data:

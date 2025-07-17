@@ -1,0 +1,11 @@
+# 開発環境用の追加パッケージ
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.0.0
+black>=22.0.0
+flake8>=5.0.0
+mypy>=1.0.0
+pre-commit>=2.20.0
+debugpy>=1.6.0
+httpx>=0.24.0  # テスト用HTTPクライアント
+faker>=18.0.0  # テストデータ生成用

@@ -1,0 +1,55 @@
+# 本番環境用 Dockerfile
+FROM python:3.10-slim AS base
+
+# セキュリティのため、非特権ユーザーを作成
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+WORKDIR /app
+
+# 依存関係のインストール
+FROM base AS deps
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# アプリケーションのビルド
+FROM base AS builder
+COPY --from=deps /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+COPY --from=deps /usr/local/bin /usr/local/bin
+
+# アプリケーションファイルをコピー
+COPY ./models ./models
+COPY ./routers ./routers
+COPY ./schemas ./schemas
+COPY ./auth ./auth
+COPY ./main.py ./
+COPY ./database.py ./
+
+# ファイルの所有者を変更
+RUN chown -R appuser:appuser /app
+
+# 本番環境用設定
+FROM base AS runner
+COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+COPY --from=builder /app /app
+
+# 実行用ユーザーに切り替え
+USER appuser
+
+# 環境変数の設定
+ENV ENV=production
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# ヘルスチェック用エンドポイント
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+EXPOSE 8000
+
+# 本番環境用の設定でサーバーを起動
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips=*", "--log-level", "info", "--workers", "4"]

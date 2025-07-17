@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miraim - 婚活アプリデモ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #F5F5F5;
+            color: #374151;
+        }
+
+        /* モバイル縦向き（9:16）レイアウト */
+        .phone-container {
+            width: 375px;
+            height: 667px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #F5F5F5;
+            padding: 60px 24px 24px;
+            display: none;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* ステータスバー */
+        .status-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 44px;
+            background: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* ホーム画面 */
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #FF8551, #FFA46D);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 32px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-avatar {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .edit-button {
+            padding: 8px 16px;
+            border: 2px solid #FF8551;
+            color: #FF8551;
+            background: transparent;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .main-title {
+            color: #FF8551;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            border-radius: 24px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .menu-item:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .menu-counselor {
+            background: linear-gradient(135deg, #FF8551, #FFA46D);
+        }
+
+        .menu-conversation {
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+        }
+
+        .menu-compatibility {
+            background: linear-gradient(135deg, #EC4899, #F97316);
+        }
+
+        .menu-styling {
+            background: linear-gradient(135deg, #059669, #0891B2);
+        }
+
+        /* AIカウンセラー画面 */
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #FF8551, #FFA46D);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FF8551;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            color: #6B7280;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 16px;
+            border-left: 4px solid;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
+        .feature-card.counselor { border-left-color: #FF8551; }
+        .feature-card.profile { border-left-color: #3B82F6; }
+        .feature-card.history { border-left-color: #8B5CF6; }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .feature-icon.counselor { background: #FF8551; }
+        .feature-icon.profile { background: #3B82F6; }
+        .feature-icon.history { background: #8B5CF6; }
+
+        .feature-title {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .feature-description {
+            color: #6B7280;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .daily-message {
+            background: linear-gradient(135deg, #FF8551, #FFA46D);
+            padding: 24px;
+            border-radius: 16px;
+            color: white;
+            margin-top: 32px;
+        }
+
+        .daily-message h3 {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .daily-message p {
+            font-size: 14px;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .back-button {
+            text-align: center;
+            margin-top: 32px;
+        }
+
+        .back-button button {
+            background: none;
+            border: none;
+            color: #6B7280;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* チャット画面 */
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .chat-header .back {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #6B7280;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 16px;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message.ai .message-bubble {
+            background: white;
+            border: 1px solid #E5E7EB;
+            color: #374151;
+        }
+
+        .message.user .message-bubble {
+            background: #FF8551;
+            color: white;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #E5E7EB;
+            border-radius: 24px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .chat-input button {
+            background: #FF8551;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ナビゲーション */
+        .nav-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: 8px;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .nav-button:hover {
+            background: white;
+        }
+
+        .nav-button.active {
+            background: #FF8551;
+            color: white;
+            border-color: #FF8551;
+        }
+    </style>
+</head>
+<body>
+    <!-- スマホ型コンテナ -->
+    <div class="phone-container">
+        <!-- ステータスバー -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <span>Miraim</span>
+            <span>100%</span>
+        </div>
+
+        <!-- ホーム画面 -->
+        <div class="screen active" id="home">
+            <div class="logo">M</div>
+            
+            <div class="profile-section">
+                <div class="profile-info">
+                    <div class="profile-avatar">T</div>
+                    <div>
+                        <div style="font-size: 12px; color: #6B7280;">takeshi_k</div>
+                    </div>
+                </div>
+                <button class="edit-button">編集する</button>
+            </div>
+
+            <h2 class="main-title">今日は何をしますか？</h2>
+
+            <nav>
+                <div class="menu-item menu-counselor" onclick="showScreen('counselor')">
+                    <span>👨‍⚕️</span>
+                    <span>AIカウンセラー</span>
+                </div>
+
+                <div class="menu-item menu-conversation">
+                    <span>💬</span>
+                    <span>会話練習</span>
+                </div>
+
+                <div class="menu-item menu-compatibility">
+                    <span>💕</span>
+                    <span>相性診断</span>
+                </div>
+
+                <div class="menu-item menu-styling">
+                    <span>✨</span>
+                    <span>スタイリング提案</span>
+                </div>
+            </nav>
+        </div>
+
+        <!-- AIカウンセラー画面 -->
+        <div class="screen" id="counselor">
+            <div class="header">
+                <div class="header-logo">AI</div>
+                <h1 class="header-title">AIカウンセラー</h1>
+                <p class="header-subtitle">
+                    24時間いつでも相談できる<br>
+                    あなた専用のカウンセラーです
+                </p>
+            </div>
+
+            <div class="feature-card counselor" onclick="showScreen('chat')">
+                <div class="feature-header">
+                    <div class="feature-icon counselor">💬</div>
+                    <div>
+                        <div class="feature-title">24時間相談チャット</div>
+                        <div class="feature-description">婚活の悩みをいつでも相談できます</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card profile">
+                <div class="feature-header">
+                    <div class="feature-icon profile">📝</div>
+                    <div>
+                        <div class="feature-title">自己紹介文作成</div>
+                        <div class="feature-description">AIがあなたの魅力を引き出す文章を作成</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card history">
+                <div class="feature-header">
+                    <div class="feature-icon history">💜</div>
+                    <div>
+                        <div class="feature-title">過去の相談履歴</div>
+                        <div class="feature-description">これまでの相談内容を振り返る</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="daily-message">
+                <h3>今日のメッセージ</h3>
+                <p>婚活は一歩ずつ進むものです。今日もあなたのペースで大丈夫。何か気になることがあれば、いつでも話しかけてくださいね。</p>
+            </div>
+
+            <div class="back-button">
+                <button onclick="showScreen('home')">← ホームに戻る</button>
+            </div>
+        </div>
+
+        <!-- チャット画面 -->
+        <div class="screen" id="chat">
+            <div class="chat-header">
+                <button class="back" onclick="showScreen('counselor')">←</button>
+                <div>
+                    <div style="font-weight: 600;">AIカウンセラー</div>
+                    <div style="font-size: 12px; color: #6B7280;">オンライン</div>
+                </div>
+            </div>
+
+            <div class="chat-messages">
+                <div class="message ai">
+                    <div class="message-bubble">
+                        こんにちは！AIカウンセラーです。今日はどのようなことでお悩みでしょうか？婚活について、どんな小さなことでもお聞かせください。
+                    </div>
+                </div>
+
+                <div class="message user">
+                    <div class="message-bubble">
+                        最近お見合いがうまくいかなくて...会話が続かないんです
+                    </div>
+                </div>
+
+                <div class="message ai">
+                    <div class="message-bubble">
+                        お見合いでの会話、確かに緊張しますよね。具体的にはどのような場面で困ることが多いですか？相手の方の話を聞くとき？それとも自分から話題を振るとき？
+                    </div>
+                </div>
+
+                <div class="message user">
+                    <div class="message-bubble">
+                        相手の話を聞いているつもりなんですが、なんだか一方的になってしまって...
+                    </div>
+                </div>
+
+                <div class="message ai">
+                    <div class="message-bubble">
+                        なるほど、「聞く力」についてのお悩みですね。実は多くの男性が同じ課題を抱えています。会話練習機能で「聞く力」に特化したトレーニングができますよ。まずは相手の言葉を「全コピー」で返すところから始めてみませんか？
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input">
+                <input type="text" placeholder="メッセージを入力...">
+                <button>→</button>
+            </div>
+        </div>
+
+        <!-- ナビゲーションボタン -->
+        <div class="nav-buttons">
+            <button class="nav-button active" onclick="showScreen('home')">ホーム</button>
+            <button class="nav-button" onclick="showScreen('counselor')">カウンセラー</button>
+            <button class="nav-button">会話練習</button>
+            <button class="nav-button">相性診断</button>
+        </div>
+    </div>
+
+    <script>
+        function showScreen(screenId) {
+            // すべての画面を非表示
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // ナビゲーションボタンのアクティブ状態をリセット
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // 指定された画面を表示
+            document.getElementById(screenId).classList.add('active');
+
+            // 対応するナビゲーションボタンをアクティブにする
+            const navButtons = document.querySelectorAll('.nav-button');
+            switch(screenId) {
+                case 'home':
+                    navButtons[0].classList.add('active');
+                    break;
+                case 'counselor':
+                case 'chat':
+                    navButtons[1].classList.add('active');
+                    break;
+            }
+        }
+
+        // 自動的にチャットメッセージをスクロール
+        function scrollChatToBottom() {
+            const chatMessages = document.querySelector('.chat-messages');
+            if (chatMessages) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // 画面切り替え時にチャットを最下部にスクロール
+        document.addEventListener('DOMContentLoaded', function() {
+            scrollChatToBottom();
+        });
+    </script>
+</body>
+</html>
