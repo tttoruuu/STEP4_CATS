@@ -13,6 +13,9 @@ ARG NODE_ENV=production
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NODE_ENV=${NODE_ENV}
 
+# BUILD_ID を追加
+ENV BUILD_ID=default_build
+
 RUN npm run build
 
 # 本番ランタイムステージ
