@@ -63,8 +63,17 @@ export default function ConversationPractice() {
 
     const fetchPartner = async () => {
       try {
-        // apiService.jsを使用してデータを取得
-        const partner = await apiService.partners.getPartner(partnerId);
+        // 一時的にハードコードされたパートナー情報を使用
+        const partner = {
+          id: 1,
+          name: "さくら",
+          age: 28,
+          gender: "female",
+          occupation: "システムエンジニア",
+          hometown: "東京都",
+          hobbies: "読書、映画鑑賞",
+          daily_routine: "カフェでのコーディング"
+        };
         setPartner(partner);
         
         // 会話履歴がURLから復元されていない場合のみ初期メッセージを設定
