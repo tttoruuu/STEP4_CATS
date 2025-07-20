@@ -4,8 +4,7 @@ import axios from 'axios';
 import Layout from '../../components/Layout';
 import apiService from '../../services/api';
 import VoiceRecorder from '../../components/VoiceRecorder';
-import TextToSpeech from '../../components/TextToSpeech';
-import { ArrowLeft, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 export default function ConversationPractice() {
   const router = useRouter();
@@ -21,9 +20,6 @@ export default function ConversationPractice() {
   const [showFeedbackButton, setShowFeedbackButton] = useState(false);
   const [maxRallyCount, setMaxRallyCount] = useState(8);
   const [error, setError] = useState('');
-  const [autoSpeechEnabled, setAutoSpeechEnabled] = useState(true);
-  const lastSpokenMessageRef = useRef(null);
-  const currentAudioRef = useRef(null);
 
   useEffect(() => {
     if (rallyCount) {
@@ -152,30 +148,6 @@ export default function ConversationPractice() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // 新しいパートナーメッセージの追加を追跡して即座に読み上げ
-  useEffect(() => {
-    if (messages.length > 0) {
-      const lastMessage = messages[messages.length - 1];
-      if (lastMessage.sender === 'partner' && autoSpeechEnabled) {
-        // 重複再生を防ぐためのユニークキー
-        const messageKey = `${messages.length - 1}-${lastMessage.text}`;
-        
-        if (lastSpokenMessageRef.current !== messageKey) {
-          console.log('🎯 New partner message - immediate TTS:', lastMessage.text);
-          console.log('🔒 Message key:', messageKey);
-          
-          lastSpokenMessageRef.current = messageKey;
-          
-          // 即座に音声合成を開始
-          if (lastMessage.text) {
-            speakText(lastMessage.text, `immediate-${Date.now()}`);
-          }
-        } else {
-          console.log('🚫 Duplicate message detected, skipping TTS:', messageKey);
-        }
-      }
-    }
-  }, [messages, autoSpeechEnabled]);
 
   // ラリー数をカウントして制限に達したらフィードバックボタンを表示
   useEffect(() => {
@@ -199,61 +171,6 @@ export default function ConversationPractice() {
     setInputMessage(transcribedText);
   };
 
-  // 専用の音声合成関数（即座に実行）
-  const speakText = async (text, id) => {
-    try {
-      console.log(`🔊 Direct TTS[${id}]: Starting synthesis for "${text}"`);
-      
-      // 少し遅延を入れて重複呼び出しを防ぐ
-      await new Promise(resolve => setTimeout(resolve, 50));
-      
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error(`Direct TTS[${id}]: API error:`, errorData);
-        return;
-      }
-
-      const audioBlob = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-
-      console.log(`🔊 Direct TTS[${id}]: Playing audio`);
-
-      // 既存の音声を停止
-      if (currentAudioRef.current) {
-        console.log(`🛑 Stopping previous audio`);
-        currentAudioRef.current.pause();
-        currentAudioRef.current.currentTime = 0;
-      }
-
-      const audio = new Audio(audioUrl);
-      currentAudioRef.current = audio;
-      
-      audio.onended = () => {
-        console.log(`🔊 Direct TTS[${id}]: Playback ended`);
-        URL.revokeObjectURL(audioUrl);
-        currentAudioRef.current = null;
-      };
-      audio.onerror = (error) => {
-        console.error(`Direct TTS[${id}]: Playback error:`, error);
-        URL.revokeObjectURL(audioUrl);
-        currentAudioRef.current = null;
-      };
-
-      await audio.play();
-      console.log(`✅ Direct TTS[${id}]: Successfully started playback`);
-
-    } catch (error) {
-      console.error(`Direct TTS[${id}]: Error:`, error);
-    }
-  };
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || sending) return;
@@ -425,21 +342,6 @@ export default function ConversationPractice() {
             <span>もどる</span>
           </button>
           
-          {/* 音声設定トグル */}
-          <button
-            onClick={() => setAutoSpeechEnabled(!autoSpeechEnabled)}
-            className={`absolute right-0 flex items-center gap-1 px-3 py-2 rounded-full text-sm transition-all ${
-              autoSpeechEnabled 
-                ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' 
-                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-            }`}
-            title={autoSpeechEnabled ? '自動読み上げをオフにする' : '自動読み上げをオンにする'}
-          >
-            {autoSpeechEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
-            <span className="text-xs">
-              {autoSpeechEnabled ? '音声ON' : '音声OFF'}
-            </span>
-          </button>
           
           <div className="text-center mt-10">
             <h1 className="text-xl font-semibold text-gray-800">{partner.name}</h1>

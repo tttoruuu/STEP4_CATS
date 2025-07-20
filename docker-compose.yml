@@ -10,6 +10,7 @@ services:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://localhost:8000
       - INTERNAL_API_URL=http://backend:8000
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     depends_on:
       - backend
     command: npm run dev
@@ -34,7 +35,7 @@ services:
   db:
     image: mysql:8.0
     ports:
-      - "3306:3306"
+      - "3306:3306" # ここを変更
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_DATABASE=testdb
