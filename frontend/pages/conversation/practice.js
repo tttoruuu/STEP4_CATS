@@ -371,16 +371,6 @@ export default function ConversationPractice() {
                 }`}
               >
                 <div className="flex items-start gap-2 max-w-xs">
-                  {message.sender === 'partner' && (
-                    <div className="mt-2">
-                      <TextToSpeech 
-                        text={message.text}
-                        disabled={false}
-                        autoPlay={false}
-                        messageId={`partner-msg-${index}`}
-                      />
-                    </div>
-                  )}
                   <div
                     className={`p-3 rounded-lg ${
                       message.sender === 'user'
