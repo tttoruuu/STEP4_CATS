@@ -15,10 +15,16 @@ env_path = current_dir / ".env"
 load_dotenv(dotenv_path=env_path)
 
 # データベース接続設定
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:password@db:3306/testdb")
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:password@localhost:3306/testdb?charset=utf8mb4")
 
 # エンジン作成とセッションの設定
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={
+        "ssl_disabled": True,
+        "charset": "utf8mb4"
+    }
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # モデル定義用のベースクラス

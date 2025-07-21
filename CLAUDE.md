@@ -141,6 +141,10 @@ docker-compose.*.yml
 
 ## 開発ルール・規約
 
+### 言語設定
+- **このプロジェクトは日本語で開発する**：UIテキスト、コメント、変数名、関数名、ファイル名すべて日本語を基本とする
+- **Claude Codeへの指示**: 必ず日本語で回答し、日本語でのコーディングを行うこと
+
 ### コーディング規約
 - **フロントエンド**: ESLint + Prettier、TypeScript strict mode
 - **バックエンド**: Black + isort、Pydantic型定義必須、docstring必須

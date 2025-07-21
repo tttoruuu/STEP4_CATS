@@ -230,6 +230,101 @@ const FINAL_API_BASE_URL = (() => {
   
   return apiUrl;
 })();
+
+// ===========================================
+// MVP向けデバッグ機能強化
+// ===========================================
+
+// 1. API設定情報の明確表示
+const logAPISettings = () => {
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    console.log('🔧 現在のAPI設定:', {
+      baseURL: FINAL_API_BASE_URL,
+      environment: process.env.NODE_ENV,
+      isLocalhost: FINAL_API_BASE_URL.includes('localhost'),
+      timestamp: new Date().toISOString()
+    });
+  }
+};
+
+// 2. バックエンド接続テスト
+const quickHealthCheck = async () => {
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    try {
+      const response = await axios.get(`${FINAL_API_BASE_URL}/`, { 
+        timeout: 3000,
+        headers: { 'Accept': 'application/json' }
+      });
+      console.log('✅ バックエンド接続OK:', response.data);
+      return true;
+    } catch (error) {
+      console.error('❌ バックエンド接続失敗:', {
+        url: FINAL_API_BASE_URL,
+        error: error.message,
+        suggestion: 'バックエンドサーバーが起動しているか確認してください'
+      });
+      return false;
+    }
+  }
+  return null;
+};
+
+// 3. 開発者用ポート変更ユーティリティ
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  window.setAPIPort = (port) => {
+    localStorage.setItem('DEV_API_OVERRIDE', `http://localhost:${port}`);
+    console.log(`🔧 APIポートを${port}に変更しました。ページをリロードしてください。`);
+    console.log('元に戻すには: window.clearAPIOverride()');
+    setTimeout(() => window.location.reload(), 1000);
+  };
+  
+  window.clearAPIOverride = () => {
+    localStorage.removeItem('DEV_API_OVERRIDE');
+    console.log('🔧 APIポート設定を元に戻しました。ページをリロードしてください。');
+    setTimeout(() => window.location.reload(), 1000);
+  };
+  
+  window.checkAPI = () => {
+    quickHealthCheck();
+  };
+  
+  // 開発コマンドのヘルプ
+  window.apiHelp = () => {
+    console.log('💡 利用可能なデバッグコマンド:');
+    console.log('  window.setAPIPort(8001) - ポート変更');
+    console.log('  window.checkAPI() - 接続テスト');
+    console.log('  window.clearAPIOverride() - 設定リセット');
+    console.log('  window.apiHelp() - このヘルプ');
+  };
+}
+
+// 4. 開発環境でのオーバーライド対応を既存のgetAuthenticatedClient内で使用
+const getEffectiveAPIURL = () => {
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    const override = localStorage.getItem('DEV_API_OVERRIDE');
+    if (override) {
+      console.log('🔧 開発用APIオーバーライド使用中:', override);
+      return override;
+    }
+  }
+  return FINAL_API_BASE_URL;
+};
+
+// 5. 初期化時の自動チェック
+let hasInitialized = false;
+const initializeAPIDebug = async () => {
+  if (!hasInitialized && typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    hasInitialized = true;
+    logAPISettings();
+    
+    // 少し遅延してヘルスチェック実行
+    setTimeout(async () => {
+      await quickHealthCheck();
+      console.log('💡 デバッグコマンド: window.apiHelp()');
+    }, 2000);
+  }
+};
+
 // ローカルホスト判定のヘルパー関数
 const isLocalEnvironment = () => {
   return typeof window !== 'undefined' && (
@@ -315,8 +410,9 @@ const getAuthenticatedClient = () => {
     tokenUtils.redirectToLogin();
     throw new Error('トークンの有効期限が切れています');
   }
-  // 本番環境では常にHTTPSを強制
-  let finalApiUrl = FINAL_API_BASE_URL;
+  // 本番環境では常にHTTPSを強制（開発環境でのオーバーライド対応）
+  let finalApiUrl = getEffectiveAPIURL();
+  console.log('DEBUG: getAuthenticatedClient - FINAL_API_BASE_URL:', finalApiUrl);
   
   // 環境を明示的に判断
   const isProduction = process.env.NODE_ENV === 'production';
@@ -454,7 +550,18 @@ export const authAPI = {
   // 現在のユーザー情報を取得
   getCurrentUser: async () => {
     try {
+      console.log('DEBUG: getCurrentUser開始');
       
+      // トークン存在確認
+      const token = tokenUtils.getToken();
+      console.log('DEBUG: トークン存在:', !!token);
+      console.log('DEBUG: トークン値:', token ? `${token.substring(0, 20)}...` : 'なし');
+      
+      if (!token) {
+        console.error('トークンが存在しません');
+        tokenUtils.redirectToLogin();
+        throw new Error('認証が必要です');
+      }
       
       // トークンの有効性を確認
       if (!tokenUtils.isTokenValid()) {
@@ -464,11 +571,24 @@ export const authAPI = {
       }
       
       const client = getAuthenticatedClient();
+      console.log('DEBUG: クライアントのベースURL:', client.defaults.baseURL);
+      console.log('DEBUG: 実行される完全URL:', client.defaults.baseURL + '/me');
+      
+      // 直接curlでテスト可能なコマンドをログ出力
+      console.log('DEBUG: 等価なcurlコマンド:', 
+        `curl -H "Authorization: Bearer ${token.substring(0, 20)}..." ${client.defaults.baseURL}/me`);
+      
       const response = await client.get('/me');
       
       return response.data;
     } catch (error) {
       console.error('ユーザー情報取得エラー:', error);
+      console.error('エラー詳細:', {
+        message: error.message,
+        config: error.config,
+        response: error.response
+      });
+      
       if (error.response?.status === 401) {
         // 認証エラーの場合、トークンを削除してリダイレクト
         tokenUtils.redirectToLogin();
@@ -973,4 +1093,17 @@ const apiService = {
   getImageUrl,
   baseUrl: FINAL_API_BASE_URL,  // APIのベースURLを公開
 };
-export default apiService; 
+export default apiService;
+
+// ===========================================
+// デバッグ機能の初期化（最後に実行）
+// ===========================================
+if (typeof window !== 'undefined') {
+  // DOMContentLoadedイベント後に初期化を実行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeAPIDebug);
+  } else {
+    // 既にロード済みの場合は少し遅延してから実行
+    setTimeout(initializeAPIDebug, 100);
+  }
+} 

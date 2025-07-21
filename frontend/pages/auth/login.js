@@ -19,17 +19,23 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  // ページ読み込み時にトークンの有効性を確認
+  // ページ読み込み時にトークンの存在を確認（validateTokenは使わない）
   useEffect(() => {
-    // 既に有効なトークンがある場合は、ホームページにリダイレクト
+    // ブラウザ環境でない場合は処理しない
+    if (typeof window === 'undefined') return;
+    
+    // 既にトークンがある場合は、ホームページにリダイレクト
     const checkAuth = async () => {
       try {
-        if (authAPI.validateToken()) {
-          console.log('有効なトークンがあります。ホームページにリダイレクトします。');
+        const storedToken = localStorage.getItem('token');
+        console.log('DEBUG: ログインページでトークン存在確認:', !!storedToken);
+        
+        if (storedToken) {
+          console.log('既存のトークンがあります。ホームページにリダイレクトします。');
           router.replace('/');
         }
       } catch (error) {
-        console.error('トークン検証エラー:', error);
+        console.error('トークン確認エラー:', error);
       }
     };
     

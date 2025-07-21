@@ -22,7 +22,7 @@ export default function ConversationModes() {
       description: '「へえ」「ほう」などの適切な相槌、相手の話に共感を示す練習',
       icon: Heart,
       color: 'from-pink-500 to-pink-600',
-      path: '/conversation/empathy'
+      path: '/conversation/empathy-new'
     },
     {
       id: 'repeat',
@@ -30,7 +30,7 @@ export default function ConversationModes() {
       description: '相手の言葉を要約せずそのまま繰り返す練習',
       icon: Copy,
       color: 'from-green-500 to-green-600',
-      path: '/conversation/repeat'
+      path: '/conversation/repeat-new'
     },
     {
       id: 'elicit',
