@@ -819,3 +819,118 @@ async def generate_conversation_feedback(
     except Exception as e:
         logger.error(f"フィードバック生成エラー: {type(e).__name__}: {str(e)}")
         return fallback_feedback
+
+#
+# 音声認識関連のエンドポイント
+#
+
+@app.post("/speech-to-text")
+async def speech_to_text(
+    audio: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    音声ファイルをテキストに変換するエンドポイント
+    
+    - **認証**: Bearer トークン認証が必要
+    - **入力データ**:
+        - audio: 音声ファイル (wav, mp3, m4a, webm形式)
+    - **戻り値**: 
+        - text: 変換されたテキスト
+        - duration: 音声の長さ（秒）
+    - **エラー**: 
+        - 401: 認証エラー
+        - 400: 不正なファイル形式
+        - 500: 変換エラー
+    """
+    import tempfile
+    import aiofiles
+    import httpx
+    
+    # 対応音声形式のチェック
+    allowed_extensions = ['wav', 'mp3', 'm4a', 'webm']
+    file_extension = audio.filename.split('.')[-1].lower()
+    
+    if file_extension not in allowed_extensions:
+        raise HTTPException(
+            status_code=400,
+            detail=f"サポートされていないファイル形式です。対応形式: {', '.join(allowed_extensions)}"
+        )
+    
+    # ファイルサイズのチェック（25MB）
+    MAX_FILE_SIZE = 25 * 1024 * 1024  # 25MB
+    contents = await audio.read()
+    file_size = len(contents)
+    
+    if file_size > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail="ファイルサイズが大きすぎます。最大25MBまでです。"
+        )
+    
+    # ファイルポインタをリセット
+    await audio.seek(0)
+    
+    try:
+        # 一時ファイルに保存
+        with tempfile.NamedTemporaryFile(suffix=f".{file_extension}", delete=False) as tmp_file:
+            async with aiofiles.open(tmp_file.name, 'wb') as f:
+                content = await audio.read()
+                await f.write(content)
+            
+            tmp_file_path = tmp_file.name
+        
+        # OpenAI Whisper APIを使用してテキストに変換
+        try:
+            from openai import OpenAI
+            
+            api_key = os.environ.get("OPENAI_API_KEY")
+            if not api_key:
+                logger.error("OpenAI APIキーが設定されていません")
+                raise HTTPException(
+                    status_code=500,
+                    detail="サーバー設定エラー: 音声認識APIキーが設定されていません。"
+                )
+            
+            client = OpenAI(api_key=api_key)
+            
+            # 音声ファイルを開いてWhisper APIに送信
+            with open(tmp_file_path, "rb") as audio_file:
+                transcript = client.audio.transcriptions.create(
+                    model="whisper-1",
+                    file=audio_file,
+                    language="ja"  # 日本語に固定
+                )
+            
+            # 音声の長さを取得（簡易的に推定）
+            duration = file_size / (16000 * 2)  # 16kHz, 16bit mono を仮定
+            
+            logger.info(f"音声認識成功: {len(transcript.text)}文字")
+            
+            return {
+                "text": transcript.text,
+                "duration": round(duration, 2)
+            }
+            
+        except Exception as e:
+            logger.error(f"Whisper API呼び出しエラー: {type(e).__name__}: {str(e)}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"音声認識エラー: {str(e)}"
+            )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"音声認識処理エラー: {type(e).__name__}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="音声認識処理中にエラーが発生しました。"
+        )
+    finally:
+        # 一時ファイルのクリーンアップ
+        try:
+            if 'tmp_file_path' in locals():
+                os.unlink(tmp_file_path)
+        except Exception as e:
+            logger.warning(f"一時ファイル削除エラー: {str(e)}")
