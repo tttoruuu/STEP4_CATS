@@ -17,8 +17,17 @@ load_dotenv(dotenv_path=env_path)
 # データベース接続設定
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:password@db:3306/testdb")
 
+# 開発環境でのローカル代替設定
+ENV = os.getenv("ENV", "development")
+if ENV == "development":
+    # ローカル開発用SQLite
+    SQLALCHEMY_DATABASE_URL = "sqlite:///./dev.db"
+
 # エンジン作成とセッションの設定
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+if "sqlite" in SQLALCHEMY_DATABASE_URL:
+    engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+else:
+    engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # モデル定義用のベースクラス
