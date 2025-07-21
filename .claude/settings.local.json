@@ -31,7 +31,12 @@
       "Bash(curl:*)",
       "Bash(docker exec:*)",
       "Bash(pkill:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(git fetch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)",
+      "Bash(git branch:*)",
+      "Bash(git reset:*)"
     ],
     "deny": []
   }
