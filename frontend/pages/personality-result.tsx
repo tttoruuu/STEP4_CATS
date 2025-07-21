@@ -139,8 +139,8 @@ const PersonalityResultPage: React.FC = () => {
 
   // 次のステップへ
   const handleNext = () => {
-    // 相性診断ページへ遷移（後で実装予定）
-    router.push('/compatibility');
+    // Marriage MBTI診断ページへ遷移
+    router.push('/marriage-mbti-test');
   };
 
   // エラー再試行

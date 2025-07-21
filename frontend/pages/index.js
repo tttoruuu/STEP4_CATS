@@ -138,7 +138,7 @@ export default function MainPage() {
           </Link>
 
           {/* 相性診断機能 */}
-          <Link href="/compatibility">
+          <Link href="/marriage-mbti-test">
             <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-gradient-to-r from-[#EC4899] to-[#F97316] text-white rounded-3xl shadow-md transition-all hover:opacity-90">
               <Heart className="w-5 h-5" />
               <span className="text-lg font-medium">相性診断</span>
