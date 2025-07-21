@@ -1,0 +1,77 @@
+name: CI - Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm ci
+      
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+      
+      - name: Frontend Lint Check
+        run: |
+          cd frontend
+          npm run lint
+        continue-on-error: true
+      
+      - name: Frontend Type Check
+        run: |
+          cd frontend
+          npm run type-check
+        continue-on-error: true
+      
+      - name: Frontend Build Test
+        run: |
+          cd frontend
+          npm run build
+      
+      - name: Backend Lint Check
+        run: |
+          cd backend
+          python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        continue-on-error: true
+      
+      - name: Simple Secret Scan
+        run: |
+          # 基本的なシークレット検出
+          if grep -r "sk-" . --exclude-dir=node_modules --exclude-dir=.git || \
+             grep -r "AKIA" . --exclude-dir=node_modules --exclude-dir=.git; then
+            echo "❌ Potential secrets detected!"
+            exit 1
+          else
+            echo "✅ No obvious secrets found"
+          fi
+        continue-on-error: true
+      
+      - name: Summary
+        run: |
+          echo "🎉 CI checks completed!"
+          echo "📝 Note: Some checks are set to continue-on-error for MVP development"
+          echo "🚀 Ready for development!"

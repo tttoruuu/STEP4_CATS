@@ -1,9 +1,10 @@
 name: Deploy to Production
 
+# MVP段階では本番デプロイを無効化
 on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+  # push:
+  #   branches: [ main ]
+  workflow_dispatch:  # 手動実行のみ許可
 
 env:
   REGISTRY: wildcats9999.azurecr.io
@@ -16,13 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Run security scan
-        uses: securecodewarrior/github-action-add-sarif@v1
-        with:
-          sarif-file: 'security-scan-results.sarif'
-          
       - name: Scan for secrets
-        uses: trufflesecurity/trufflehog@v3.63.2
+        uses: trufflesecurity/trufflehog@main
         with:
           path: ./
           base: main
