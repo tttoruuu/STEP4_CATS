@@ -127,7 +127,7 @@ export default function MainPage() {
           </Link>
 
           {/* 会話練習機能 */}
-          <Link href="/conversation">
+          <Link href="/conversation/modes">
             <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white rounded-3xl shadow-md transition-all hover:opacity-90">
               <MessageSquare className="w-5 h-5" />
               <span className="text-lg font-medium">会話練習</span>
