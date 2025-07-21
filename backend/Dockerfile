@@ -19,6 +19,7 @@ ENV FRONTEND_ORIGIN=http://localhost:3000
 COPY ./models ./models
 COPY ./routers ./routers
 COPY ./schemas ./schemas
+COPY ./services ./services
 COPY ./auth ./auth
 COPY ./main.py ./
 COPY ./database.py ./

@@ -45,7 +45,11 @@
       "Bash(npm --prefix frontend run type-check)",
       "Bash(pip install:*)",
       "Bash(python -m uvicorn:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(taskkill:*)",
+      "Bash(wmic:*)",
+      "Bash(git stash:*)",
+      "Bash(uvicorn:*)"
     ],
     "deny": []
   }

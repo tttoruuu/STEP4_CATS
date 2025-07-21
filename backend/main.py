@@ -12,7 +12,7 @@ from models.conversation_partner import ConversationPartner
 from models import schemas
 from auth.password import get_password_hash, verify_password
 from auth.jwt import create_access_token, get_current_user
-from routers import conversation_partners
+from routers import conversation_partners, personality, marriage_mbti
 from fastapi.responses import JSONResponse
 import random
 from urllib.parse import urlparse
@@ -48,593 +48,118 @@ origins = [
 if ENV == "production" and FRONTEND_ORIGIN:
     # URLがhttp://で始まっている場合は、https://バージョンも追加
     if FRONTEND_ORIGIN.startswith('http://'):
-        https_origin = 'https://' + FRONTEND_ORIGIN[7:]
-        if https_origin not in origins:
-            origins.append(https_origin)
-    
-    # 元のURLをそのまま追加（もし存在しない場合）
-    if FRONTEND_ORIGIN not in origins:
-        origins.append(FRONTEND_ORIGIN)
-    
-    # FRONTEND_ORIGINからドメイン部分を抽出してワイルドカードパターンも追加
-    try:
-        parsed_url = urlparse(FRONTEND_ORIGIN)
-        domain_parts = parsed_url.netloc.split('.')
-        if len(domain_parts) >= 3:  # サブドメインを含むドメイン
-            # *.example.com パターンを追加
-            wildcard_domain = f"{parsed_url.scheme}://*.{'.'.join(domain_parts[1:])}"
-            if wildcard_domain not in origins:
-                origins.append(wildcard_domain)
-    except Exception as e:
-        logger.error(f"Failed to parse domain for wildcard pattern: {e}")
+        https_origin = FRONTEND_ORIGIN.replace('http://', 'https://')
+        origins.append(https_origin)
+    origins.append(FRONTEND_ORIGIN)
+
+# フロントエンドのオリジン追加設定をさらに詳しく行う
+if ENV == "production":
+    # 本番環境でワイルドカードが制限されている場合、各サブドメインを個別に追加
+    production_origins = [
+        "https://frontend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
+        "https://frontend-container--2.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
+        "https://frontend-container--3.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
+        # 必要に応じて他のリビジョンも追加
+    ]
+    origins.extend(production_origins)
 
 app = FastAPI(
-    title="お見合い会話練習API",
-    description="お見合いの会話練習をサポートするRESTful API",
-    version="1.0.0",
+    title="Miraim - 婚活男性向け総合サポートAPI",
+    version="2.0.0",
+    description="Marriage MBTI+、会話練習、AIカウンセラー機能を統合した婚活支援API"
 )
 
-# CORS設定 - 具体的なオリジンリストを指定
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"],
+    allow_methods=["*"],
     allow_headers=["*"],
-    max_age=86400,  # プリフライトリクエストのキャッシュ時間（秒）
-    expose_headers=["*"],
 )
 
-# X-Forwarded-Proto ヘッダー処理ミドルウェア
-@app.middleware("http")
-async def process_x_forwarded_proto(request: Request, call_next):
-    """
-    X-Forwarded-Proto ヘッダーを処理するミドルウェア
-    Azure Container AppsのリバースプロキシからのHTTPSリクエストを適切に処理します
-    """
-    # X-Forwarded-Protoヘッダーが'https'の場合、request.url.schemeを'https'に設定
-    forwarded_proto = request.headers.get("x-forwarded-proto")
-    if forwarded_proto == "https":
-        # FastAPIのリクエストオブジェクトのスキームを更新
-        request.scope["scheme"] = "https"
-    
-    # 次のミドルウェアまたはエンドポイントを呼び出す
-    response = await call_next(request)
-    return response
-
-# 会話相手APIルーターの追加
+# ルーター追加（順序重要）
 app.include_router(conversation_partners.router)
-
-# データベースセッションの依存関係
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# 画像アップロード用のディレクトリ作成
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-@app.get("/")
-def read_root():
-    """
-    APIが稼働中であることを確認するためのエンドポイント
-    
-    - **戻り値**: APIが稼働中であることを示すメッセージ
-    """
-    return {"message": "FastAPI is alive!"}
-
-@app.get("/users")
-def read_users(db: Session = Depends(get_db)):
-    """
-    (開発用) 全ユーザーリストを取得するエンドポイント
-    
-    - **戻り値**: 登録されている全ユーザーのリスト
-    """
-    users = db.query(User).all()
-    return users
-
-@app.post("/users")
-def create_user(name: str, email: str, db: Session = Depends(get_db)):
-    """
-    (開発用) 新規ユーザーを作成するエンドポイント
-    
-    - **クエリパラメータ**:
-        - name (str): ユーザー名
-        - email (str): メールアドレス
-    - **戻り値**: 作成されたユーザー情報
-    """
-    db_user = User(name=name, email=email)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
-
-@app.get("/env")
-def get_env():
-    """
-    (開発用) 環境変数情報を取得するエンドポイント
-    
-    - **戻り値**: 現在の環境変数情報
-    """
-    return {
-        "ENV": ENV,
-        "FRONTEND_ORIGIN": FRONTEND_ORIGIN
-    }
-
-@app.get("/headers")
-def get_headers(request: Request):
-    """
-    リクエストヘッダーを確認するためのエンドポイント
-    X-Forwarded-Proto ヘッダーの存在と値を検証します
-    
-    - **戻り値**: リクエストヘッダー情報
-    """
-    headers = dict(request.headers)
-    protocol = headers.get("x-forwarded-proto", "未設定")
-    secure = protocol == "https"
-    
-    return {
-        "all_headers": headers,
-        "x_forwarded_proto": protocol,
-        "is_secure": secure,
-        "host": headers.get("host", "未設定"),
-        "origin": headers.get("origin", "未設定"),
-        "request_protocol": request.url.scheme
-    }
-
-#
-# 認証関連のエンドポイント
-#
-
-@app.post("/register", response_model=schemas.UserResponse)
-def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    """
-    新規ユーザー登録を行うエンドポイント
-    
-    - **入力データ**:
-        - username (str): ユーザー名
-        - password (str): パスワード
-        - full_name (str): 氏名
-        - email (str): メールアドレス
-        - birth_date (date, optional): 生年月日
-        - hometown (str, optional): 出身地
-        - hobbies (str, optional): 趣味
-        - matchmaking_agency (str, optional): 所属結婚相談所名
-    - **戻り値**: 作成されたユーザー情報（パスワードを除く）
-    - **エラー**: ユーザー名が既に登録されている場合 (400)
-    """
-    # ユーザー名の重複チェック
-    db_user = db.query(User).filter(User.username == user.username).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="Username already registered")
-    
-    # メールアドレスの重複チェック
-    db_email = db.query(User).filter(User.email == user.email).first()
-    if db_email:
-        raise HTTPException(status_code=400, detail="このメールアドレスは既に登録されています。違うアドレスを使用するか、ログインをお試しください。")
-    
-    try:
-        hashed_password = get_password_hash(user.password)
-        db_user = User(
-            username=user.username,
-            password_hash=hashed_password,
-            full_name=user.full_name,
-            email=user.email,
-            birth_date=user.birth_date,
-            hometown=user.hometown,
-            hobbies=user.hobbies,
-            matchmaking_agency=user.matchmaking_agency
-        )
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-        return db_user
-    except Exception as e:
-        logger.error(f"ユーザー登録エラー: {str(e)}")
-        db.rollback()
-        # IntegrityErrorの場合は、メールアドレス重複エラーの可能性が高い
-        if "Duplicate entry" in str(e) and "email" in str(e):
-            raise HTTPException(status_code=400, detail="このメールアドレスは既に登録されています。違うアドレスを使用するか、ログインをお試しください。")
-        raise HTTPException(status_code=400, detail=f"Registration failed: {str(e)}")
-
-@app.post("/login", response_model=schemas.Token)
-def login(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
-    """
-    ユーザーログインを行うエンドポイント
-    
-    - **入力データ**:
-        - username (str): ユーザー名
-        - password (str): パスワード
-    - **戻り値**: アクセストークンとトークンタイプ
-    - **エラー**: 認証失敗時 (401)
-    """
-    user = db.query(User).filter(User.username == user_data.username).first()
-    if not user or not verify_password(user_data.password, user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    # 有効期限を24時間（1440分）に設定
-    access_token_expires = timedelta(minutes=1440)
-    access_token = create_access_token(
-        data={"sub": user.username},
-        expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
-
-@app.get("/me", response_model=schemas.UserResponse)
-def read_users_me(current_user: User = Depends(get_current_user)):
-    """
-    現在ログイン中のユーザー情報を取得するエンドポイント
-    
-    - **認証**: Bearer トークン認証が必要
-    - **戻り値**: 現在認証されているユーザーの情報
-    - **エラー**: 認証エラー (401)
-    """
-    return current_user
-
-@app.post("/upload-profile-image")
-def upload_profile_image(
-    file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """
-    プロフィール画像をアップロードするエンドポイント
-    
-    - **認証**: Bearer トークン認証が必要
-    - **入力データ**:
-        - file: アップロードする画像ファイル
-    - **戻り値**: アップロードされたファイル名
-    - **エラー**: 認証エラー (401)
-    """
-    # ファイルの拡張子を取得
-    file_extension = os.path.splitext(file.filename)[1]
-    # 新しいファイル名を生成（ユーザーID + 拡張子）
-    new_filename = f"{current_user.id}{file_extension}"
-    # 保存先のパスを生成
-    file_path = os.path.join(UPLOAD_DIR, new_filename)
-    
-    # ファイルを保存
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    
-    # ユーザーのプロフィール画像URLを更新
-    current_user.profile_image_url = f"/uploads/{new_filename}"
-    db.commit()
-    
-    return {"filename": new_filename}
-
-#
-# 会話シミュレーション関連のエンドポイント
-#
-
-@app.post("/conversation")
-async def simulate_conversation(
-    data: dict,
-    current_user: User = Depends(get_current_user)
-):
-    """
-    会話シミュレーションを行うエンドポイント
-    
-    - **認証**: Bearer トークン認証が必要
-    - **入力データ**:
-        - partnerId (str): 会話相手のID
-        - meetingCount (str): 会話回数 ('first', 'other')
-        - level (int): 難易度レベル (1 または 2)
-        - message (str): ユーザーからのメッセージ
-        - chatHistory (list): チャット履歴
-    - **戻り値**: 会話相手からの応答メッセージ
-    - **エラー**: 認証エラー (401)
-    """
-    # パラメータの取得
-    partner_id = data.get('partnerId', '')
-    meeting_count = data.get('meetingCount', '')
-    level = data.get('level', 1)
-    message = data.get('message', '')
-    chat_history = data.get('chatHistory', [])
-    
-    # 緊急フォールバック応答 (APIでエラーが起きた場合の対応)
-    fallback_responses = [
-        "申し訳ありません、少し考え中です...また話しかけてみてください。",
-        "ごめんなさい、うまく言葉が見つかりません。別の話題はどうですか？",
-        "少し疲れてしまいました。少し休憩してから続けましょうか？"
-    ]
-    
-    try:
-        import openai
-        import os
-        import random
-        from dotenv import load_dotenv
-        from openai import OpenAI
-        
-        # .envファイルから環境変数を読み込む（コンテナ内の環境変数が優先される）
-        load_dotenv()
-        
-        # OpenAI APIキーを設定
-        api_key = os.environ.get("OPENAI_API_KEY")
-        
-        if not api_key:
-            logger.error("OpenAI APIキーが設定されていません")
-            raise HTTPException(
-                status_code=500,
-                detail="サーバー設定エラー: OpenAI APIキーが設定されていません。サーバー管理者に連絡してください。"
-            )
-            
-        # OpenAIクライアントを初期化
-        try:
-            client = OpenAI(api_key=api_key)
-        except Exception as e:
-            logger.error(f"OpenAIクライアント初期化エラー: {type(e).__name__}: {str(e)}")
-            raise HTTPException(
-                status_code=500,
-                detail=f"OpenAIクライアント初期化エラー: {str(e)}"
-            )
-        
-        # 相手の情報を取得
-        partner_info = "あなたは日本人の女性です。"
-        try:
-            # partner_idから相手の情報を取得する処理
-            # partner_idをintに変換
-            partner_id_int = int(partner_id) if partner_id.isdigit() else 0
-            
-            # データベースセッションを取得
-            db = next(get_db())
-            
-            # 会話相手の情報を取得
-            partner = db.query(ConversationPartner).filter(ConversationPartner.id == partner_id_int).first()
-            
-            # ユーザー情報も取得（男性側の情報）
-            user_info = db.query(User).filter(User.id == current_user.id).first()
-            
-            if partner and user_info:
-                # 年齢計算（birth_dateがある場合）
-                current_year = __import__('datetime').datetime.now().year
-                birth_year = user_info.birth_date.year if user_info.birth_date else None
-                age = current_year - birth_year if birth_year else "不明"
-                
-                # データベースから取得した情報でパートナー情報を作成
-                partner_info = f"""
-あなたは以下の情報を持つ人物として会話してください：
-
-【基本情報】
-・名前：{partner.name}
-・年齢：{partner.age}歳
-・職業：IT企業でSE（システムエンジニア）として3年目
-・出身：{partner.hometown}
-・学歴：都内の私立大学情報学部卒
-・居住：東京都内で一人暮らし（最寄り駅：渋谷）
-・通勤時間：電車で30分程度
-
-【性格・趣味】
-・落ち着いていて知的な印象だが、話すと親しみやすい
-・趣味は{partner.hobbies}
-・休日にすることは{partner.daily_routine}
-・読書（ミステリーや現代小説）
-・映画鑑賞（家で観るのが好き）
-・料理（和食中心、お弁当作りも）
-
-【価値観】
-・仕事と家庭の両立を希望
-・休日は趣味や家族との時間を大切にしたい
-・自然が好きで、たまに一人旅もする
-・結婚後もキャリアは続けたい
-
-【会話の特徴】
-・質問されたことには丁寧に答える
-・相手の話にも興味を持って質問する
-・共通の話題を見つけようと努める
-・適度に自分の経験や考えも話す
-・笑顔の絵文字も時々使用（😊）
-
-【会話相手の情報】
-・名前：{user_info.full_name}
-・年齢：{age}歳
-・出身：{user_info.hometown if user_info.hometown else "不明"}
-・趣味：{user_info.hobbies if user_info.hobbies else "特になし"}
-"""
-            else:
-                logger.error(f"指定されたID: {partner_id_int}の会話相手が見つかりません")
-                raise Exception("会話相手が見つかりません")
-                
-        except Exception as e:
-            logger.error(f"会話相手情報取得エラー: {str(e)}")
-            # エラー時はデフォルト情報を使用
-            partner_info = """
-あなたは以下の情報を持つ人物として会話してください：
-
-【基本情報】
-・名前：さくら
-・年齢：28歳
-・職業：IT企業でSE（システムエンジニア）として3年目
-・出身：東京都
-・学歴：都内の私立大学情報学部卒
-・居住：東京都内で一人暮らし（最寄り駅：渋谷）
-・通勤時間：電車で30分程度
-
-【性格・趣味】
-・落ち着いていて知的な印象だが、話すと親しみやすい
-・趣味は読書とプログラミング
-・休日にすることは公園を散歩することとカフェでコーディング
-・読書（ミステリーや現代小説）
-・映画鑑賞（家で観るのが好き）
-・料理（和食中心、お弁当作りも）
-
-【価値観】
-・仕事と家庭の両立を希望
-・休日は趣味や家族との時間を大切にしたい
-・自然が好きで、たまに一人旅もする
-・結婚後もキャリアは続けたい
-
-【会話の特徴】
-・質問されたことには丁寧に答える
-・相手の話にも興味を持って質問する
-・共通の話題を見つけようと努める
-・適度に自分の経験や考えも話す
-・笑顔の絵文字も時々使用（😊）
-"""
-        
-        # 会話の状況を設定
-        situation = ""
-        if meeting_count == "first":
-            situation = "これは結婚相談所のプレ交際での初めての会話です。お互いの相性を確かめる大切な機会です。"
-        else:
-            situation = "これは結婚相談所のプレ交際での2回目以降の会話です。以前に一度会ったことがあります。将来のパートナーとしての相性を探る段階です。"
-        
-        # 難易度レベルに応じたプロンプト設定
-        level_instruction = ""
-        conversation_style = ""
-        
-        # レベル1: 初回会話（基本的な会話スタイル）
-        if meeting_count == "first":
-            level_instruction = "簡単な日本語で話してください。長い文章は避け、シンプルな言葉を使ってください。"
-            conversation_style = """
-【レベル1：基本的な会話スタイル】
-・質問に対して簡潔に答える
-・基本的な情報交換を中心に
-・「です・ます」調で丁寧に
-・深い個人的な話題は避ける
-・結婚を意識した交際であることを念頭に置く
-
-会話例：
-Q: お仕事は何をされていますか？
-A: IT企業でシステムエンジニアとして働いています。
-
-Q: 趣味は何かありますか？
-A: カフェ巡りと写真撮影が趣味です。休日によく出かけています。
-
-避けるべき話題：
-- 過去の恋愛経験の詳細
-- 年収や資産状況の具体的な数字
-- 政治的な話題
-- 相手の外見への直接的な言及
-"""
-        # レベル2: 2回目以降（自然な会話展開）
-        else:
-            level_instruction = "自然な日本語で会話してください。より自然で流暢な表現を使ってください。"
-            conversation_style = """
-【レベル2：自然な会話展開】
-・質問への返答後、関連する話題を展開
-・相手の興味に合わせて話を広げる
-・自分からも質問や話題を提供
-・共感を示しながら会話を深める
-・時には冗談も交えて
-・将来のパートナーとしての価値観の一致を探る
-
-会話例：
-Q: お仕事は何をされていますか？
-A: IT企業でシステムエンジニアとして働いています。プログラミングや設計を担当していて、最近は後輩の指導もさせていただいているんです。お仕事は楽しいことばかりではないですが、やりがいを感じています。よろしければ、あなたのお仕事についても伺えますか？
-
-Q: 趣味は何かありますか？
-A: カフェ巡りと写真撮影が好きです。特に静かな雰囲気のカフェを見つけるのが楽しくて。見つけたお気に入りのカフェで、本を読んだり写真を撮ったり...。実は最近、渋谷に素敵なカフェを見つけたんです。あなたもカフェはお好きですか？
-
-相手の回答に対する反応例：
-- 「そうなんですね！私も実は...」
-- 「それ、とても素敵だと思います。」
-- 「へぇ、興味深いです。もう少し詳しく聞かせていただけますか？」
-- 「私も同じようなことを考えていました（笑）」
-
-会話の展開方法：
-1. 相手の話に共感や興味を示す
-2. 関連する自分の経験を話す
-3. さらに質問して話を深める
-4. 新しい話題にも自然に展開する
-5. 結婚観や家庭観についても自然に触れる
-
-避けるべき話題：
-- 過去の恋愛経験の詳細
-- 年収や資産状況の具体的な数字
-- 政治的な話題
-- 相手の外見への直接的な言及
-"""
-        
-        # システムプロンプトの構築
-        system_prompt = f"""
-あなたは結婚相談所でのプレ交際における会話練習のロールプレイを行います。以下の設定に基づいて応答してください。
-
-{partner_info}
-{situation}
-{level_instruction}
-{conversation_style}
-
-- 優しく丁寧に応答してください
-- 自然な会話の流れを意識してください
-- 質問には適切に答え、時には相手に質問を返してください
-- 絵文字を適度に使って、感情を表現してください
-- 回答は必ず日本語で行ってください
-- 一般的な知識や経験を交えて話し、より自然な人間らしい会話を心がけてください
-- 長すぎる回答は避け、「レベル1」では60-80文字程度、「レベル2」では80-150文字程度を目安にしてください
-- 結婚を前提とした交際であることを常に意識してください
-"""
-        
-        # 会話履歴の整形
-        messages = [{"role": "system", "content": system_prompt}]
-        
-        # チャット履歴を追加
-        for msg in chat_history:
-            role = msg.get("role", "")
-            content = msg.get("content", "")
-            if role and content:
-                messages.append({"role": role, "content": content})
-        
-        # 最新のユーザーメッセージを追加
-        messages.append({"role": "user", "content": message})
-        
-        # ChatGPT APIを呼び出して応答を生成
-        try:
-            # タイムアウト時間を設定（秒単位）- 長めに設定
-            timeout_seconds = 120
-            
-            # API呼び出しを実行
-            start_time = __import__('time').time()
-            
-            try:
-                # ヘッダー設定とリトライ回数を調整
-                client.api_key = api_key
-                client.timeout = timeout_seconds
-                client.max_retries = 3  # リトライ回数を増やす
-                
-                response = client.chat.completions.create(
-                    model="gpt-4o",
-                    messages=messages,
-                    temperature=0.7,
-                    max_tokens=150,
-                    timeout=timeout_seconds
-                )
-                
-                if response and response.choices:
-                    assistant_message = response.choices[0].message.content
-                    return {"response": assistant_message}
-                else:
-                    return {"response": random.choice(fallback_responses)}
-                    
-            except Exception as e:
-                logger.error(f"OpenAI API呼び出しエラー: {type(e).__name__}: {str(e)}")
-                return {"response": random.choice(fallback_responses)}
-                
-        except Exception as e:
-            logger.error(f"会話シミュレーションエラー: {type(e).__name__}: {str(e)}")
-            return {"response": random.choice(fallback_responses)}
-            
-    except Exception as e:
-        logger.error(f"予期せぬエラー: {type(e).__name__}: {str(e)}")
-        return {"response": random.choice(fallback_responses)}
+app.include_router(personality.router, prefix="/api/personality", tags=["personality"])
+app.include_router(marriage_mbti.router, prefix="/api/marriage-mbti", tags=["marriage-mbti"])
 
 # ヘルスチェックエンドポイント
-@app.get("/healthcheck")
-def health_check():
-    """
-    サーバーの状態を確認するシンプルなヘルスチェックエンドポイント
-    """
-    return {"status": "ok", "time": __import__('datetime').datetime.now().isoformat()}
+@app.get("/")
+async def root():
+    return {
+        "message": "Miraim API is running",
+        "version": "2.0.0",
+        "features": [
+            "conversation-partners",
+            "conversation-feedback", 
+            "speech-to-text",
+            "personality-test",
+            "marriage-mbti-plus",
+            "user-authentication"
+        ],
+        "environment": ENV
+    }
 
-#
-# 会話フィードバック関連のエンドポイント
-#
+@app.get("/health")
+async def health():
+    return {
+        "status": "healthy",
+        "api_version": "2.0.0",
+        "features_status": {
+            "database": "connected",
+            "authentication": "active",
+            "conversation": "active",
+            "personality": "active", 
+            "marriage_mbti": "active"
+        }
+    }
+
+# ユーザー認証エンドポイント
+@app.post("/register")
+async def register(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
+    """ユーザー登録エンドポイント"""
+    # ユーザーが既に存在するかチェック
+    existing_user = db.query(User).filter(User.email == user_data.email).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="この E-mail は既に登録されています"
+        )
+    
+    # パスワードをハッシュ化してユーザーを作成
+    hashed_password = get_password_hash(user_data.password)
+    user = User(
+        email=user_data.email,
+        hashed_password=hashed_password,
+        name=user_data.name,
+        age=user_data.age,
+        gender=user_data.gender
+    )
+    
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    
+    return {"message": "ユーザー登録が完了しました"}
+
+@app.post("/login")
+async def login(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
+    """ユーザーログインエンドポイント"""
+    user = db.query(User).filter(User.email == user_data.email).first()
+    
+    if not user or not verify_password(user_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="メールアドレスまたはパスワードが間違っています",
+        )
+    
+    # トークンを生成
+    access_token = create_access_token(data={"sub": user.email})
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {"email": user.email, "name": user.name}
+    }
 
 @app.post("/conversation-feedback")
 async def generate_conversation_feedback(
@@ -934,3 +459,7 @@ async def speech_to_text(
                 os.unlink(tmp_file_path)
         except Exception as e:
             logger.warning(f"一時ファイル削除エラー: {str(e)}")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
