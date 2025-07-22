@@ -21,6 +21,7 @@ class User(Base):
 
     # リレーションシップ
     conversation_partners = relationship("ConversationPartner", back_populates="user")
+    conversations = relationship("Conversation", back_populates="user")
 
     def __repr__(self):
         return f"<User {self.username}>"

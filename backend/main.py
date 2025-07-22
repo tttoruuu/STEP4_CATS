@@ -12,7 +12,7 @@ from models.conversation_partner import ConversationPartner
 from models import schemas
 from auth.password import get_password_hash, verify_password
 from auth.jwt import create_access_token, get_current_user
-from routers import conversation_partners, personality, marriage_mbti
+from routers import conversation_partners, personality, marriage_mbti, counselor
 from fastapi.responses import JSONResponse
 import random
 from urllib.parse import urlparse
@@ -81,6 +81,7 @@ app.add_middleware(
 app.include_router(conversation_partners.router)
 app.include_router(personality.router, prefix="/api/personality", tags=["personality"])
 app.include_router(marriage_mbti.router, prefix="/api/marriage-mbti", tags=["marriage-mbti"])
+app.include_router(counselor.router)
 
 # ヘルスチェックエンドポイント
 @app.get("/")
