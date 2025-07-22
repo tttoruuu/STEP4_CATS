@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import Layout from '../../components/Layout';
 import apiService from '../../services/api';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Mic, MicOff } from 'lucide-react';
 
 export default function ConversationPractice() {
   const router = useRouter();
@@ -19,6 +19,9 @@ export default function ConversationPractice() {
   const [showFeedbackButton, setShowFeedbackButton] = useState(false);
   const [maxRallyCount, setMaxRallyCount] = useState(8);
   const [error, setError] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [audioChunks, setAudioChunks] = useState([]);
 
   useEffect(() => {
     if (rallyCount) {
@@ -285,6 +288,71 @@ export default function ConversationPractice() {
     });
   };
 
+  // 音声録音の開始/停止を切り替える
+  const handleVoiceToggle = async () => {
+    if (isRecording) {
+      // 録音停止
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        setIsRecording(false);
+      }
+    } else {
+      // 録音開始
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const recorder = new MediaRecorder(stream);
+        const chunks = [];
+
+        recorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            chunks.push(event.data);
+          }
+        };
+
+        recorder.onstop = async () => {
+          const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+          stream.getTracks().forEach(track => track.stop());
+          
+          // 音声ファイルをサーバーに送信
+          await sendAudioToServer(audioBlob);
+        };
+
+        recorder.start();
+        setMediaRecorder(recorder);
+        setIsRecording(true);
+        setError('');
+      } catch (error) {
+        console.error('マイクへのアクセスに失敗しました:', error);
+        setError('マイクへのアクセスが拒否されました');
+      }
+    }
+  };
+
+  // 音声ファイルをサーバーに送信して文字起こし
+  const sendAudioToServer = async (audioBlob) => {
+    try {
+      setSending(true);
+      
+      // 音声ファイルを作成（File形式で送信）
+      const audioFile = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
+
+      // APIを呼び出して音声認識
+      const response = await apiService.conversation.speechToText(audioFile);
+      
+      if (response && response.text) {
+        // 認識されたテキストを入力欄に設定
+        setInputMessage(response.text);
+      } else {
+        setError('音声認識に失敗しました');
+      }
+    } catch (error) {
+      console.error('音声認識エラー:', error);
+      setError('音声認識中にエラーが発生しました');
+    } finally {
+      setSending(false);
+    }
+  };
+
   if (loading) {
     return (
       <Layout title="会話練習" hideHeader={true}>
@@ -388,19 +456,33 @@ export default function ConversationPractice() {
 
         {/* 入力エリア */}
         <div className="w-full max-w-md bg-white/90 p-4 rounded-xl border border-white/40 shadow-sm mb-4">
-          <div className="flex">
-            <textarea
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              placeholder={showFeedbackButton ? "ラリー数の上限に達しました" : "メッセージを入力..."}
-              className={`flex-grow bg-[#FAFAFA] text-gray-800 rounded-l-xl p-3 focus:outline-none focus:ring-1 focus:ring-[#FF8551] border border-gray-200 ${showFeedbackButton ? 'opacity-50 cursor-not-allowed' : ''}`}
-              rows="2"
-              disabled={showFeedbackButton}
-            />
+          <div className="flex items-end gap-2">
+            <div className="flex-grow">
+              <textarea
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                placeholder={showFeedbackButton ? "ラリー数の上限に達しました" : "メッセージを入力..."}
+                className={`w-full bg-[#FAFAFA] text-gray-800 rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-[#FF8551] border border-gray-200 ${showFeedbackButton ? 'opacity-50 cursor-not-allowed' : ''}`}
+                rows="2"
+                disabled={showFeedbackButton}
+              />
+            </div>
+            <button
+              onClick={handleVoiceToggle}
+              disabled={showFeedbackButton || sending}
+              className={`p-3 rounded-full transition-all ${
+                isRecording
+                  ? 'bg-red-500 text-white animate-pulse'
+                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+              } ${showFeedbackButton || sending ? 'opacity-50 cursor-not-allowed' : ''}`}
+              title={isRecording ? '録音停止' : '音声入力'}
+            >
+              {isRecording ? <MicOff size={20} /> : <Mic size={20} />}
+            </button>
             <button
               onClick={handleSendMessage}
               disabled={!inputMessage.trim() || sending || showFeedbackButton}
-              className={`bg-gradient-to-r from-[#FF8551] to-[#FFA46D] text-white rounded-r-xl px-4 ${
+              className={`bg-gradient-to-r from-[#FF8551] to-[#FFA46D] text-white rounded-xl px-6 py-3 ${
                 !inputMessage.trim() || sending || showFeedbackButton
                   ? 'opacity-50 cursor-not-allowed'
                   : 'hover:opacity-90'
@@ -409,6 +491,11 @@ export default function ConversationPractice() {
               送信
             </button>
           </div>
+          {isRecording && (
+            <div className="mt-2 text-center text-sm text-red-500 animate-pulse">
+              録音中...
+            </div>
+          )}
         </div>
       </div>
     </Layout>

@@ -1,0 +1,392 @@
+[
+  {
+    "question_id": 1,
+    "question_text": "（女性）こんにちは、今日は来るまでちょっと迷っちゃいました。",
+    "choices": [
+      {
+        "label": "A",
+        "text": "今日、来るまで大変じゃなかったですか？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "とりあえずLINE交換しませんか？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "結婚願望ありますか？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "なんでこの会に来たんですか？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 2,
+    "question_text": "（女性）最近、週末の過ごし方を工夫してて…",
+    "choices": [
+      {
+        "label": "A",
+        "text": "週末はどんな風に過ごすことが多いんですか？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "毎日何時に起きてますか？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "一人暮らしですか？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "土日は暇してますか？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 3,
+    "question_text": "（女性）趣味とかって、気になりますか？",
+    "choices": [
+      {
+        "label": "A",
+        "text": "最近ハマってること、ありますか？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "趣味は何？詳しく教えて？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "何かオタクですか？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "暇つぶしって何してるの？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 4,
+    "question_text": "（女性）学生時代って、いろんな思い出がありますよね。",
+    "choices": [
+      {
+        "label": "A",
+        "text": "学生の頃ってどんなタイプでした？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "偏差値いくつくらいでした？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "どこの大学ですか？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "部活とか無駄じゃなかったですか？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 5,
+    "question_text": "（女性）休日はだいたい家にいることが多いかも。",
+    "choices": [
+      {
+        "label": "A",
+        "text": "休日は外出派ですか？それとも家でゆっくり派ですか？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "土日ヒマなら遊べますか？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "家で何してるんですか？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "寝てばかりじゃないですか？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 6,
+    "question_text": "（女性）旅行とか好きですよ。",
+    "choices": [
+      {
+        "label": "A",
+        "text": "もし1週間休みがあったら、どこに行きたいですか？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "会社辞めたいと思ったことありますか？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "1人で旅行って寂しくないですか？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "海外より日本が好きですよね？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 7,
+    "question_text": "（女性）最近、家でゆっくり映画観たりしてます。",
+    "choices": [
+      {
+        "label": "A",
+        "text": "映画とか観ます？最近おすすめあります？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "推しとかいます？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "ディズニー好きですよね？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "恋愛ものって観る派ですか？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 8,
+    "question_text": "（女性）食べるの大好きなんです。最近ちょっと食べすぎてて…",
+    "choices": [
+      {
+        "label": "A",
+        "text": "好きな食べ物って何ですか？外食とか行きます？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "料理できない派ですか？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "一人でラーメン行けます？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "ファミレスとか好きですか？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 9,
+    "question_text": "（女性）こういう場って、ちょっと緊張しますよね…",
+    "choices": [
+      {
+        "label": "A",
+        "text": "初対面の人と話すとき、緊張するタイプですか？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "こういう場って面倒くさいですよね？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "俺、全然緊張しないんですけど大丈夫ですか？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "一人参加って寂しくないですか？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 10,
+    "question_text": "（女性）仕事、最近忙しくて…でもやりがいはあるかな。",
+    "choices": [
+      {
+        "label": "A",
+        "text": "お仕事ってどんなことされてるんですか？忙しいですか？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "年収ってどれくらいですか？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "転職考えてます？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "事務職とかラクそうですよね？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 11,
+    "question_text": "（女性）仕事って、大変なこともあるけど楽しさもあります。",
+    "choices": [
+      {
+        "label": "A",
+        "text": "今の仕事、どんなところが楽しいですか？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "辞めたいって思うときありますよね？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "仕事ってつまらなくないですか？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "上司ムカつきません？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 12,
+    "question_text": "（女性）実はこういう会、ちょっと慣れてなくて…",
+    "choices": [
+      {
+        "label": "A",
+        "text": "実はこういう場、ちょっと慣れてなくて…〇〇さんはどうですか？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "緊張してるんですけど伝わってますか？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "こういうの、正直めんどいですよね？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "どうせ今日もダメな気がしてて…",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 13,
+    "question_text": "（女性）友達といる時間がすごく好きなんですよね。",
+    "choices": [
+      {
+        "label": "A",
+        "text": "周りの友達ってどんな人が多いですか？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "友達少ないですか？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "友達関係って続く方ですか？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "親友とかいないんですか？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 14,
+    "question_text": "（女性）最近は、自分なりのリラックス法を見つけようとしてて…",
+    "choices": [
+      {
+        "label": "A",
+        "text": "〇〇さんって、どんなときにリラックスできますか？",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "ストレス発散どうしてます？",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "お酒強いですか？",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "カラオケとか行くんですか？",
+        "is_correct": false
+      }
+    ]
+  },
+  {
+    "question_id": 15,
+    "question_text": "（女性）今日、ちゃんと話せるか不安だったけど、思ったよりリラックスできてるかも。",
+    "choices": [
+      {
+        "label": "A",
+        "text": "話してて思ったんですけど、〇〇なところ素敵ですね",
+        "is_correct": true
+      },
+      {
+        "label": "B",
+        "text": "写真と違って印象良いですね",
+        "is_correct": false
+      },
+      {
+        "label": "C",
+        "text": "思ったより話しやすいっすね",
+        "is_correct": false
+      },
+      {
+        "label": "D",
+        "text": "今日の服、攻めてますね",
+        "is_correct": false
+      }
+    ]
+  }
+]

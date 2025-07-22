@@ -12,3 +12,4 @@ mysql-connector-python
 alembic
 openai==1.30.0
 httpx==0.24.1
+aiofiles==23.2.1

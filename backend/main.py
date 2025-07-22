@@ -12,10 +12,13 @@ from models.conversation_partner import ConversationPartner
 from models import schemas
 from auth.password import get_password_hash, verify_password
 from auth.jwt import create_access_token, get_current_user
-from routers import conversation_partners
-from fastapi.responses import JSONResponse
+from routers import conversation_partners, deep_questions
+from fastapi.responses import JSONResponse, Response
 import random
 from urllib.parse import urlparse
+import aiofiles
+import tempfile
+import httpx
 
 # データベースのテーブルを作成
 Base.metadata.create_all(bind=engine)
@@ -104,6 +107,9 @@ async def process_x_forwarded_proto(request: Request, call_next):
 
 # 会話相手APIルーターの追加
 app.include_router(conversation_partners.router)
+
+# 深堀り質問APIルーターの追加  
+app.include_router(deep_questions.router)
 
 # データベースセッションの依存関係
 def get_db():
@@ -631,6 +637,101 @@ def health_check():
     サーバーの状態を確認するシンプルなヘルスチェックエンドポイント
     """
     return {"status": "ok", "time": __import__('datetime').datetime.now().isoformat()}
+
+#
+# 音声認識関連のエンドポイント
+#
+
+@app.post("/speech-to-text")
+async def speech_to_text(
+    audio: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    音声ファイルをテキストに変換するエンドポイント（OpenAI Whisper API使用）
+    
+    - **認証**: Bearer Token認証が必要
+    - **入力データ**: 音声ファイル（wav, mp3, m4a, webm等）
+    - **戻り値**: 変換されたテキスト
+    """
+    try:
+        # ファイル形式の検証
+        allowed_formats = ["audio/wav", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/webm", "audio/x-m4a"]
+        if audio.content_type not in allowed_formats:
+            raise HTTPException(
+                status_code=400,
+                detail=f"サポートされていないファイル形式です。対応形式: {', '.join(allowed_formats)}"
+            )
+        
+        # ファイルサイズの制限（25MB）
+        max_size = 25 * 1024 * 1024
+        contents = await audio.read()
+        if len(contents) > max_size:
+            raise HTTPException(
+                status_code=400,
+                detail="ファイルサイズが大きすぎます（最大25MB）"
+            )
+        
+        # 一時ファイルに保存
+        with tempfile.NamedTemporaryFile(delete=False, suffix=audio.filename) as tmp_file:
+            tmp_file.write(contents)
+            tmp_file_path = tmp_file.name
+        
+        try:
+            # OpenAI APIキーを取得
+            api_key = os.environ.get("OPENAI_API_KEY")
+            if not api_key:
+                raise HTTPException(
+                    status_code=500,
+                    detail="OpenAI APIキーが設定されていません"
+                )
+            
+            # Whisper APIで音声認識
+            headers = {
+                "Authorization": f"Bearer {api_key}"
+            }
+            
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                with open(tmp_file_path, 'rb') as f:
+                    files = {"file": (audio.filename, f, audio.content_type)}
+                    data = {
+                        "model": "whisper-1",
+                        "language": "ja"  # 日本語を指定
+                    }
+                    
+                    response = await client.post(
+                        "https://api.openai.com/v1/audio/transcriptions",
+                        headers=headers,
+                        files=files,
+                        data=data
+                    )
+                
+                if response.status_code != 200:
+                    logger.error(f"Whisper API エラー: {response.status_code} - {response.text}")
+                    raise HTTPException(
+                        status_code=500,
+                        detail="音声認識処理中にエラーが発生しました"
+                    )
+                
+                result = response.json()
+                return {
+                    "text": result.get("text", ""),
+                    "duration": result.get("duration", 0)
+                }
+                
+        finally:
+            # 一時ファイルを削除
+            if os.path.exists(tmp_file_path):
+                os.unlink(tmp_file_path)
+                
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"音声認識エラー: {type(e).__name__}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="音声認識処理中に予期せぬエラーが発生しました"
+        )
 
 #
 # 会話フィードバック関連のエンドポイント

@@ -930,6 +930,37 @@ export const conversationAPI = {
       throw error.response?.data || { detail: 'フィードバック生成中にエラーが発生しました' };
     }
   },
+
+  // 音声認識（Speech-to-Text）
+  speechToText: async (audioFile) => {
+    try {
+      console.log('送信する音声ファイル:', {
+        name: audioFile.name,
+        size: audioFile.size,
+        type: audioFile.type
+      });
+
+      const client = getAuthenticatedClient();
+      const formData = new FormData();
+      formData.append('audio', audioFile);
+
+      const response = await client.post('/speech-to-text', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 30000, // 30秒のタイムアウト
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('音声認識エラー詳細:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      throw error.response?.data || { detail: '音声認識中にエラーが発生しました' };
+    }
+  },
 };
 // プロフィール関連のAPI
 export const profileAPI = {
