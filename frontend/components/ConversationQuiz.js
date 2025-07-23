@@ -92,10 +92,10 @@ const ConversationQuiz = ({
         </h3>
         
         <div className="space-y-3">
-          {scenario.choices.map((choice, index) => {
+          {scenario.options.map((choice, index) => {
             const isSelected = selectedChoice?.id === choice.id;
-            const isCorrect = choice.isCorrect;
-            const isIncorrect = !choice.isCorrect;
+            const isCorrect = choice.id === scenario.correctAnswer;
+            const isIncorrect = choice.id !== scenario.correctAnswer;
             
             let buttonClasses = "w-full p-4 text-left border-2 rounded-lg transition-all duration-200 ";
             
@@ -139,20 +139,27 @@ const ConversationQuiz = ({
       {/* 結果表示 */}
       {showResult && selectedChoice && (
         <div className="mb-8">
-          <div className={`p-6 rounded-lg border-2 ${selectedChoice.isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'}`}>
+          <div className={`p-6 rounded-lg border-2 ${selectedChoice.id === scenario.correctAnswer ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'}`}>
             <div className="flex items-center gap-2 mb-3">
-              <span className={`text-2xl ${selectedChoice.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
-                {selectedChoice.isCorrect ? '✓' : '✗'}
+              <span className={`text-2xl ${selectedChoice.id === scenario.correctAnswer ? 'text-green-600' : 'text-red-600'}`}>
+                {selectedChoice.id === scenario.correctAnswer ? '✓' : '✗'}
               </span>
-              <h3 className={`text-lg font-medium ${selectedChoice.isCorrect ? 'text-green-800' : 'text-red-800'}`}>
-                {selectedChoice.isCorrect ? '正解です！' : '不正解です'}
+              <h3 className={`text-lg font-medium ${selectedChoice.id === scenario.correctAnswer ? 'text-green-800' : 'text-red-800'}`}>
+                {selectedChoice.id === scenario.correctAnswer ? '正解です！' : '不正解です'}
               </h3>
             </div>
             
-            <div className={`${selectedChoice.isCorrect ? 'text-green-700' : 'text-red-700'}`}>
-              <h4 className="font-medium mb-2">解説</h4>
-              <p className="leading-relaxed">{selectedChoice.explanation}</p>
+            <div className={`${selectedChoice.id === scenario.correctAnswer ? 'text-green-700' : 'text-red-700'}`}>
+              <h4 className="font-medium mb-2">フィードバック</h4>
+              <p className="leading-relaxed">{selectedChoice.feedback}</p>
             </div>
+            
+            {scenario.explanation && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <h4 className="font-medium mb-2 text-gray-800">解説</h4>
+                <p className="text-gray-700 leading-relaxed">{scenario.explanation}</p>
+              </div>
+            )}
           </div>
         </div>
       )}
