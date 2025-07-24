@@ -34,43 +34,33 @@
 4. **スタイリング提案**：年齢・季節・タイプ別の外見改善提案
 
 ## 開発コマンド
+```bash
+# 統合コマンド（Makefile）
+# 初回セットアップ: make setup
+# 開発サーバー起動: make dev
+# ビルド: make build
+# テスト実行: make test
 
-### 統合コマンド（Makefile）
-- 初回セットアップ: `make setup`
-- 開発サーバー起動: `make dev`
-- ビルド: `make build`
-- テスト実行: `make test`
-- リント: `make lint`
-- Docker開発環境: `make docker-dev`
-- Docker本番環境: `make docker-prod`
-- 全コマンド表示: `make help`
+# フロントエンド（Next.js PWA）
+# 開発サーバー: npm run dev
+# ビルド: npm run build
+# リント: npm run lint
+# 型チェック: npm run type-check
 
-### フロントエンド（Next.js PWA）
-- 開発サーバー: `npm run dev`
-- ビルド: `npm run build`
-- テスト: `npm test`
-- リント: `npm run lint`
-- 型チェック: `npm run type-check`
-- PWAビルド: `npm run build && npm run export`
+# バックエンド（FastAPI）
+# 開発サーバー: uvicorn main:app --reload
+# API テスト: pytest
+# API仕様確認: http://localhost:8000/docs
 
-### バックエンド（FastAPI）
-- 開発サーバー: `uvicorn main:app --reload`
-- API テスト: `pytest`
-- データベースマイグレーション: `alembic upgrade head`
-- API仕様確認: `http://localhost:8000/docs` (Swagger UI)
+# Docker開発環境
+# 開発環境起動: docker-compose -f docker-compose.development.yml up -d
+# 環境停止: docker-compose down
+# ログ確認: docker-compose logs -f [service-name]
 
-### Docker開発環境
-- 開発環境起動: `docker-compose -f docker-compose.development.yml up -d`
-- 本番環境起動: `docker-compose -f docker-compose.prod.yml up -d`
-- フロントエンド単体: `docker-compose -f docker-compose.development.yml up frontend`
-- バックエンド単体: `docker-compose -f docker-compose.development.yml up backend`
-- データベース単体: `docker-compose -f docker-compose.development.yml up db`
-- ログ確認: `docker-compose logs -f [service-name]`
-- 環境停止: `docker-compose down`
-
-### AI/ML関連
-- モデル学習: `python scripts/train_model.py`
-- 音声処理テスト: `python scripts/test_voice_analysis.py`
+# AI/ML関連
+# モデル学習: python scripts/train_model.py
+# 音声処理テスト: python scripts/test_voice_analysis.py
+```
 
 ### Git運用ルール（チーム開発）
 ```bash
@@ -81,12 +71,12 @@
 
 ### GitHubプルリクエストマージ
 ```bash
-git add -A && git commit -m "変更内容" && git push origin main
-curl -s https://api.github.com/repos/tttoruuu/STEP4_CATS/pulls
-git fetch origin && git stash && git merge origin/[PR-ブランチ名]
-git add . && git commit -m "🔀 マージ完了" && git push origin main && git stash pop
+# 基本手順: git add -A && git commit -m "変更内容" && git push origin main
+# PR確認: curl -s https://api.github.com/repos/tttoruuu/STEP4_CATS/pulls
+# マージ: git fetch origin && git stash && git merge origin/[PR-ブランチ名]
+# 完了: git add . && git commit -m "🔀 マージ完了" && git push origin main && git stash pop
+# 競合解決: models/user.py=全リレーション統合, フロントエンド=git checkout --theirs
 ```
-**競合解決**: models/user.py=全リレーション統合、フロントエンド=`git checkout --theirs`、main.py=ルーター統合
 
 ## アーキテクチャ設計
 
@@ -232,16 +222,17 @@ UserProfile {
 }
 ```
 
-## デプロイ手順（基本フロー）
+## デプロイ手順
+```bash
+# 開発環境
+# 初回セットアップ: make setup
+# 開発サーバー起動: make dev  
+# テスト実行: make test
+# コード品質チェック: make lint
 
-### 開発環境
-1. `make setup` - 初回セットアップ
-2. `make dev` - 開発サーバー起動
-3. `make test` - テスト実行
-4. `make lint` - コード品質チェック
-
-### 本番環境
-1. GitHub Actions（mainブランチ）で自動デプロイ
-2. Azure Container Apps へのデプロイ
-3. データベースマイグレーション実行
-4. ヘルスチェック確認
+# 本番環境
+# GitHub Actions（mainブランチ）で自動デプロイ
+# Azure Container Apps へのデプロイ
+# データベースマイグレーション実行
+# ヘルスチェック確認
+```
