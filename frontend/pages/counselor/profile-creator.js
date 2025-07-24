@@ -81,8 +81,34 @@ export default function ProfileCreator() {
   const generateProfiles = async () => {
     setIsGenerating(true);
     
-    // AIによるプロフィール生成のシミュレーション
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/counselor/profile-generation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          answers: profileData
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('API request failed');
+      }
+
+      const data = await response.json();
+      const profiles = data.profiles.map((profile, index) => ({
+        id: index + 1,
+        title: profile.title,
+        content: profile.content
+      }));
+      
+      setGeneratedProfiles(profiles);
+    } catch (error) {
+      console.error('Error generating profiles:', error);
+      // フォールバック
       const profiles = [
         {
           id: 1,
@@ -130,9 +156,10 @@ ${profileData.values}を大切にしており、${profileData.idealPartner}よ�
       ];
       
       setGeneratedProfiles(profiles);
+    } finally {
       setIsGenerating(false);
       setStep(questions.length + 1);
-    }, 2000);
+    }
   };
 
   const regenerateProfiles = () => {

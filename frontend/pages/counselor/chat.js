@@ -40,8 +40,37 @@ export default function CounselorChat() {
     setInputMessage('');
     setIsLoading(true);
 
-    // AIレスポンスのシミュレーション（実際のAPIに置き換える）
-    setTimeout(() => {
+    try {
+      // 実際のAPIを呼び出し
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/counselor/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          message: userMessage.content,
+          context: messages.slice(-10).map(m => `${m.type}: ${m.content}`).join('\n')
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('API request failed');
+      }
+
+      const data = await response.json();
+      const aiResponse = {
+        id: Date.now() + 1,
+        type: 'ai',
+        content: data.message,
+        timestamp: new Date(data.timestamp)
+      };
+      
+      setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      // フォールバック応答
       const aiResponse = {
         id: Date.now() + 1,
         type: 'ai',
@@ -49,8 +78,9 @@ export default function CounselorChat() {
         timestamp: new Date()
       };
       setMessages(prev => [...prev, aiResponse]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const generateAIResponse = (userInput) => {
