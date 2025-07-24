@@ -1,0 +1,8 @@
+{
+  "memory": {
+    "contextFiles": ["CLAUDE.md"],
+    "autoload": true
+  },
+  "defaultMemoryContext": "このプロジェクトで作業する前に、必ずCLAUDE.mdの内容を確認して従ってください。",
+  "instructions": "プロジェクトの作業開始時にCLAUDE.mdの内容を参照し、記載されたルールと手順に従って作業してください。"
+}
