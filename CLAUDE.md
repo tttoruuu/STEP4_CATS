@@ -73,14 +73,29 @@
 - 音声処理テスト: `python scripts/test_voice_analysis.py`
 
 ### Git運用ルール（チーム開発）
-**作業開始時（必須）**: `git fetch origin && git pull origin main`  
-**作業完了時**: `git add -A && git commit -m "機能: 変更内容" && git push origin main`
+**作業開始時（必須）**:
+```bash
+git fetch origin && git pull origin main
+git checkout -b feature/機能名-担当者名  # 例: feature/login-toru
+```
+
+**作業完了時**:
+```bash
+git add -A && git commit -m "機能: 変更内容"
+git push origin feature/機能名-担当者名
+# GitHubでプルリクエスト作成 → レビュー → マージ
+```
 
 **コンフリクト回避**:
 - main.py: ルーター追加は末尾
 - models/: 新モデルは個別ファイル、既存変更は事前相談  
 - pages/: 機能別ディレクトリ分割
 - data/: ファイル名にプレフィックス付与
+
+**ブランチ命名規則**:
+- `feature/機能名-担当者名`: 新機能開発
+- `fix/バグ名-担当者名`: バグ修正
+- `hotfix/緊急修正名`: 本番緊急対応
 
 ### GitHubプルリクエストマージ
 ```bash
