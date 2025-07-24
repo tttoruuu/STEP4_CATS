@@ -289,30 +289,23 @@ UserProfile {
 - 音声処理テスト: `python scripts/test_voice_analysis.py`
 
 ### Git運用ルール（チーム開発）
-```bash
-# 作業開始時（必須）: git fetch origin && git pull origin main
-# 作業完了時: git add -A && git commit -m "機能: 変更内容" && git push origin main
+**作業開始時（必須）**: `git fetch origin && git pull origin main`  
+**作業完了時**: `git add -A && git commit -m "機能: 変更内容" && git push origin main`
 
-# コンフリクト回避
-# main.py: ルーター追加は末尾
-# models/: 新モデルは個別ファイル、既存変更は事前相談  
-# pages/: 機能別ディレクトリ分割
-# data/: ファイル名にプレフィックス付与
-```
+**コンフリクト回避**:
+- main.py: ルーター追加は末尾
+- models/: 新モデルは個別ファイル、既存変更は事前相談  
+- pages/: 機能別ディレクトリ分割
+- data/: ファイル名にプレフィックス付与
 
 ### GitHubプルリクエストマージ
 ```bash
-# 基本手順
 git add -A && git commit -m "変更内容" && git push origin main
-curl -s https://api.github.com/repos/tttoruuu/STEP4_CATS/pulls  # PR確認
+curl -s https://api.github.com/repos/tttoruuu/STEP4_CATS/pulls
 git fetch origin && git stash && git merge origin/[PR-ブランチ名]
 git add . && git commit -m "🔀 マージ完了" && git push origin main && git stash pop
-
-# 競合解決
-# models/user.py: 全リレーションシップ統合
-# フロントエンド: git checkout --theirs [ファイル名]
-# main.py: インポート・ルーター統合
 ```
+**競合解決**: models/user.py=全リレーション統合、フロントエンド=`git checkout --theirs`、main.py=ルーター統合
 
 ## アーキテクチャ概要
 
