@@ -8,6 +8,8 @@
 
 **婚活男性向け「内面スタイリング」トータルサポートアプリ**
 
+**重要**: 詳細な機能仕様・計画は `APP_PLAN.md` を参照すること
+
 **ビジョン**：結婚相談所に通う真剣な婚活男性のコミュニケーション能力を向上させ、理想的なパートナーとの出会いを実現する  
 **対象**：結婚相談所に入会している、会話・コミュニケーションに課題を抱える男性  
 **技術スタック**：Next.js PWA + FastAPI + MySQL + AI API統合（特に聞く力向上とコミュニケーション分析に特化）
@@ -287,21 +289,16 @@ UserProfile {
 - 音声処理テスト: `python scripts/test_voice_analysis.py`
 
 ### Git運用ルール（チーム開発）
-**重要**: 作業前に必ず最新コードを取得してコンフリクトを防止
-
 ```bash
-# 作業開始時（必須）
-git fetch origin && git pull origin main
+# 作業開始時（必須）: git fetch origin && git pull origin main
+# 作業完了時: git add -A && git commit -m "機能: 変更内容" && git push origin main
 
-# 作業完了時
-git add -A && git commit -m "機能: 変更内容" && git push origin main
+# コンフリクト回避
+# main.py: ルーター追加は末尾
+# models/: 新モデルは個別ファイル、既存変更は事前相談  
+# pages/: 機能別ディレクトリ分割
+# data/: ファイル名にプレフィックス付与
 ```
-
-#### コンフリクト回避のための分担ルール
-- **backend/main.py**: 各機能のルーター追加は末尾に追加
-- **models/**: 新モデルは個別ファイル作成、既存ファイル変更時は事前相談
-- **frontend/pages/**: 担当機能別にディレクトリ分割（/counselor, /conversation, /personality等）
-- **data/**: ファイル名に機能名プレフィックス付与（counselor_data.js等）
 
 ### GitHubプルリクエストマージ
 ```bash
