@@ -286,6 +286,37 @@ UserProfile {
 - モデル学習: `python scripts/train_model.py`
 - 音声処理テスト: `python scripts/test_voice_analysis.py`
 
+### Git運用ルール（チーム開発）
+**重要**: 作業前に必ず最新コードを取得してコンフリクトを防止
+
+```bash
+# 作業開始時（必須）
+git fetch origin && git pull origin main
+
+# 作業完了時
+git add -A && git commit -m "機能: 変更内容" && git push origin main
+```
+
+#### コンフリクト回避のための分担ルール
+- **backend/main.py**: 各機能のルーター追加は末尾に追加
+- **models/**: 新モデルは個別ファイル作成、既存ファイル変更時は事前相談
+- **frontend/pages/**: 担当機能別にディレクトリ分割（/counselor, /conversation, /personality等）
+- **data/**: ファイル名に機能名プレフィックス付与（counselor_data.js等）
+
+### GitHubプルリクエストマージ
+```bash
+# 基本手順
+git add -A && git commit -m "変更内容" && git push origin main
+curl -s https://api.github.com/repos/tttoruuu/STEP4_CATS/pulls  # PR確認
+git fetch origin && git stash && git merge origin/[PR-ブランチ名]
+git add . && git commit -m "🔀 マージ完了" && git push origin main && git stash pop
+
+# 競合解決
+# models/user.py: 全リレーションシップ統合
+# フロントエンド: git checkout --theirs [ファイル名]
+# main.py: インポート・ルーター統合
+```
+
 ## アーキテクチャ概要
 
 ### システム構成
