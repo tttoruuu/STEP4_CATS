@@ -171,9 +171,16 @@ docker-compose.*.yml
 - **ブランチ**: feature/機能名、hotfix/修正内容
 
 ### Git運用ルール
-- **メインブランチ**: main（本番）、develop（開発）
-- **プルリクエスト**: レビュー必須、CI/CD通過必須
-- **リリース**: semantic versioning（major.minor.patch）
+```bash
+# ブランチ構成: main（本番）← develop（統合）← feature（機能開発）
+# デプロイ専用: main（安定版のみ）
+# チーム開発: develop → feature/機能名-担当者名
+# 緊急修正: hotfix/修正内容 → main
+```
+- **main**: 本番デプロイ専用（安定版のみ）
+- **develop**: チーム開発統合ブランチ  
+- **feature**: 個別機能開発用
+- **プルリクエスト**: develop←feature、main←develop
 
 ### テスト方針
 - **単体テスト**: 各機能80%以上のカバレッジ
