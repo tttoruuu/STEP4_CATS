@@ -122,7 +122,7 @@ async def counselor_chat(
         
         # OpenAI APIを呼び出し
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=messages,
             temperature=0.8,
             max_tokens=800,
@@ -181,7 +181,7 @@ async def generate_profile(
         
         # OpenAI APIを呼び出し
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "あなたは結婚相談所の敏腕仲人です。"},
                 {"role": "user", "content": prompt}
