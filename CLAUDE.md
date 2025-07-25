@@ -190,32 +190,36 @@ docker-compose.*.yml
 
 ## 環境変数設定
 
+### 開発環境
 ```bash
 # AI/ML
-OPENAI_API_KEY=
+OPENAI_API_KEY=sk-proj-xxx
 SPEECH_API_KEY=
 
 # データベース
 MYSQL_HOST=localhost
 MYSQL_PORT=3306
-MYSQL_DATABASE=konkatsu_app
+MYSQL_DATABASE=testdb
 MYSQL_USER=root
-MYSQL_PASSWORD=
-DATABASE_URL=mysql://user:password@localhost:3306/konkatsu_app
-
-# 外部API
-MANDAMU_API_KEY=
-MANDAMU_API_SECRET=
+MYSQL_PASSWORD=password
+DATABASE_URL=mysql+pymysql://root:password@localhost:3306/testdb
 
 # 認証
-JWT_SECRET=
-AUTH0_DOMAIN=
+JWT_SECRET=dev_jwt_secret_key
+```
 
-# インフラ (Azure)
-AZURE_CLIENT_ID=
-AZURE_CLIENT_SECRET=
-AZURE_TENANT_ID=
-AZURE_SUBSCRIPTION_ID=
+### 本番環境（Azure）
+```bash
+# Container Apps: aca-wild-australiaeast.azurecontainerapps.io
+# Container Registry: acrtech0for9th.azurecr.io
+# MySQL: eastasiafor9th.mysql.database.azure.com
+# Blob Storage: blobeastasiafor9th.blob.core.windows.net
+# リソースグループ: rg-001-gen9
+# サブスクリプション: 9b680e6d-e5a6-4381-aad5-a30afcbc8459
+
+# デプロイ: GitHub Actions（mainブランチpush時）
+# 手動実行: GitHub → Actions → "Deploy to Azure Production"
+# 設定詳細: docs/deployment/github-secrets-setup.md
 ```
 
 ## API仕様（基本構造）

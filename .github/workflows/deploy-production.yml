@@ -7,9 +7,10 @@ on:
   workflow_dispatch:  # 手動実行のみ許可
 
 env:
-  REGISTRY: wildcats9999.azurecr.io
-  RESOURCE_GROUP: miraim-rg
-  CONTAINER_APP_NAME: miraim-app
+  REGISTRY: acrtech0for9th.azurecr.io
+  RESOURCE_GROUP: rg-001-gen9
+  CONTAINER_APP_NAME: aca-wild-australiaeast
+  MYSQL_SERVER: eastasiafor9th.mysql.database.azure.com
 
 jobs:
   security-scan:
