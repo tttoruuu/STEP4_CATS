@@ -45,22 +45,25 @@ AZURE_STORAGE_ACCOUNT=blobeastasiafor9th
 AZURE_STORAGE_KEY=storage-access-key
 ```
 
-## 本部への依頼事項
+## 本部への依頼事項（セキュア版）
 
-### 1. Service Principal作成依頼
+### 限定権限Service Principal作成依頼
 ```
-リソースグループ: rg-001-gen9
-必要な権限:
-- Container Apps: Contributor
-- Container Registry: AcrPush, AcrPull
-- MySQL: Contributor
-- Storage: Storage Blob Data Contributor
+目的: GitHub ActionsからのContainer Appsデプロイのみ
+スコープ: リソースグループ rg-001-gen9 の以下リソースのみ
+必要最小権限:
+- aca-wild-australiaeast: Container Apps へのデプロイ権限のみ
+- acrtech0for9th: イメージpush権限のみ
+
+※ユーザー名・パスワード等の機密情報は不要
+※Service Principal JSONのみ提供
 ```
 
-### 2. 必要な情報の提供依頼
-- Container Registry ログイン情報
-- MySQL データベース作成済みユーザー・パスワード
-- Storage Account アクセスキー
+### 代替案：Azure Portal Web Shellスクリプト
+```bash
+# 本部担当者がPortal Web Shellで実行するスクリプトを提供
+# 認証情報を外部に出すことなくデプロイ可能
+```
 
 ## GitHub Secrets設定手順
 
