@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
-import openai
+from openai import OpenAI
 import os
 from pydantic import BaseModel
 
@@ -101,12 +101,12 @@ async def counselor_chat(
 ):
     """AIカウンセラーとのチャット"""
     try:
-        # OpenAI APIキーの確認
+        # OpenAI クライアントの初期化
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
-        openai.api_key = api_key
+        client = OpenAI(api_key=api_key)
         
         # メッセージの構築
         messages = [
@@ -121,7 +121,7 @@ async def counselor_chat(
         messages.append({"role": "user", "content": request.message})
         
         # OpenAI APIを呼び出し
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages,
             temperature=0.8,
@@ -148,7 +148,7 @@ async def counselor_chat(
             timestamp=datetime.utcnow()
         )
         
-    except openai.error.OpenAIError as e:
+    except Exception as openai_error:
         # OpenAI APIエラーの場合はフォールバック応答
         fallback_message = "申し訳ございません。現在、システムに一時的な問題が発生しております。お悩みをお聞かせいただければ、私なりのアドバイスをさせていただきます。どのようなことでお困りでしょうか？"
         
@@ -166,12 +166,12 @@ async def generate_profile(
 ):
     """自己紹介文の生成"""
     try:
-        # OpenAI APIキーの確認
+        # OpenAI クライアントの初期化
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
-        openai.api_key = api_key
+        client = OpenAI(api_key=api_key)
         
         # 質問と回答を整形
         qa_text = "\n".join([f"{k}: {v}" for k, v in request.answers.items()])
@@ -180,7 +180,7 @@ async def generate_profile(
         prompt = PROFILE_GENERATION_PROMPT + qa_text
         
         # OpenAI APIを呼び出し
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "あなたは結婚相談所の敏腕仲人です。"},
@@ -232,7 +232,7 @@ async def generate_profile(
         
         return ProfileGenerationResponse(profiles=profiles[:3])
         
-    except openai.error.OpenAIError as e:
+    except Exception as openai_error:
         # OpenAI APIエラーの場合はデフォルトプロフィールを返す
         default_profiles = [
             {
