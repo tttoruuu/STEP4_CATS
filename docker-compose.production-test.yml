@@ -1,0 +1,39 @@
+# 本番環境模擬テスト用 Docker Compose
+# コスト¥0で本番デプロイ前の事前検証
+
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.production
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:8000
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - production-test
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    env_file:
+      - .env.production-test
+    environment:
+      - ENV=production
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8000:8000"
+    networks:
+      - production-test
+
+networks:
+  production-test:
+    driver: bridge
