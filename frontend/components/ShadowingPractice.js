@@ -23,6 +23,11 @@ const ShadowingPractice = ({
       <div className="max-w-2xl mx-auto p-6">
         <div className="text-center text-gray-500">
           シャドーイング練習データが見つかりません
+          {scenario && !scenario.shadowingAudio && (
+            <div className="mt-2 text-sm">
+              音声データが不足しています
+            </div>
+          )}
         </div>
         <button
           onClick={onBack}
@@ -34,7 +39,7 @@ const ShadowingPractice = ({
     );
   }
 
-  const correctChoice = scenario.choices.find(choice => choice.isCorrect);
+  const correctChoice = scenario.choices?.find(choice => choice.isCorrect) || null;
 
   const handleListenComplete = () => {
     setPracticeStep('practice');
