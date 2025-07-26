@@ -11,6 +11,8 @@ class Conversation(Base):
     role = Column(String(50), nullable=False)  # 'counselor', 'practice', etc.
     user_message = Column(Text, nullable=False)
     ai_message = Column(Text, nullable=False)
+    conversation_id = Column(String(100), nullable=True, index=True)  # 会話セッションID
+    conversation_title = Column(String(200), nullable=True)  # 会話タイトル
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # リレーション

@@ -8,6 +8,7 @@ __pycache__/
 .env.production
 .env.local
 config/.env.production
+config/.env.development
 
 # セキュリティ関連
 *.pem
