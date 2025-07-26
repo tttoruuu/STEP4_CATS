@@ -1,269 +1,233 @@
 # CLAUDE.md
 
-⚠️ **チームメンバー必読** ⚠️
-Claude Code作業時は必ずこのファイルを確認してください。
-プロジェクトのルール・コマンド・手順がすべて記載されています。
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-このファイルは、このリポジトリでClaude Code (claude.ai/code)が作業する際の基盤ガイダンスを提供します。
+## Project Overview
 
-## CLAUDE.md更新ルール（重要）
+**婚活男性向け「内面スタイリング」トータルサポートアプリ (Miraim)**
+
+A matchmaking conversation practice application designed to help Japanese men improve their communication skills for dating scenarios, particularly those using marriage consultation services (結婚相談所).
+
+**Target Users**: Men enrolled in marriage consultation services who struggle with communication, especially in first meetings.
+
+**Core Features**:
+1. **AI Counselor**: Consultation for dating concerns and profile creation support
+2. **Conversation Practice**: Communication training focused on active listening skills
+3. **Compatibility Diagnosis**: Personality and values assessment for matching support
+4. **Styling Suggestions**: Age/season/type-specific appearance improvement recommendations
+
+## Development Commands
+
+### Quick Start
 ```bash
-# 更新形式: # コメント: コマンド の形式で記載
-# 冗長な説明禁止: Claude Codeが理解しやすい簡潔な記載のみ
-# 必須情報のみ記載: 実行可能なコマンドと最小限の説明
-# 更新時は必ずアナウンス: 「CLAUDE.mdを更新しますが良いですか？」→事後報告でOK
+make setup        # First-time setup - installs all dependencies
+make dev          # Start development servers (frontend:3000, backend:8000)
+make docker-dev   # Start Docker development environment
 ```
 
-## プロジェクト基本概要
-
-**GitHubリポジトリ**: https://github.com/tttoruuu/STEP4_CATS.git
-
-**婚活男性向け「内面スタイリング」トータルサポートアプリ**
-
-**重要**: 詳細な機能仕様・計画は `APP_PLAN.md` を参照すること
-
-**ビジョン**：結婚相談所に通う真剣な婚活男性のコミュニケーション能力を向上させ、理想的なパートナーとの出会いを実現する  
-**対象**：結婚相談所に入会している、会話・コミュニケーションに課題を抱える男性  
-**技術スタック**：Next.js PWA + FastAPI + MySQL + AI API統合（特に聞く力向上とコミュニケーション分析に特化）
-
-## ターゲットペルソナ（基本特徴）
-
-### メインターゲットの特徴
-- **結婚相談所入会者**: 多額の入会金を支払い、真剣に結婚を考えている
-- **コミュニケーション課題**: 「口下手」「話がうまくいかない」と自覚、特に初対面への不安
-- **効率性重視**: 身元保証を重視し、条件で相手を選びがち
-- **精神的サポート必要**: 婚活疲れ、「落ち込む」「何をしていいか分からない」状態
-
-### 主要課題
-1. **会話・コミュニケーション能力の不足**（最重要課題）
-2. **自己理解と相手理解の不足**
-3. **婚活サービスにおける体験の不満**
-
-### 4つの主要機能
-1. **AIカウンセラー**：婚活悩み相談・自己紹介文作成支援
-2. **会話練習機能**：聞く力特化のコミュニケーショントレーニング
-3. **相性診断機能**：性格・価値観診断とマッチング支援
-4. **スタイリング提案**：年齢・季節・タイプ別の外見改善提案
-
-## 開発コマンド
+### Frontend (Next.js PWA)
 ```bash
-# 統合コマンド（Makefile）
-# 初回セットアップ: make setup
-# 開発サーバー起動: make dev
-# ビルド: make build
-# テスト実行: make test
-
-# フロントエンド（Next.js PWA）
-# 開発サーバー: npm run dev
-# ビルド: npm run build
-# リント: npm run lint
-# 型チェック: npm run type-check
-
-# バックエンド（FastAPI）
-# 開発サーバー: uvicorn main:app --reload
-# API テスト: pytest
-# API仕様確認: http://localhost:8000/docs
-
-# Docker開発環境
-# 開発環境起動: docker-compose -f docker-compose.development.yml up -d
-# 環境停止: docker-compose down
-# ログ確認: docker-compose logs -f [service-name]
-
-# AI/ML関連
-# モデル学習: python scripts/train_model.py
-# 音声処理テスト: python scripts/test_voice_analysis.py
+cd frontend
+npm run dev       # Development server at http://localhost:3000
+npm run build     # Production build
+npm run lint      # Run ESLint
+npm run type-check # TypeScript type checking
+npm run format    # Format code with Prettier
 ```
 
-### Git運用ルール（チーム開発）
+### Backend (FastAPI)
 ```bash
-# 作業開始: git checkout -b feature/機能名-担当者名
-# 作業完了: git push origin [ブランチ名] → GitHub PR作成
-# コンフリクト回避: main.py=末尾追加, models/=個別ファイル, pages/=機能別分割
+cd backend
+uvicorn main:app --reload --host 0.0.0.0 --port 8000  # Dev server
+pytest            # Run tests (when implemented)
+flake8 .          # Python linting
+black .           # Format Python code
+mypy .            # Type checking
+alembic upgrade head  # Run database migrations
 ```
 
-### GitHubプルリクエストマージ
+### Docker Commands
 ```bash
-# 基本手順: git add -A && git commit -m "変更内容" && git push origin main
-# PR確認: curl -s https://api.github.com/repos/tttoruuu/STEP4_CATS/pulls
-# マージ: git fetch origin && git stash && git merge origin/[PR-ブランチ名]
-# 完了: git add . && git commit -m "🔀 マージ完了" && git push origin main && git stash pop
-# 競合解決: models/user.py=全リレーション統合, フロントエンド=git checkout --theirs
+# Development
+docker-compose -f docker-compose.development.yml up -d     # Start all services
+docker-compose -f docker-compose.development.yml logs -f   # View logs
+docker-compose -f docker-compose.development.yml down      # Stop services
+
+# Production
+docker-compose -f docker-compose.prod.yml up -d           # Start production
 ```
 
-## アーキテクチャ設計
-
-### システム構成
+### Database Operations
+```bash
+make db-migrate   # Run migrations
+make db-reset     # Reset database (development only)
 ```
-フロントエンド（Next.js PWA）
+
+### Testing Commands
+```bash
+make test         # Run all tests (frontend + backend)
+make lint         # Run all linters
+
+# Frontend specific (placeholder - tests not yet implemented)
+cd frontend && npm test
+
+# Backend specific
+cd backend && pytest                    # Run all tests
+cd backend && pytest --cov             # With coverage
+cd backend && pytest -v                # Verbose mode
+```
+
+## Architecture Overview
+
+### System Architecture
+```
+Next.js PWA (Frontend)
     ↓
 API Gateway / BFF
     ↓
-マイクロサービス群
-├── ユーザー管理サービス
-├── AI対話サービス（LLM API統合：GPT-4o-mini採用）
-├── 音声解析サービス
-├── 診断・分析サービス
-├── スタイリング提案サービス
-└── 外部連携サービス（マンダム API等）
+FastAPI Microservices
+├── User Management Service
+├── AI Dialogue Service (OpenAI Integration)
+├── Voice Analysis Service
+├── Diagnosis/Analysis Service
+├── Styling Recommendation Service
+└── External Integration Service (Mandom API)
     ↓
-データベース層（MySQL + Redis）
+Data Layer (MySQL + Redis)
 ```
 
-### 技術選定理由
-- **Next.js PWA**: モバイル・Web統一、オフライン対応、高速描画
-- **FastAPI**: 高速API開発、自動ドキュメント生成、型安全性
-- **MySQL**: トランザクション安全性、複雑なリレーション対応
-- **Redis**: セッション管理、キャッシュ、リアルタイム機能
-- **Azure**: エンタープライズレベルのセキュリティ、AI統合
+### Key Technologies
+- **Frontend**: Next.js 15.2.4, React 18.2.0, TypeScript, Tailwind CSS, Material-UI
+- **Backend**: FastAPI 0.104.1, SQLAlchemy 2.0.23, Pydantic
+- **AI/ML**: OpenAI API 1.30.0, Speech-to-Text integration
+- **Database**: MySQL (primary), Redis (cache/sessions)
+- **Infrastructure**: Docker, Azure Container Apps, GitHub Actions CI/CD
 
-### ディレクトリ構成
+### Directory Structure
 ```
-/frontend          # Next.js PWA
-/backend           # FastAPI
-/config            # 設定ファイル・シークレット管理
-/scripts           # デプロイ・開発スクリプト
-/docs             # 設計書・仕様書
-docker-compose.*.yml
-```
-
-### セキュリティ要件
-- 個人情報（婚活データ）の適切な暗号化と保護
-- 音声データの匿名化処理
-- GDPR/個人情報保護法への準拠
-- GitHub Secretsによる機密情報管理
-- JWT認証 + OAuth2による認可制御
-
-## Docker開発環境詳細
-
-### サービス構成
-- **frontend**: Next.js PWAアプリケーション (Port: 3000)
-- **api**: FastAPI バックエンド (Port: 8000)
-- **mysql**: MySQL データベース (Port: 3306)
-- **redis**: キャッシュ・セッション管理 (Port: 6379)
-
-### 開発フロー
-1. `docker-compose up -d` で全サービス起動
-2. フロントエンド: http://localhost:3000
-3. API仕様: http://localhost:8000/docs
-4. MySQL管理: phpMyAdmin (Port: 8080)
-
-### データ永続化
-- MySQL データ: `./docker/mysql/data`
-
-## 開発ルール・規約
-
-### 言語設定
-- **このプロジェクトは日本語で開発する**：UIテキスト、コメント、変数名、関数名、ファイル名すべて日本語を基本とする
-- **Claude Codeへの指示**: 必ず日本語で回答し、日本語でのコーディングを行うこと
-
-### AI設定
-```bash
-# AI/MLモデル選定: GPT-4o-mini採用
-# 採用理由: コスト70%削減（vs GPT-3.5-turbo）、品質大幅向上、高速レスポンス
-# 月間1000回利用想定: 約30円（vs GPT-4o: 1000円、GPT-3.5-turbo: 100円）
-# 用途: AIカウンセラー、プロフィール生成、会話分析
+/frontend          # Next.js PWA application
+  /pages           # Page components (auth, profile, conversation, etc.)
+  /components      # Reusable UI components
+  /services        # API client services
+  /hooks           # Custom React hooks
+  /utils           # Utility functions
+/backend           # FastAPI application
+  /routers         # API endpoints
+  /models          # SQLAlchemy models
+  /schemas         # Pydantic schemas
+  /services        # Business logic
+  /core            # Core configurations
+/config            # Configuration and secrets management
+  /secrets         # Azure Key Vault scripts
+/scripts           # Deployment and utility scripts
+/docs              # Documentation and design specs
+/.github/workflows # CI/CD pipelines
 ```
 
-### コーディング規約
-- **フロントエンド**: ESLint + Prettier、TypeScript strict mode
-- **バックエンド**: Black + isort、Pydantic型定義必須、docstring必須
-- **コミット**: Conventional Commits形式
-- **ブランチ**: feature/機能名、hotfix/修正内容
+## API Endpoints
 
-### Git運用ルール
-```bash
-# ブランチ構成: main（本番）← develop（統合）← feature（機能開発）
-# デプロイ専用: main（安定版のみ）
-# チーム開発: develop → feature/機能名-担当者名
-# 緊急修正: hotfix/修正内容 → main
-```
-- **main**: 本番デプロイ専用（安定版のみ）
-- **develop**: チーム開発統合ブランチ  
-- **feature**: 個別機能開発用
-- **プルリクエスト**: develop←feature、main←develop
+### Authentication
+- `POST /auth/login` - User login
+- `POST /auth/register` - User registration
+- `POST /auth/refresh` - Token refresh
+- `POST /auth/logout` - User logout
 
-### テスト方針
-- **単体テスト**: 各機能80%以上のカバレッジ
-- **統合テスト**: API間連携、外部サービス連携
-- **E2Eテスト**: 主要ユーザージャーニー
-- **AI応答品質テスト**: 会話精度、音声解析精度
+### Core Features
+- `GET /api/user/profile` - Get user profile
+- `PUT /api/user/profile` - Update user profile
+- `POST /api/counselor/chat` - AI counselor dialogue
+- `POST /api/conversation/practice` - Conversation practice session
+- `GET /api/conversation/partners` - List conversation partners
+- `POST /api/compatibility/diagnose` - Compatibility diagnosis
+- `GET /api/styling/recommend` - Styling recommendations
 
-## 環境変数設定
+### API Documentation
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
 
-### 開発環境
+## Development Guidelines
+
+### Code Style
+- **Frontend**: ESLint + Prettier, TypeScript strict mode enabled
+- **Backend**: Black + isort for formatting, Pydantic for type validation, docstrings required
+- **Commits**: Use Conventional Commits format (feat:, fix:, docs:, etc.)
+- **Branches**: `feature/feature-name`, `fix/issue-description`, `hotfix/critical-fix`
+
+### Security Considerations
+- All sensitive data must be encrypted
+- Use Azure Key Vault for secrets management
+- JWT authentication with proper expiration
+- CORS properly configured for production domains
+- Never commit `.env` files or secrets
+
+### Environment Variables
+Required environment variables (see `config/.env.example`):
 ```bash
 # AI/ML
-OPENAI_API_KEY=sk-proj-xxx
+OPENAI_API_KEY=
 SPEECH_API_KEY=
 
-# データベース
+# Database
 MYSQL_HOST=localhost
 MYSQL_PORT=3306
-MYSQL_DATABASE=testdb
-MYSQL_USER=root
-MYSQL_PASSWORD=password
-DATABASE_URL=mysql+pymysql://root:password@localhost:3306/testdb
+MYSQL_DATABASE=konkatsu_app
+DATABASE_URL=mysql://user:password@localhost:3306/konkatsu_app
 
-# 認証
-JWT_SECRET=dev_jwt_secret_key
+# Auth
+JWT_SECRET=
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# External APIs
+MANDAMU_API_KEY=
+MANDAMU_API_SECRET=
+
+# Azure (Production)
+AZURE_CLIENT_ID=
+AZURE_CLIENT_SECRET=
+AZURE_TENANT_ID=
 ```
 
-### 本番環境（Azure）
+## Deployment
+
+### Development Deployment
+- Automatic deployment on push to `develop` branch via GitHub Actions
+- Deploys to Azure Container Apps (development environment)
+
+### Production Deployment
+- Automatic deployment on push to `main` branch via GitHub Actions
+- Deploys to Azure Container Apps (production environment)
+- Requires manual approval in GitHub Actions
+
+### Manual Deployment
 ```bash
-# Container Apps: aca-wild-australiaeast.azurecontainerapps.io
-# Container Registry: acrtech0for9th.azurecr.io
-# MySQL: eastasiafor9th.mysql.database.azure.com
-# Blob Storage: blobeastasiafor9th.blob.core.windows.net
-# リソースグループ: rg-001-gen9
-# サブスクリプション: 9b680e6d-e5a6-4381-aad5-a30afcbc8459
-
-# デプロイ: GitHub Actions（mainブランチpush時）
-# 手動実行: GitHub → Actions → "Deploy to Azure Production"
-# 設定詳細: docs/deployment/github-secrets-setup.md
+./scripts/deploy-all.sh      # Deploy all services
+./scripts/rollback.sh        # Rollback to previous version
 ```
 
-## API仕様（基本構造）
+## Common Development Tasks
 
-### 認証エンドポイント
-- `POST /auth/login` - ユーザーログイン
-- `POST /auth/register` - ユーザー登録
-- `POST /auth/refresh` - トークンリフレッシュ
+### Adding a New API Endpoint
+1. Create router in `backend/routers/`
+2. Define Pydantic schemas in `backend/schemas/`
+3. Implement business logic in `backend/services/`
+4. Add router to `backend/main.py`
+5. Update frontend API service in `frontend/services/`
 
-### 主要エンドポイント
-- `GET /api/user/profile` - ユーザープロフィール取得
-- `POST /api/counselor/chat` - AIカウンセラー対話
-- `POST /api/conversation/practice` - 会話練習
-- `POST /api/compatibility/diagnose` - 相性診断
-- `GET /api/styling/recommend` - スタイリング提案
+### Working with the Database
+1. Create/modify SQLAlchemy models in `backend/models/`
+2. Generate migration: `cd backend && alembic revision --autogenerate -m "description"`
+3. Review and apply migration: `alembic upgrade head`
 
-### データモデル（基本構造）
-```typescript
-User {
-  id: string
-  email: string
-  profile: UserProfile
-  createdAt: Date
-}
+### Implementing AI Features
+1. AI services are centralized in `backend/services/ai/`
+2. Use environment variables for API keys
+3. Implement proper error handling and rate limiting
+4. Add response caching where appropriate
 
-UserProfile {
-  name: string
-  age: number
-  personalityType: string
-  communicationLevel: number
-}
-```
+## Project Status Notes
 
-## デプロイ手順
-```bash
-# 開発環境
-# 初回セットアップ: make setup
-# 開発サーバー起動: make dev  
-# テスト実行: make test
-# コード品質チェック: make lint
-
-# 本番環境
-# GitHub Actions（mainブランチ）で自動デプロイ
-# Azure Container Apps へのデプロイ
-# データベースマイグレーション実行
-# ヘルスチェック確認
-```
+- **Testing**: Test infrastructure is set up but no tests are implemented yet
+- **Frontend Tests**: Jest needs to be configured
+- **Backend Tests**: pytest is installed but no test files exist
+- **Current Branch**: `development-captain-fukabori` (active development)
