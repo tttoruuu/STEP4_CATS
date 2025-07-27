@@ -19,9 +19,7 @@
       "Bash(brew install:*)",
       "Bash(pandoc:*)",
       "Bash(ls:*)",
-      "Bash(for file in *.md)",
-      "Bash(do pandoc \"$file\" -o \"$file%.md.docx\")",
-      "Bash(done)",
+      "Bash(for file in *.md; do pandoc \"$file\" -o \"${file%.md}.docx\"; done)",
       "Bash(true)",
       "Bash(echo:*)",
       "Bash(make:*)",
@@ -52,7 +50,16 @@
       "Bash(uvicorn:*)",
       "Bash(gh pr list:*)",
       "Bash(gh auth:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(docker:*)",
+      "Bash(node:*)",
+      "Bash(kill:*)",
+      "Bash(cat:*)",
+      "Bash(mysql:*)",
+      "Bash(./scripts/production-test.sh:*)",
+      "Bash(dos2unix:*)",
+      "Bash(sed:*)",
+      "Bash(bash:*)"
     ],
     "deny": []
   }
