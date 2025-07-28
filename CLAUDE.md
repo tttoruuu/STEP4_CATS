@@ -1,10 +1,26 @@
 # CLAUDE.md
 
+⚠️ **チームメンバー必読** ⚠️
+Claude Code作業時は必ずこのファイルを確認してください。
+プロジェクトのルール・コマンド・手順がすべて記載されています。
+
 このファイルは、このリポジトリでClaude Code (claude.ai/code)が作業する際の基盤ガイダンスを提供します。
+
+## CLAUDE.md更新ルール（重要）
+```bash
+# 更新形式: # コメント: コマンド の形式で記載
+# 冗長な説明禁止: Claude Codeが理解しやすい簡潔な記載のみ
+# 必須情報のみ記載: 実行可能なコマンドと最小限の説明
+# 更新時は必ずアナウンス: 「CLAUDE.mdを更新しますが良いですか？」→事後報告でOK
+```
 
 ## プロジェクト基本概要
 
+**GitHubリポジトリ**: https://github.com/tttoruuu/STEP4_CATS.git
+
 **婚活男性向け「内面スタイリング」トータルサポートアプリ**
+
+**重要**: 詳細な機能仕様・計画は `APP_PLAN.md` を参照すること
 
 **ビジョン**：結婚相談所に通う真剣な婚活男性のコミュニケーション能力を向上させ、理想的なパートナーとの出会いを実現する  
 **対象**：結婚相談所に入会している、会話・コミュニケーションに課題を抱える男性  
@@ -29,55 +45,50 @@
 3. **相性診断機能**：性格・価値観診断とマッチング支援
 4. **スタイリング提案**：年齢・季節・タイプ別の外見改善提案
 
-
 ## 開発コマンド
+```bash
+# 統合コマンド（Makefile）
+# 初回セットアップ: make setup
+# 開発サーバー起動: make dev
+# ビルド: make build
+# テスト実行: make test
 
-### 統合コマンド（Makefile）
-- 初回セットアップ: `make setup`
-- 開発サーバー起動: `make dev`
-- ビルド: `make build`
-- テスト実行: `make test`
-- リント: `make lint`
-- Docker開発環境: `make docker-dev`
-- Docker本番環境: `make docker-prod`
-- 全コマンド表示: `make help`
+# フロントエンド（Next.js PWA）
+# 開発サーバー: npm run dev
+# ビルド: npm run build
+# リント: npm run lint
+# 型チェック: npm run type-check
 
-### フロントエンド（Next.js PWA）
-- 開発サーバー: `npm run dev`
-- ビルド: `npm run build`
-- テスト: `npm test`
-- リント: `npm run lint`
-- 型チェック: `npm run type-check`
-- PWAビルド: `npm run build && npm run export`
+# バックエンド（FastAPI）
+# 開発サーバー: uvicorn main:app --reload
+# API テスト: pytest
+# API仕様確認: http://localhost:8000/docs
 
-### バックエンド（FastAPI）
-- 開発サーバー: `uvicorn main:app --reload`
-- API テスト: `pytest`
-- データベースマイグレーション: `alembic upgrade head`
-- API仕様確認: `http://localhost:8000/docs` (Swagger UI)
+# Docker開発環境
+# 開発環境起動: docker-compose -f docker-compose.development.yml up -d
+# 環境停止: docker-compose down
+# ログ確認: docker-compose logs -f [service-name]
 
-### Docker開発環境
-- 開発環境起動: `docker-compose -f docker-compose.development.yml up -d`
-- 本番環境起動: `docker-compose -f docker-compose.prod.yml up -d`
-- フロントエンド単体: `docker-compose -f docker-compose.development.yml up frontend`
-- バックエンド単体: `docker-compose -f docker-compose.development.yml up backend`
-- データベース単体: `docker-compose -f docker-compose.development.yml up db`
-- ログ確認: `docker-compose logs -f [service-name]`
-- 環境停止: `docker-compose down`
+# AI/ML関連
+# モデル学習: python scripts/train_model.py
+# 音声処理テスト: python scripts/test_voice_analysis.py
+```
 
-### セキュリティ関連
-- 本番環境変数: GitHub Secretsで管理
-- 環境変数設定: GitHub Actionsで自動生成
+### Git運用ルール（チーム開発）
+```bash
+# 作業開始: git checkout -b feature/機能名-担当者名
+# 作業完了: git push origin [ブランチ名] → GitHub PR作成
+# コンフリクト回避: main.py=末尾追加, models/=個別ファイル, pages/=機能別分割
+```
 
-### デプロイ関連
-- 開発環境デプロイ: GitHub Actions (developブランチ)
-- 本番環境デプロイ: GitHub Actions (mainブランチ)
-- 手動デプロイ: `./scripts/deploy-all.sh`
-- ロールバック: `./scripts/rollback.sh`
-
-### AI/ML関連
-- モデル学習: `python scripts/train_model.py`
-- 音声処理テスト: `python scripts/test_voice_analysis.py`
+### GitHubプルリクエストマージ
+```bash
+# 基本手順: git add -A && git commit -m "変更内容" && git push origin main
+# PR確認: curl -s https://api.github.com/repos/tttoruuu/STEP4_CATS/pulls
+# マージ: git fetch origin && git stash && git merge origin/[PR-ブランチ名]
+# 完了: git add . && git commit -m "🔀 マージ完了" && git push origin main && git stash pop
+# 競合解決: models/user.py=全リレーション統合, フロントエンド=git checkout --theirs
+```
 
 ## アーキテクチャ設計
 
@@ -89,7 +100,7 @@ API Gateway / BFF
     ↓
 マイクロサービス群
 ├── ユーザー管理サービス
-├── AI対話サービス（LLM API統合）
+├── AI対話サービス（LLM API統合：GPT-4o-mini採用）
 ├── 音声解析サービス
 ├── 診断・分析サービス
 ├── スタイリング提案サービス
@@ -145,6 +156,14 @@ docker-compose.*.yml
 - **このプロジェクトは日本語で開発する**：UIテキスト、コメント、変数名、関数名、ファイル名すべて日本語を基本とする
 - **Claude Codeへの指示**: 必ず日本語で回答し、日本語でのコーディングを行うこと
 
+### AI設定
+```bash
+# AI/MLモデル選定: GPT-4o-mini採用
+# 採用理由: コスト70%削減（vs GPT-3.5-turbo）、品質大幅向上、高速レスポンス
+# 月間1000回利用想定: 約30円（vs GPT-4o: 1000円、GPT-3.5-turbo: 100円）
+# 用途: AIカウンセラー、プロフィール生成、会話分析
+```
+
 ### コーディング規約
 - **フロントエンド**: ESLint + Prettier、TypeScript strict mode
 - **バックエンド**: Black + isort、Pydantic型定義必須、docstring必須
@@ -152,9 +171,16 @@ docker-compose.*.yml
 - **ブランチ**: feature/機能名、hotfix/修正内容
 
 ### Git運用ルール
-- **メインブランチ**: main（本番）、develop（開発）
-- **プルリクエスト**: レビュー必須、CI/CD通過必須
-- **リリース**: semantic versioning（major.minor.patch）
+```bash
+# ブランチ構成: main（本番）← develop（統合）← feature（機能開発）
+# デプロイ専用: main（安定版のみ）
+# チーム開発: develop → feature/機能名-担当者名
+# 緊急修正: hotfix/修正内容 → main
+```
+- **main**: 本番デプロイ専用（安定版のみ）
+- **develop**: チーム開発統合ブランチ  
+- **feature**: 個別機能開発用
+- **プルリクエスト**: develop←feature、main←develop
 
 ### テスト方針
 - **単体テスト**: 各機能80%以上のカバレッジ
@@ -164,32 +190,36 @@ docker-compose.*.yml
 
 ## 環境変数設定
 
+### 開発環境
 ```bash
 # AI/ML
-OPENAI_API_KEY=
+OPENAI_API_KEY=sk-proj-xxx
 SPEECH_API_KEY=
 
 # データベース
 MYSQL_HOST=localhost
 MYSQL_PORT=3306
-MYSQL_DATABASE=konkatsu_app
+MYSQL_DATABASE=testdb
 MYSQL_USER=root
-MYSQL_PASSWORD=
-DATABASE_URL=mysql://user:password@localhost:3306/konkatsu_app
-
-# 外部API
-MANDAMU_API_KEY=
-MANDAMU_API_SECRET=
+MYSQL_PASSWORD=password
+DATABASE_URL=mysql+pymysql://root:password@localhost:3306/testdb
 
 # 認証
-JWT_SECRET=
-AUTH0_DOMAIN=
+JWT_SECRET=dev_jwt_secret_key
+```
 
-# インフラ (Azure)
-AZURE_CLIENT_ID=
-AZURE_CLIENT_SECRET=
-AZURE_TENANT_ID=
-AZURE_SUBSCRIPTION_ID=
+### 本番環境（Azure）
+```bash
+# Container Apps: aca-wild-australiaeast.azurecontainerapps.io
+# Container Registry: acrtech0for9th.azurecr.io
+# MySQL: eastasiafor9th.mysql.database.azure.com
+# Blob Storage: blobeastasiafor9th.blob.core.windows.net
+# リソースグループ: rg-001-gen9
+# サブスクリプション: 9b680e6d-e5a6-4381-aad5-a30afcbc8459
+
+# デプロイ: GitHub Actions（mainブランチpush時）
+# 手動実行: GitHub → Actions → "Deploy to Azure Production"
+# 設定詳細: docs/deployment/github-secrets-setup.md
 ```
 
 ## API仕様（基本構造）
@@ -223,16 +253,17 @@ UserProfile {
 }
 ```
 
-## デプロイ手順（基本フロー）
+## デプロイ手順
+```bash
+# 開発環境
+# 初回セットアップ: make setup
+# 開発サーバー起動: make dev  
+# テスト実行: make test
+# コード品質チェック: make lint
 
-### 開発環境
-1. `make setup` - 初回セットアップ
-2. `make dev` - 開発サーバー起動
-3. `make test` - テスト実行
-4. `make lint` - コード品質チェック
-
-### 本番環境
-1. GitHub Actions（mainブランチ）で自動デプロイ
-2. Azure Container Apps へのデプロイ
-3. データベースマイグレーション実行
-4. ヘルスチェック確認
+# 本番環境
+# GitHub Actions（mainブランチ）で自動デプロイ
+# Azure Container Apps へのデプロイ
+# データベースマイグレーション実行
+# ヘルスチェック確認
+```

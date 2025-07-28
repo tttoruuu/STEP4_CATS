@@ -49,7 +49,10 @@
       "Bash(taskkill:*)",
       "Bash(wmic:*)",
       "Bash(git stash:*)",
-      "Bash(uvicorn:*)"
+      "Bash(uvicorn:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh auth:*)",
+      "Bash(git rm:*)"
     ],
     "deny": []
   }

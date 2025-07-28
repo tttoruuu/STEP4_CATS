@@ -71,8 +71,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         logger.error(f"JWTデコードエラー: {str(e)}")
         raise credentials_exception
     
-    # ユーザーの検索
-    user = db.query(User).filter(User.username == username).first()
+    # ユーザーの検索（emailまたはusernameで検索）
+    user = db.query(User).filter(
+        (User.email == username) | (User.username == username)
+    ).first()
     if user is None:
         logger.error(f"ユーザー {username} がデータベースに見つかりません")
         raise user_not_found_exception

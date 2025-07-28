@@ -129,11 +129,14 @@ async def register(user_data: schemas.UserCreate, db: Session = Depends(get_db))
     # パスワードをハッシュ化してユーザーを作成
     hashed_password = get_password_hash(user_data.password)
     user = User(
+        username=user_data.username,
         email=user_data.email,
-        hashed_password=hashed_password,
-        name=user_data.name,
-        age=user_data.age,
-        gender=user_data.gender
+        password_hash=hashed_password,
+        full_name=user_data.full_name,
+        birth_date=user_data.birth_date,
+        hometown=user_data.hometown,
+        hobbies=user_data.hobbies,
+        matchmaking_agency=user_data.matchmaking_agency
     )
     
     db.add(user)
@@ -145,12 +148,15 @@ async def register(user_data: schemas.UserCreate, db: Session = Depends(get_db))
 @app.post("/login")
 async def login(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
     """ユーザーログインエンドポイント"""
-    user = db.query(User).filter(User.email == user_data.email).first()
+    # ユーザー名またはメールアドレスでログイン可能
+    user = db.query(User).filter(
+        (User.username == user_data.username) | (User.email == user_data.username)
+    ).first()
     
-    if not user or not verify_password(user_data.password, user.hashed_password):
+    if not user or not verify_password(user_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="メールアドレスまたはパスワードが間違っています",
+            detail="ユーザー名・メールアドレスまたはパスワードが間違っています",
         )
     
     # トークンを生成
@@ -159,7 +165,7 @@ async def login(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "user": {"email": user.email, "name": user.name}
+        "user": {"email": user.email, "name": user.full_name}
     }
 
 @app.post("/conversation-feedback")

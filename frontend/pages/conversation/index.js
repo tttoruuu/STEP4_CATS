@@ -242,7 +242,19 @@ export default function ConversationIndex() {
           </button>
         )}
         
-        <div className="mt-6">
+        <div className="mt-6 space-y-3 text-center">
+          <button
+            onClick={() => router.push('/conversation/basic-quiz')}
+            className="block w-full bg-gradient-to-r from-[#FF8551] to-[#FFA46D] text-white rounded-full py-3 px-6 hover:opacity-90 transition-opacity shadow-sm"
+          >
+            会話の基本練習
+          </button>
+          <button
+            onClick={() => router.push('/conversation/deep-questions')}
+            className="block w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full py-3 px-6 hover:opacity-90 transition-opacity shadow-sm"
+          >
+            深堀り質問練習
+          </button>
           <button
             onClick={() => router.push('/conversation/tips-selection')}
             className="text-[#FF8551] hover:opacity-80 transition-opacity"

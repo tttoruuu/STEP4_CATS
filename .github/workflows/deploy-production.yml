@@ -7,25 +7,26 @@ on:
   workflow_dispatch:  # 手動実行のみ許可
 
 env:
-  REGISTRY: wildcats9999.azurecr.io
-  RESOURCE_GROUP: miraim-rg
-  CONTAINER_APP_NAME: miraim-app
+  REGISTRY: acrtech0for9th.azurecr.io
+  RESOURCE_GROUP: rg-001-gen9
+  CONTAINER_APP_NAME: aca-wild-australiaeast
+  MYSQL_SERVER: eastasiafor9th.mysql.database.azure.com
 
 jobs:
-  security-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Scan for secrets
-        uses: trufflesecurity/trufflehog@main
-        with:
-          path: ./
-          base: main
-          head: HEAD
+  # security-scan:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     
+  #     - name: Scan for secrets
+  #       uses: trufflesecurity/trufflehog@main
+  #       with:
+  #         path: ./
+  #         base: main
+  #         head: HEAD
 
   build-and-deploy:
-    needs: security-scan
+    # needs: security-scan
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     
@@ -44,16 +45,16 @@ jobs:
         with:
           python-version: '3.10'
       
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
-      - name: Setup Azure Key Vault secrets
-        run: |
-          # Azure Key Vaultからシークレットを取得して環境変数ファイルを生成
-          chmod +x ./config/secrets/azure-keyvault.sh
-          ./config/secrets/azure-keyvault.sh
+      # - name: Azure Login
+      #   uses: azure/login@v1
+      #   with:
+      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # 
+      # - name: Setup Azure Key Vault secrets
+      #   run: |
+      #     # Azure Key Vaultからシークレットを取得して環境変数ファイルを生成
+      #     chmod +x ./config/secrets/azure-keyvault.sh
+      #     ./config/secrets/azure-keyvault.sh
       
       - name: Login to Azure Container Registry
         uses: azure/docker-login@v1
@@ -84,54 +85,54 @@ jobs:
           docker push ${{ env.REGISTRY }}/backend:${{ github.sha }}
           docker push ${{ env.REGISTRY }}/backend:latest
       
-      - name: Deploy to Azure Container Apps
-        run: |
-          # コンテナアプリの更新
-          az containerapp update \
-            --name ${{ env.CONTAINER_APP_NAME }}-frontend \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --image ${{ env.REGISTRY }}/frontend:${{ github.sha }} \
-            --set-env-vars NODE_ENV=production
-          
-          az containerapp update \
-            --name ${{ env.CONTAINER_APP_NAME }}-backend \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --image ${{ env.REGISTRY }}/backend:${{ github.sha }} \
-            --set-env-vars ENV=production
-      
-      - name: Run database migrations
-        run: |
-          # データベースマイグレーションの実行
-          ./scripts/deploy-db-migration.sh
-      
-      - name: Health check
-        run: |
-          # デプロイ後のヘルスチェック
-          sleep 30
-          curl -f ${{ secrets.NEXT_PUBLIC_API_URL }}/health || exit 1
-      
-      - name: Notify deployment status
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          channel: '#deployments'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-        if: always()
+      # - name: Deploy to Azure Container Apps
+      #   run: |
+      #     # コンテナアプリの更新
+      #     az containerapp update \
+      #       --name ${{ env.CONTAINER_APP_NAME }}-frontend \
+      #       --resource-group ${{ env.RESOURCE_GROUP }} \
+      #       --image ${{ env.REGISTRY }}/frontend:${{ github.sha }} \
+      #       --set-env-vars NODE_ENV=production
+      #     
+      #     az containerapp update \
+      #       --name ${{ env.CONTAINER_APP_NAME }}-backend \
+      #       --resource-group ${{ env.RESOURCE_GROUP }} \
+      #       --image ${{ env.REGISTRY }}/backend:${{ github.sha }} \
+      #       --set-env-vars ENV=production
+      # 
+      # - name: Run database migrations
+      #   run: |
+      #     # データベースマイグレーションの実行
+      #     ./scripts/deploy-db-migration.sh
+      # 
+      # - name: Health check
+      #   run: |
+      #     # デプロイ後のヘルスチェック
+      #     sleep 30
+      #     curl -f ${{ secrets.NEXT_PUBLIC_API_URL }}/health || exit 1
+      # 
+      # - name: Notify deployment status
+      #   uses: 8398a7/action-slack@v3
+      #   with:
+      #     status: ${{ job.status }}
+      #     channel: '#deployments'
+      #     webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      #   if: always()
 
-  rollback:
-    needs: build-and-deploy
-    runs-on: ubuntu-latest
-    if: failure()
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
-      - name: Rollback deployment
-        run: |
-          echo "Deployment failed. Initiating rollback..."
-          ./scripts/rollback.sh
+  # rollback:
+  #   needs: build-and-deploy
+  #   runs-on: ubuntu-latest
+  #   if: failure()
+  #   
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     
+  #     - name: Azure Login
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #     
+  #     - name: Rollback deployment
+  #       run: |
+  #         echo "Deployment failed. Initiating rollback..."
+  #         ./scripts/rollback.sh

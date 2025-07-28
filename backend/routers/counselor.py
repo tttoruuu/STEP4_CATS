@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
-import openai
+from openai import OpenAI
 import os
 from pydantic import BaseModel
 
@@ -239,12 +239,12 @@ async def counselor_chat(
 ):
     """AIカウンセラーとのチャット"""
     try:
-        # OpenAI APIキーの確認
+        # OpenAI クライアントの初期化
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
-        openai.api_key = api_key
+        client = OpenAI(api_key=api_key)
         
         # メッセージの構築
         messages = [
@@ -259,9 +259,8 @@ async def counselor_chat(
         messages.append({"role": "user", "content": request.message})
         
         # OpenAI APIを呼び出し
-        client = openai.OpenAI(api_key=api_key)
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=messages,
             temperature=0.8,
             max_tokens=300,  # 文字数制限のため調整
@@ -303,12 +302,12 @@ async def generate_profile(
 ):
     """自己紹介文の生成"""
     try:
-        # OpenAI APIキーの確認
+        # OpenAI クライアントの初期化
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
-        openai.api_key = api_key
+        client = OpenAI(api_key=api_key)
         
         # 質問と回答を整形（より詳細な情報を含める）
         qa_text = ""
@@ -328,10 +327,9 @@ async def generate_profile(
         # プロンプトを構築
         prompt = PROFILE_GENERATION_PROMPT + qa_text
         
-        # OpenAI APIを呼び出し（より高品質なモデルを使用）
-        client = openai.OpenAI(api_key=api_key)
+        # OpenAI APIを呼び出し
         response = client.chat.completions.create(
-            model="gpt-4o",  # より高品質なモデルを使用
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system", 
@@ -536,9 +534,9 @@ async def generate_conversation_title(messages: List[dict]) -> str:
 
 タイトル:"""
 
-        client = openai.OpenAI(api_key=api_key)
+        client = OpenAI(api_key=api_key)
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "あなたは会話内容から適切なタイトルを生成するAIです。"},
                 {"role": "user", "content": title_prompt}
