@@ -59,7 +59,10 @@
       "Bash(./scripts/production-test.sh:*)",
       "Bash(dos2unix:*)",
       "Bash(sed:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(open:*)",
+      "Bash(brew services:*)",
+      "Bash(source .env)"
     ],
     "deny": []
   }
