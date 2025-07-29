@@ -1,5 +1,4 @@
 # 開発環境用 Docker Compose
-version: '3.8'
 
 services:
   frontend:
@@ -31,7 +30,11 @@ services:
       - DATABASE_URL=mysql+pymysql://root:password@db:3306/testdb
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ENV=development
+      - DEBUG=true
       - FRONTEND_ORIGIN=http://localhost:3000
+      - JWT_SECRET=${JWT_SECRET}
+      - API_V1_STR=/api/v1
+      - PROJECT_NAME=STEP4_CATS
     depends_on:
       db:
         condition: service_healthy

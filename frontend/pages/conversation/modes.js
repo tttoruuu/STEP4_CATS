@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Layout from '../../components/Layout';
-import { ArrowLeft, MessageCircle, Heart, Copy, Lightbulb, Search, Users } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Heart, Copy, TrendingUp, Users } from 'lucide-react';
 
 export default function ConversationModes() {
   const router = useRouter();
@@ -33,20 +33,13 @@ export default function ConversationModes() {
       path: '/conversation/repeat-new'
     },
     {
-      id: 'elicit',
-      title: '会話を引き出す',
-      description: '相手が話しやすいように話題を広げる質問の練習',
-      icon: Lightbulb,
-      color: 'from-yellow-500 to-yellow-600',
-      path: '/conversation/elicit'
-    },
-    {
-      id: 'deepen',
-      title: '深掘りする',
-      description: '引き出した会話の中から相手が興味を持つポイントをさらに質問して掘り下げる練習',
-      icon: Search,
-      color: 'from-purple-500 to-purple-600',
-      path: '/conversation/deepen'
+      id: 'integrated-conversation',
+      title: '聞く力練習（統合型）',
+      description: '会話を引き出す・深掘りするスキルを初級・中級・上級のレベル別で体系的に習得',
+      icon: TrendingUp,
+      color: 'from-green-500 to-blue-500',
+      path: '/conversation/integrated-practice',
+      badge: 'おすすめ'
     },
     {
       id: 'free',
@@ -76,7 +69,7 @@ export default function ConversationModes() {
         </h1>
         
         <p className="text-center text-gray-600 mb-8 max-w-md">
-          聞く力を向上させるための6つの練習モードから選択してください
+          聞く力を向上させるための5つの練習モードから選択してください
         </p>
         
         <div className="w-full max-w-md space-y-4">
@@ -84,7 +77,12 @@ export default function ConversationModes() {
             const IconComponent = mode.icon;
             return (
               <Link key={mode.id} href={mode.path}>
-                <div className={`bg-gradient-to-r ${mode.color} p-6 rounded-xl text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 cursor-pointer`}>
+                <div className={`bg-gradient-to-r ${mode.color} p-6 rounded-xl text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 cursor-pointer relative`}>
+                  {mode.badge && (
+                    <div className="absolute top-2 right-2 bg-white text-green-600 text-xs px-2 py-1 rounded font-medium">
+                      {mode.badge}
+                    </div>
+                  )}
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">
                       <IconComponent size={32} className="text-white" />

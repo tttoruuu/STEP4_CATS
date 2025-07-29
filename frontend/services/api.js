@@ -1050,6 +1050,40 @@ export const conversationAPI = {
       throw error.response?.data || { detail: 'フィードバック生成中にエラーが発生しました' };
     }
   },
+  
+  // Text-to-Speech機能
+  textToSpeech: async (text, options = {}) => {
+    try {
+      const { voice = 'alloy', model = 'tts-1', speed = 1.0 } = options;
+      
+      console.log('TTS リクエスト:', { text: text.substring(0, 50) + '...', voice, speed });
+      
+      const client = getAuthenticatedClient();
+      const response = await client.post('/api/text-to-speech', {
+        text,
+        voice,
+        model,
+        speed
+      }, {
+        responseType: 'blob'
+      });
+      
+      // Blobから音声URLを作成
+      const audioUrl = URL.createObjectURL(response.data);
+      console.log('TTS 音声URL作成完了:', audioUrl);
+      
+      return audioUrl;
+    } catch (error) {
+      console.error('Text-to-Speech エラー:', error);
+      if (error.response?.status === 400) {
+        throw new Error('テキストが長すぎるか、無効なパラメータです。');
+      } else if (error.response?.status === 429) {
+        throw new Error('音声生成の制限に達しました。しばらく待ってから再試行してください。');
+      } else {
+        throw new Error('音声生成に失敗しました。');
+      }
+    }
+  },
 };
 // プロフィール関連のAPI
 export const profileAPI = {
