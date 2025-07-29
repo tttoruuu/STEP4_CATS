@@ -1,0 +1,47 @@
+{
+  "mappings": {
+    "default": {
+      "greeting": "greeting_01.mp3",
+      "acknowledgment": "acknowledgment_01.mp3",
+      "empathy": "empathy_01.mp3",
+      "question": "question_01.mp3"
+    },
+    "texts": {
+      "そうなんですね。もう少し詳しく教えていただけますか？": "sou_nan_desu_ne.mp3",
+      "なるほど、それは大変でしたね。": "naruhodo_taihen.mp3",
+      "素晴らしいですね！どんなところが特に好きですか？": "subarashii_doko_suki.mp3",
+      "それは興味深いですね。もっと聞かせてください。": "kyoumi_bukai.mp3",
+      "お気持ちよくわかります。": "okimochi_wakarimasu.mp3",
+      "それから、どうなりましたか？": "sorekara_dou.mp3",
+      "どんな気持ちでしたか？": "donna_kimochi.mp3",
+      "それは楽しそうですね！": "tanoshisou.mp3"
+    },
+    "categories": {
+      "greeting": [
+        "はじめまして",
+        "こんにちは",
+        "よろしくお願いします"
+      ],
+      "acknowledgment": [
+        "そうなんですね",
+        "なるほど",
+        "わかりました"
+      ],
+      "empathy": [
+        "大変でしたね",
+        "お気持ちわかります",
+        "それは辛かったですね"
+      ],
+      "question": [
+        "どうでしたか",
+        "いかがですか",
+        "どんな感じですか"
+      ]
+    }
+  },
+  "fallback": {
+    "enabled": true,
+    "defaultFile": "default_response.mp3",
+    "silenceFile": "silence_1s.mp3"
+  }
+}

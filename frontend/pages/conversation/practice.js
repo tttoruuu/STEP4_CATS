@@ -4,7 +4,7 @@ import axios from 'axios';
 import Layout from '../../components/Layout';
 import apiService from '../../services/api';
 import VoiceRecorder from '../../components/VoiceRecorder';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Lightbulb, Search, TrendingUp } from 'lucide-react';
 
 export default function ConversationPractice() {
   const router = useRouter();
@@ -328,37 +328,40 @@ export default function ConversationPractice() {
     );
   }
 
-  return (
-    <Layout title={`${partner.name}との会話`} hideHeader={true}>
-      <div 
-        className="flex flex-col items-center min-h-screen bg-[#F5F5F5] text-gray-800 px-4 sm:px-6 py-4"
-        style={{
-          backgroundImage: `url('/images/back.png')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
-          backgroundBlendMode: 'overlay'
-        }}
-      >
-        {/* ヘッダー */}
-        <div className="w-full max-w-md mt-8 relative">
-          <button
-            onClick={() => router.push('/conversation')}
-            className="text-[#FF8551] flex items-center gap-1 hover:opacity-80 transition-opacity absolute left-0"
-          >
-            <ArrowLeft size={18} />
-            <span>もどる</span>
-          </button>
-          
-          
-          <div className="text-center mt-10">
-            <h1 className="text-xl font-semibold text-gray-800">{partner.name}</h1>
-            <p className="text-sm text-gray-500">
-              {partner.age}歳 • {partner.gender === 'female' ? '女性' : partner.gender === 'male' ? '男性' : 'その他'} • {partner.occupation}
-            </p>
+  // 新しい統合型練習への誘導画面を返す
+  if (partnerId) {
+    // 既存の会話練習機能
+    return (
+      <Layout title={`${partner?.name || ''}との会話`} hideHeader={true}>
+        <div 
+          className="flex flex-col items-center min-h-screen bg-[#F5F5F5] text-gray-800 px-4 sm:px-6 py-4"
+          style={{
+            backgroundImage: `url('/images/back.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed',
+            backgroundBlendMode: 'overlay'
+          }}
+        >
+          {/* ヘッダー */}
+          <div className="w-full max-w-md mt-8 relative">
+            <button
+              onClick={() => router.push('/conversation')}
+              className="text-[#FF8551] flex items-center gap-1 hover:opacity-80 transition-opacity absolute left-0"
+            >
+              <ArrowLeft size={18} />
+              <span>もどる</span>
+            </button>
+            
+            
+            <div className="text-center mt-10">
+              <h1 className="text-xl font-semibold text-gray-800">{partner.name}</h1>
+              <p className="text-sm text-gray-500">
+                {partner.age}歳 • {partner.gender === 'female' ? '女性' : partner.gender === 'male' ? '男性' : 'その他'} • {partner.occupation}
+              </p>
+            </div>
           </div>
-        </div>
 
         {/* メッセージエリア */}
         <div className="w-full max-w-md flex-grow mt-4 overflow-y-auto">
@@ -432,6 +435,103 @@ export default function ConversationPractice() {
             >
               送信
             </button>
+          </div>
+        </div>
+      </div>
+    </Layout>
+    );
+  }
+
+  // partnerIdがない場合は、練習モード選択画面を表示
+  return (
+    <Layout title="会話練習">
+      <div className="flex flex-col items-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 text-gray-800 px-4 sm:px-6 py-4">
+        <div className="w-full max-w-4xl mt-8">
+          <button
+            onClick={() => router.push('/')}
+            className="text-blue-600 flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
+          >
+            <ArrowLeft size={18} />
+            <span>ホームに戻る</span>
+          </button>
+          
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">会話練習</h1>
+            <p className="text-gray-600">あなたのスキルレベルに合わせて練習方法を選びましょう</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* 統合型練習（新機能） */}
+            <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-green-500 relative">
+              <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                おすすめ
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg">
+                  <TrendingUp className="text-white" size={24} />
+                </div>
+                <h2 className="text-xl font-bold">統合型会話練習</h2>
+              </div>
+              <p className="text-gray-600 mb-4">
+                「会話を引き出す」「深堀りする」スキルを段階的に習得できる統合プログラム。初級・中級・上級のレベル別練習で着実にスキルアップ。
+              </p>
+              <ul className="text-sm text-gray-600 space-y-1 mb-4">
+                <li>✓ レベル別の段階的学習</li>
+                <li>✓ 音声再生によるシャドーイング</li>
+                <li>✓ 進捗管理と成長の可視化</li>
+              </ul>
+              <button
+                onClick={() => router.push('/conversation/integrated-practice')}
+                className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg py-3 hover:opacity-90 transition-opacity font-medium"
+              >
+                統合型練習を始める
+              </button>
+            </div>
+
+            {/* 個別練習（既存機能） */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-gradient-to-r from-yellow-500 to-purple-500 rounded-lg">
+                  <MessageCircle className="text-white" size={24} />
+                </div>
+                <h2 className="text-xl font-bold">個別スキル練習</h2>
+              </div>
+              <p className="text-gray-600 mb-4">
+                特定のスキルに焦点を当てて練習したい方向け。「引き出す」「深掘りする」を個別に練習できます。
+              </p>
+              
+              <div className="space-y-3">
+                <button
+                  onClick={() => router.push('/conversation/elicit')}
+                  className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg py-2 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                >
+                  <Lightbulb size={18} />
+                  会話を引き出す練習
+                </button>
+                <button
+                  onClick={() => router.push('/conversation/deepen')}
+                  className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg py-2 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                >
+                  <Search size={18} />
+                  深掘りする練習
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 説明セクション */}
+          <div className="mt-8 bg-blue-50 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-blue-800 mb-2">どちらを選べばいい？</h3>
+            <div className="text-sm text-blue-700 space-y-2">
+              <p>
+                <strong>統合型練習がおすすめの方：</strong>
+                体系的に会話スキルを身につけたい、自分のレベルに合わせて学習したい、進捗を確認しながら学びたい
+              </p>
+              <p>
+                <strong>個別練習がおすすめの方：</strong>
+                特定のスキルを集中的に練習したい、苦手な部分だけを克服したい、短時間で特定のスキルを向上させたい
+              </p>
+            </div>
           </div>
         </div>
       </div>

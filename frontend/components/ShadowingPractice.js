@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import AudioPlayer from './AudioPlayer';
 import AudioRecorder from './AudioRecorder';
+import TTSAudioPlayer from './TTSAudioPlayer';
+import { conversationAPI } from '../services/api';
 
 const ShadowingPractice = ({ 
   scenario, 
@@ -18,11 +20,12 @@ const ShadowingPractice = ({
     setPracticeCount(0);
   }, [scenario?.id]);
 
-  if (!scenario || !scenario.shadowingAudio) {
+  if (!scenario) {
+    console.error('シナリオが未定義:', scenario);
     return (
       <div className="max-w-2xl mx-auto p-6">
         <div className="text-center text-gray-500">
-          シャドーイング練習データが見つかりません
+          シナリオデータが見つかりません
         </div>
         <button
           onClick={onBack}
@@ -34,7 +37,24 @@ const ShadowingPractice = ({
     );
   }
 
-  const correctChoice = scenario.choices.find(choice => choice.isCorrect);
+  if (!scenario.shadowingAudio) {
+    console.warn('シャドーイング音声が見つかりません:', scenario);
+    return (
+      <div className="max-w-2xl mx-auto p-6">
+        <div className="text-center text-gray-500">
+          シャドーイング練習音声が設定されていません
+        </div>
+        <button
+          onClick={onBack}
+          className="mt-4 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+        >
+          戻る
+        </button>
+      </div>
+    );
+  }
+
+  const correctChoice = scenario && scenario.options ? scenario.options.find(option => option.id === scenario.correctAnswer) : null;
 
   const handleListenComplete = () => {
     setPracticeStep('practice');
@@ -120,15 +140,14 @@ const ShadowingPractice = ({
         <div className="bg-green-50 border-l-4 border-green-400 p-6 rounded-r-lg">
           <h3 className="font-medium text-green-800 mb-3">正解の返答</h3>
           <p className="text-lg text-gray-800 leading-relaxed mb-4">
-            「{scenario.shadowingText || correctChoice?.text}」
+            「{scenario.shadowingText || (correctChoice && correctChoice.text)}」
           </p>
           
-          {/* 音声プレイヤー */}
-          <AudioPlayer
-            audioSrc={scenario.shadowingAudio}
-            title="正解の返答"
-            description="この文章を聞きながら、同じタイミングで発話してみましょう"
+          {/* OpenAI TTSを使用した音声再生 */}
+          <TTSAudioPlayer
+            text={scenario.shadowingText || (correctChoice && correctChoice.text)}
             onPlayComplete={practiceStep === 'listen' ? handleListenComplete : undefined}
+            onStartPractice={handleStartPractice}
           />
         </div>
       </div>
