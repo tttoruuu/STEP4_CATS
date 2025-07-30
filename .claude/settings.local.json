@@ -62,7 +62,9 @@
       "Bash(bash:*)",
       "Bash(open:*)",
       "Bash(brew services:*)",
-      "Bash(source .env)"
+      "Bash(source .env)",
+      "Bash(gh run list:*)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": []
   }
