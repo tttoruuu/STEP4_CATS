@@ -17,6 +17,9 @@ config/.env.development
 *.p12
 *.pfx
 
+# 機密情報ファイル
+CLAUDE_PRIVATE.md
+
 # 暗号化されていない本番設定
 config/secrets/*.env
 !config/secrets/*.encrypted

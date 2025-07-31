@@ -45,6 +45,46 @@ Claude Code作業時は必ずこのファイルを確認してください。
 3. **相性診断機能**：性格・価値観診断とマッチング支援
 4. **スタイリング提案**：年齢・季節・タイプ別の外見改善提案
 
+## 🚨 Azure CLI 運用ルール（必読・厳守）
+
+⚠️ **Azure CLI使用前に必ずCLAUDE_PRIVATE.mdを確認すること** ⚠️
+
+### 基本方針
+```bash
+# 詳細な設定・コマンドは CLAUDE_PRIVATE.md を参照
+# 機密情報（リソース名、ID等）は CLAUDE_PRIVATE.md に記載
+# このファイルは一般的なルールのみ記載
+```
+
+### 許可される操作カテゴリ
+```bash
+# ✅ 許可: Container Apps のスケーリング・状態確認・ログ確認
+# ✅ 許可: Container Registry のイメージ管理・タグ確認
+# ✅ 許可: コスト使用量の確認・監視
+# ✅ 許可: リソース状態の確認（読み取り専用）
+```
+
+### 🚫 禁止される操作
+```bash
+# ❌ 禁止: 新規リソースの作成
+# ❌ 禁止: 高額リソース（VM、GPU、Premium Storage等）の操作
+# ❌ 禁止: 対象外リソースグループへのアクセス
+# ❌ 禁止: リソースの削除（--delete系コマンド）
+```
+
+### 必須チェックリスト
+```bash
+# 作業前（必須）: コスト確認、リソース状態確認
+# 作業中（必須）: 操作ログの記録
+# 作業後（必須）: スケーリング設定の適正化、コスト増加確認
+```
+
+### 緊急時対応
+```bash
+# 高額課金アラート時: 即座にContainer Appsを停止
+# 問題発生時: 本部への即座報告 + 操作ログ共有
+```
+
 ## 開発コマンド
 ```bash
 # 統合コマンド（Makefile）
@@ -190,36 +230,21 @@ docker-compose.*.yml
 
 ## 環境変数設定
 
-### 開発環境
+**開発環境・本番環境の詳細設定は `CLAUDE_PRIVATE.md` を参照**
+
 ```bash
-# AI/ML
-OPENAI_API_KEY=sk-proj-xxx
-SPEECH_API_KEY=
-
-# データベース
-MYSQL_HOST=localhost
-MYSQL_PORT=3306
-MYSQL_DATABASE=testdb
-MYSQL_USER=root
-MYSQL_PASSWORD=password
-DATABASE_URL=mysql+pymysql://root:password@localhost:3306/testdb
-
-# 認証
-JWT_SECRET=dev_jwt_secret_key
+# 環境変数例（実際の値はCLAUDE_PRIVATE.mdに記載）
+# AI/ML: OPENAI_API_KEY, SPEECH_API_KEY
+# データベース: MYSQL_HOST, MYSQL_PORT, DATABASE_URL
+# 認証: JWT_SECRET
+# Azure: リソース名、接続情報等
 ```
 
-### 本番環境（Azure）
+### デプロイ方法
 ```bash
-# Container Apps: aca-wild-australiaeast.azurecontainerapps.io
-# Container Registry: acrtech0for9th.azurecr.io
-# MySQL: eastasiafor9th.mysql.database.azure.com
-# Blob Storage: blobeastasiafor9th.blob.core.windows.net
-# リソースグループ: rg-001-gen9
-# サブスクリプション: 9b680e6d-e5a6-4381-aad5-a30afcbc8459
-
-# デプロイ: GitHub Actions（mainブランチpush時）
-# 手動実行: GitHub → Actions → "Deploy to Azure Production"
-# 設定詳細: docs/deployment/github-secrets-setup.md
+# GitHub Actions（mainブランチpush時）による自動デプロイ
+# 手動実行: GitHub → Actions → "Deploy to Production"
+# 詳細設定: docs/deployment/github-secrets-setup.md
 ```
 
 ## API仕様（基本構造）
