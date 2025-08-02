@@ -11,7 +11,7 @@ export default function MyPage() {
     const fetchUserData = async () => {
       try {
         // 認証トークンをチェック
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('token');
         if (!token) {
           router.push('/auth/login-chat');
           return;
@@ -37,7 +37,7 @@ export default function MyPage() {
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('token');
     router.push('/auth/login-chat');
   };
 

@@ -90,7 +90,7 @@ export interface APIError {
 const API_BASE_URL = (() => {
   // 1. サーバーサイドでの実行
   if (typeof window === 'undefined') {
-    const url = process.env.INTERNAL_API_URL || 'http://backend:8000';
+    const url = process.env.INTERNAL_API_URL || 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io';
     return url;
   }
   

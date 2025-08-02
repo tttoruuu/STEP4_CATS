@@ -8,7 +8,7 @@ RUN npm install
 COPY . .
 
 # ビルド時に環境変数を設定（デフォルト値あり）
-ARG NEXT_PUBLIC_API_URL=http://backend:8000
+ARG NEXT_PUBLIC_API_URL=https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io
 ARG NODE_ENV=production
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NODE_ENV=${NODE_ENV}

@@ -29,9 +29,13 @@ export default function MainPage() {
         return;
       }
       
+      // 少し遅延してトークンチェック（AuthChatからの遷移を考慮）
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // トークンの存在確認（validateTokenは使わない）
       const storedToken = localStorage.getItem('token');
       console.log('DEBUG: localStorage token存在:', !!storedToken);
+      console.log('DEBUG: token value:', storedToken ? storedToken.substring(0, 20) + '...' : 'null');
       
       if (!storedToken) {
         console.log('トークンがありません。新しいログインページへリダイレクトします。');

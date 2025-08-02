@@ -23,7 +23,8 @@ async def get_dev_user(db: Session = Depends(get_db)):
         user = db.query(User).filter(User.username == user_id).first()
         if not user:
             # 新しい開発ユーザーを作成
-            from datetime import date
+            from datetime import date, datetime
+            current_hour = datetime.now().hour
             user = User(
                 username=user_id,
                 password_hash="dev_hash",

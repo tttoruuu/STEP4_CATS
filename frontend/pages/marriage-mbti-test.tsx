@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Heart, Users, Target, Brain, ArrowRight, ArrowLeft, RotateCcw, Loader2, AlertCircle } from 'lucide-react';
+import Layout from '../components/Layout';
 import ErrorAlert from '../components/common/ErrorAlert';
 import MarriageMBTIResultComponent from '../components/MarriageMBTIResult';
 import {
@@ -285,103 +286,110 @@ const MarriageMBTITestPage: React.FC = () => {
   // ローディング画面
   if (state.isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-rose-500 to-blue-500 rounded-full flex items-center justify-center">
-            <Loader2 className="w-10 h-10 text-white animate-spin" />
+      <Layout title="Marriage MBTI+ 診断" hideFooter={true}>
+        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-rose-500 to-blue-500 rounded-full flex items-center justify-center">
+              <Loader2 className="w-10 h-10 text-white animate-spin" />
+            </div>
+            <h2 className="text-lg font-medium text-gray-800 mb-2">質問を読み込んでいます...</h2>
+            <p className="text-sm text-gray-600">Marriage MBTI+ 診断の準備中です</p>
           </div>
-          <h2 className="text-lg font-medium text-gray-800 mb-2">質問を読み込んでいます...</h2>
-          <p className="text-sm text-gray-600">Marriage MBTI+ 診断の準備中です</p>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   // エラー画面
   if (state.error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="max-w-md mx-auto px-6 py-8">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-rose-200/30 shadow-xl">
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                <AlertCircle className="w-8 h-8 text-red-500" />
+      <Layout title="Marriage MBTI+ 診断" hideFooter={true}>
+        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+          <div className="max-w-md mx-auto px-6 py-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-rose-200/30 shadow-xl">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                  <AlertCircle className="w-8 h-8 text-red-500" />
+                </div>
+                <h2 className="text-lg font-medium text-gray-800 mb-2">エラーが発生しました</h2>
               </div>
-              <h2 className="text-lg font-medium text-gray-800 mb-2">エラーが発生しました</h2>
+              
+              <ErrorAlert
+                error={state.error}
+                onRetry={handleRetry}
+                showRetry={true}
+              />
             </div>
-            
-            <ErrorAlert
-              error={state.error}
-              onRetry={handleRetry}
-              showRetry={true}
-            />
           </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   // 分析中画面
   if (state.isAnalyzing) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-rose-500 to-blue-500 rounded-full flex items-center justify-center">
-            <Brain className="w-12 h-12 text-white animate-pulse" />
-          </div>
-          <h2 className="text-xl font-bold text-gray-800 mb-4">分析中...</h2>
-          <p className="text-lg text-gray-600 mb-4">
-            あなたのMBTIタイプと結婚観を<br />
-            詳しく分析しています
-          </p>
-          <div className="flex justify-center">
-            <div className="flex space-x-1">
-              {[0, 1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="w-2 h-2 bg-gradient-to-r from-rose-500 to-blue-500 rounded-full animate-bounce"
-                  style={{ animationDelay: `${i * 0.2}s` }}
-                ></div>
-              ))}
+      <Layout title="Marriage MBTI+ 診断" hideFooter={true}>
+        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-rose-500 to-blue-500 rounded-full flex items-center justify-center">
+              <Brain className="w-12 h-12 text-white animate-pulse" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-800 mb-4">分析中...</h2>
+            <p className="text-lg text-gray-600 mb-4">
+              あなたのMBTIタイプと結婚観を<br />
+              詳しく分析しています
+            </p>
+            <div className="flex justify-center">
+              <div className="flex space-x-1">
+                {[0, 1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="w-2 h-2 bg-gradient-to-r from-rose-500 to-blue-500 rounded-full animate-bounce"
+                    style={{ animationDelay: `${i * 0.2}s` }}
+                  ></div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-indigo-100">
-      {/* ヘッダー */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-rose-200/30 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Heart className="w-6 h-6 text-rose-500" />
-            <h1 className="text-xl font-bold text-gray-800">Marriage MBTI+</h1>
+    <Layout title="Marriage MBTI+ 診断" hideFooter={state.currentStep !== 'result'}>
+      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-indigo-100">
+        {/* ヘッダー */}
+        <header className="bg-white/80 backdrop-blur-sm border-b border-rose-200/30 sticky top-0 z-10">
+          <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Heart className="w-6 h-6 text-rose-500" />
+              <h1 className="text-xl font-bold text-gray-800">Marriage MBTI+</h1>
+            </div>
+            {(state.currentStep === 'mbti' || state.currentStep === 'marriage') && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {state.currentStep === 'mbti' ? 'MBTI診断' : '結婚観診断'}
+                </span>
+                <span className="text-sm font-medium text-rose-600">
+                  {state.currentQuestionIndex + 1} / {state.currentStep === 'mbti' ? totalMBTIQuestions : totalMarriageQuestions}
+                </span>
+              </div>
+            )}
           </div>
           {(state.currentStep === 'mbti' || state.currentStep === 'marriage') && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">
-                {state.currentStep === 'mbti' ? 'MBTI診断' : '結婚観診断'}
-              </span>
-              <span className="text-sm font-medium text-rose-600">
-                {state.currentQuestionIndex + 1} / {state.currentStep === 'mbti' ? totalMBTIQuestions : totalMarriageQuestions}
-              </span>
+            <div className="h-1 bg-gray-200">
+              <div 
+                className="h-full bg-gradient-to-r from-rose-500 to-blue-500 transition-all duration-500 ease-out"
+                style={{ width: `${getProgress()}%` }}
+              />
             </div>
           )}
-        </div>
-        {(state.currentStep === 'mbti' || state.currentStep === 'marriage') && (
-          <div className="h-1 bg-gray-200">
-            <div 
-              className="h-full bg-gradient-to-r from-rose-500 to-blue-500 transition-all duration-500 ease-out"
-              style={{ width: `${getProgress()}%` }}
-            />
-          </div>
-        )}
-      </header>
+        </header>
 
-      {/* メインコンテンツ */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
+        {/* メインコンテンツ */}
+        <main className="max-w-4xl mx-auto px-4 py-8">
         {/* 開始画面 */}
         {state.currentStep === 'intro' && (
           <div className="text-center space-y-8 animate-fade-in">
@@ -575,8 +583,9 @@ const MarriageMBTITestPage: React.FC = () => {
             />
           </div>
         )}
-      </main>
-    </div>
+        </main>
+      </div>
+    </Layout>
   );
 };
 
