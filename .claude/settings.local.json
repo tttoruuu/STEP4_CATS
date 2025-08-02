@@ -64,7 +64,16 @@
       "Bash(brew services:*)",
       "Bash(source .env)",
       "Bash(gh run list:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(az acr repository list:*)",
+      "Bash(az consumption usage list:*)",
+      "Bash(az resource list:*)",
+      "Bash(az containerapp list:*)",
+      "Bash(az containerapp show:*)",
+      "Bash(az containerapp logs show:*)",
+      "Bash(az acr repository show-tags:*)",
+      "Bash(az containerapp update:*)",
+      "Bash(az containerapp revision list:*)"
     ],
     "deny": []
   }

@@ -180,7 +180,7 @@ const API_BASE_URL = (() => {
   
   // 4. ハードコードされた本番環境のURL (フォールバック)
   if (process.env.NODE_ENV === 'production') {
-    const prodUrl = 'https://backend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io';
+    const prodUrl = 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io';
     
     return prodUrl;
   }

@@ -36,9 +36,11 @@ logger = logging.getLogger(__name__)
 origins = [
     "http://localhost:3000",  # ローカル開発環境
     "http://frontend:3000",   # Docker Compose環境
-    "https://frontend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",  # 本番環境のフロントエンド（HTTPS）
+    "https://frontend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",  # 旧本番環境のフロントエンド（HTTPS）
+    "https://aca-wild-australiaeast.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # 現在の本番環境フロントエンド
     # 以下を追加 - Azureの各リビジョンURLも許可
     "https://frontend-container--*.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
+    "https://aca-wild-australiaeast--*.icymoss-273d47c5.australiaeast.azurecontainerapps.io",
     # ユーザーがアクセスする可能性のあるカスタムドメイン
     "https://*.azurecontainerapps.io",
     "https://*.azurewebsites.net",
@@ -59,6 +61,9 @@ if ENV == "production":
         "https://frontend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
         "https://frontend-container--2.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
         "https://frontend-container--3.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
+        "https://aca-wild-australiaeast.icymoss-273d47c5.australiaeast.azurecontainerapps.io",
+        "https://aca-wild-australiaeast--0000004.icymoss-273d47c5.australiaeast.azurecontainerapps.io",
+        "https://aca-wild-australiaeast--0000005.icymoss-273d47c5.australiaeast.azurecontainerapps.io",
         # 必要に応じて他のリビジョンも追加
     ]
     origins.extend(production_origins)
@@ -82,6 +87,46 @@ app.include_router(conversation_partners.router)
 app.include_router(personality.router, prefix="/api/personality", tags=["personality"])
 app.include_router(marriage_mbti.router, prefix="/api/marriage-mbti", tags=["marriage-mbti"])
 app.include_router(counselor.router)
+
+# OpenAI接続テスト用エンドポイント（認証なし）
+@app.get("/test-openai")
+async def test_openai():
+    """OpenAI API接続テスト（デバッグ用）"""
+    try:
+        from openai import OpenAI
+        import os
+        
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            return {"status": "error", "message": "OPENAI_API_KEY not set", "key_length": 0}
+        
+        # APIキーの最初と最後の数文字のみ表示（セキュリティ）
+        masked_key = f"{api_key[:8]}...{api_key[-8:]}" if len(api_key) > 16 else "short_key"
+        
+        client = OpenAI(api_key=api_key)
+        
+        # シンプルなテストリクエスト
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": "Hello, please respond with 'OpenAI connection successful'"}],
+            max_tokens=50
+        )
+        
+        return {
+            "status": "success", 
+            "message": "OpenAI connection successful",
+            "key_masked": masked_key,
+            "response": response.choices[0].message.content,
+            "model": response.model
+        }
+        
+    except Exception as e:
+        return {
+            "status": "error", 
+            "message": str(e),
+            "key_masked": masked_key if 'masked_key' in locals() else "unknown",
+            "error_type": type(e).__name__
+        }
 
 # ヘルスチェックエンドポイント
 @app.get("/")

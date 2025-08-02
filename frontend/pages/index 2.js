@@ -34,9 +34,9 @@ export default function MainPage() {
       console.log('DEBUG: localStorage token存在:', !!storedToken);
       
       if (!storedToken) {
-        console.log('トークンがありません。新しいログインページへリダイレクトします。');
+        console.log('トークンがありません。ログインページへリダイレクトします。');
         setLoading(false);
-        router.replace('/auth/login-chat');
+        router.replace('/auth/login');
         return;
       }
       
@@ -55,7 +55,7 @@ export default function MainPage() {
 
   const handleLogout = () => {
     authAPI.logout(); // APIの関数を使用
-    router.push('/auth/login-chat');
+    router.push('/auth/login');
   };
 
   if (loading) {
@@ -71,7 +71,7 @@ export default function MainPage() {
       <div className="min-h-screen flex flex-col items-center justify-center text-gray-800 bg-[#F5F5F5] px-6">
         <p className="text-red-500 mb-4">{error}</p>
         <button 
-          onClick={() => router.push('/auth/login-chat')}
+          onClick={() => router.push('/auth/login')}
           className="bg-gradient-to-r from-[#FF8551] to-[#FFA46D] hover:opacity-90 text-white font-medium py-2 px-4 rounded-full"
         >
           ログイン画面に戻る

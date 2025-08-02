@@ -29,7 +29,7 @@ export default function App({ Component, pageProps }) {
     console.log('本番環境を使用します');
     const productionUrl = configApiUrl || 
                          envApiUrl || 
-                         'https://backend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io';
+                         'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io';
     
     console.log('本番APIのURL:', productionUrl);
     return productionUrl;

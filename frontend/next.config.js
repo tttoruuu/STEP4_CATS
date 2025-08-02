@@ -12,7 +12,7 @@ const nextConfig = {
         process.env.NEXT_PUBLIC_API_URL.replace('http:', 'https:') : 
         process.env.NEXT_PUBLIC_API_URL) :
       (process.env.NODE_ENV === 'production'
-        ? 'https://backend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io'
+        ? 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io'
         : 'http://localhost:8000'
     ),
   },
@@ -22,7 +22,7 @@ const nextConfig = {
         process.env.NEXT_PUBLIC_API_URL.replace('http:', 'https:') : 
         process.env.NEXT_PUBLIC_API_URL) :
       (process.env.NODE_ENV === 'production'
-        ? 'https://backend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io'
+        ? 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io'
         : 'http://localhost:8000'
     ),
     environment: process.env.NODE_ENV || 'development',
