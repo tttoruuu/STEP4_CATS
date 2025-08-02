@@ -12,7 +12,7 @@ from models.conversation_partner import ConversationPartner
 from models import schemas
 from auth.password import get_password_hash, verify_password
 from auth.jwt import create_access_token, get_current_user
-from routers import conversation_partners, personality, marriage_mbti, counselor
+from routers import conversation_partners, personality, marriage_mbti, counselor, profile, auth
 from fastapi.responses import JSONResponse
 import random
 from urllib.parse import urlparse
@@ -83,10 +83,12 @@ app.add_middleware(
 )
 
 # ルーター追加（順序重要）
+app.include_router(auth.router)
 app.include_router(conversation_partners.router)
 app.include_router(personality.router, prefix="/api/personality", tags=["personality"])
 app.include_router(marriage_mbti.router, prefix="/api/marriage-mbti", tags=["marriage-mbti"])
 app.include_router(counselor.router)
+app.include_router(profile.router)
 
 # OpenAI接続テスト用エンドポイント（認証なし）
 @app.get("/test-openai")
@@ -156,6 +158,35 @@ async def health():
             "conversation": "active",
             "personality": "active", 
             "marriage_mbti": "active"
+        }
+    }
+
+@app.get("/test-profile")
+async def test_profile():
+    """プロフィールテスト用エンドポイント（認証なし）"""
+    return {
+        "success": True,
+        "message": "Profile test endpoint working!",
+        "profile": {
+            "user_id": 1,
+            "name": "田中 太郎",
+            "age": 32,
+            "birth_date": "1991年8月15日",
+            "konkatsu_experience": "初心者",
+            "occupation": "ITエンジニア",
+            "birthplace": "大阪府",
+            "residence": "東京都渋谷区",
+            "hobbies": ["読書", "ジョギング", "カフェ巡り", "映画鑑賞"],
+            "weekend_activities": "友人と食事をしたり、新しいカフェを探索したりしています。たまに一人旅も楽しんでいます。",
+            "mbti": {
+                "mbti_type": "INFP-T",
+                "type_name": "仲介者",
+                "description": "内向的で創造性豊かな性格タイプです。"
+            },
+            "profile_image_url": None,
+            "email": "tanaka@example.com",
+            "created_at": "2025-08-02T00:00:00",
+            "updated_at": "2025-08-02T00:00:00"
         }
     }
 
