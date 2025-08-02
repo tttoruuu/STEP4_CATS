@@ -467,6 +467,60 @@ async def speech_to_text(
         except Exception as e:
             logger.warning(f"一時ファイル削除エラー: {str(e)}")
 
+@app.post("/api/text-to-speech")
+async def text_to_speech(request: Request):
+    """Text-to-Speech API エンドポイント"""
+    try:
+        from openai import OpenAI
+        from fastapi.responses import Response
+        import json
+        
+        # リクエストボディを取得
+        body = await request.body()
+        data = json.loads(body.decode('utf-8'))
+        
+        text = data.get('text', '')
+        voice = data.get('voice', 'alloy')
+        model = data.get('model', 'tts-1')
+        speed = data.get('speed', 1.0)
+        
+        if not text:
+            raise HTTPException(status_code=400, detail="テキストが提供されていません")
+        
+        # OpenAI API キーの確認
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+        
+        # OpenAI クライアントの初期化
+        client = OpenAI(api_key=api_key)
+        
+        # TTS API を呼び出し
+        response = client.audio.speech.create(
+            model=model,
+            voice=voice,
+            input=text,
+            speed=speed
+        )
+        
+        # 音声データを返す
+        return Response(
+            content=response.content,
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": "attachment; filename=speech.mp3"
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"TTS API エラー: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"音声生成中にエラーが発生しました: {str(e)}"
+        )
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

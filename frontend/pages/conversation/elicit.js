@@ -18,15 +18,36 @@ export default function ElicitPractice() {
     setCurrentScenario(randomScenario);
   }, []);
 
-  const handleQuizComplete = () => {
-    // 完了したシナリオを記録
-    if (currentScenario) {
-      setCompletedScenarios(prev => [...prev, currentScenario.id]);
+  const 次の問題へ進む = () => {
+    // 現在のシナリオIDを完了リストに追加
+    const 新しい完了リスト = currentScenario 
+      ? [...completedScenarios, currentScenario.id]
+      : completedScenarios;
+    
+    // 全シナリオを取得
+    const 全シナリオ = getScenariosByCategory('elicit');
+    
+    // 未完了のシナリオを取得
+    const 未完了シナリオ = 全シナリオ.filter(
+      シナリオ => !新しい完了リスト.includes(シナリオ.id)
+    );
+    
+    // 次のシナリオを選択
+    if (未完了シナリオ.length > 0) {
+      // 未完了のものからランダム選択
+      const ランダムインデックス = Math.floor(Math.random() * 未完了シナリオ.length);
+      const 次のシナリオ = 未完了シナリオ[ランダムインデックス];
+      
+      setCurrentScenario(次のシナリオ);
+      setCompletedScenarios(新しい完了リスト);
+    } else {
+      // 全て完了した場合はリセット
+      setCompletedScenarios([]);
+      const 新シナリオ = getRandomScenario('elicit');
+      setCurrentScenario(新シナリオ);
     }
     
-    // 新しいランダムシナリオを取得
-    const newScenario = getRandomScenario('elicit');
-    setCurrentScenario(newScenario);
+    // クイズビューに戻る
     setCurrentView('quiz');
   };
 
@@ -36,7 +57,7 @@ export default function ElicitPractice() {
 
   const handleShadowingComplete = () => {
     // シャドーイング完了後、新しいクイズへ
-    handleQuizComplete();
+    次の問題へ進む();
   };
 
   const handleBackToQuiz = () => {
@@ -84,14 +105,14 @@ export default function ElicitPractice() {
           {currentView === 'quiz' ? (
             <ConversationQuiz
               scenario={currentScenario}
-              onComplete={handleQuizComplete}
+              onComplete={次の問題へ進む}
               onShadowingStart={handleShadowingStart}
               showShadowingButton={true}
             />
           ) : (
             <ShadowingPractice
               scenario={currentScenario}
-              onComplete={handleShadowingComplete}
+              onComplete={次の問題へ進む}
               onBack={handleBackToQuiz}
             />
           )}

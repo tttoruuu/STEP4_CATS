@@ -82,8 +82,8 @@ levels: {
     // ... 他の選択肢
   ],
   
-  shadowingAudio: "/audio/shadowing/elicit_001.mp3", // シャドーイング音声ファイルパス
-  shadowingText: "そうなんですね。普段はお休みの日は何をされてるんですか？", // シャドーイング用テキスト
+  shadowingAudio: "/audio/shadowing/elicit_001.mp3", // シャドーイング音声ファイルパス（現在はOpenAI TTS使用）
+  shadowingText: "そうなんですね。普段はお休みの日は何をされてるんですか？", // シャドーイング用テキスト（TTS生成対象）
   tip: "相手が「特にない」と言った時は、より具体的で答えやすい質問に変えてみましょう。", // 学習ヒント
   
   createdAt: "2025-01-21",                   // 作成日
