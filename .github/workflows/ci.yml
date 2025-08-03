@@ -48,6 +48,9 @@ jobs:
         continue-on-error: true
       
       - name: Frontend Build Test
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_API_URL: http://localhost:8000
         run: |
           cd frontend
           npm run build
