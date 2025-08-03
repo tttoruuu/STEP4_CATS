@@ -25,9 +25,9 @@ const ComprehensiveProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
       {/* Header Section */}
-      <div className="bg-gradient-to-b from-orange-500 to-orange-300 pt-8 pb-8 px-4 rounded-b-3xl">
+      <div className="pt-8 pb-8 px-4 rounded-b-3xl" style={{background: 'var(--bg-gradient-primary)'}}>
         <div className="max-w-4xl mx-auto text-center">
           <div className="relative inline-block mb-4">
             <div className="w-24 h-24 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center">
@@ -39,7 +39,10 @@ const ComprehensiveProfilePage: React.FC = () => {
           <p className="text-white/90 text-lg mb-4">--歳</p>
           <button
             onClick={handleEdit}
-            className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full border border-white/30 hover:bg-white/30 transition-colors"
+            className="inline-flex items-center gap-2 backdrop-blur-sm text-white px-4 py-2 rounded-full border transition-colors"
+            style={{backgroundColor: 'rgba(255, 255, 255, 0.2)', borderColor: 'rgba(255, 255, 255, 0.3)'}}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
           >
             <Edit3 className="w-4 h-4" />
             編集
@@ -51,42 +54,42 @@ const ComprehensiveProfilePage: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 py-6 pb-24 space-y-6">
         
         {/* Basic Info Card */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-800 mb-6">基本情報</h2>
+        <div className="card">
+          <h2 className="text-xl font-bold mb-6" style={{color: 'var(--color-gray-800)'}}>基本情報</h2>
           
           <div className="flex items-start gap-3 mb-4">
-            <Calendar className="w-5 h-5 text-orange-500 mt-0.5" />
+            <Calendar className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
-              <p className="text-sm text-gray-600 mb-1">生年月日</p>
-              <p className="text-gray-400">未設定</p>
+              <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>生年月日</p>
+              <p style={{color: 'var(--color-gray-400)'}}>未設定</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3 mb-4">
-            <Users className="w-5 h-5 text-orange-500 mt-0.5" />
+            <Users className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
-              <p className="text-sm text-gray-600 mb-1">婚活の経験</p>
-              <span className="px-3 py-1 rounded-full text-sm font-semibold text-white bg-gray-400">
+              <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>婚活の経験</p>
+              <span className="px-3 py-1 rounded-full text-sm font-semibold text-white" style={{backgroundColor: 'var(--color-gray-400)'}}>
                 未設定
               </span>
             </div>
           </div>
 
           <div className="flex items-start gap-3 mb-4">
-            <Briefcase className="w-5 h-5 text-orange-500 mt-0.5" />
+            <Briefcase className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
-              <p className="text-sm text-gray-600 mb-1">職業</p>
-              <p className="text-gray-400">未設定</p>
+              <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>職業</p>
+              <p style={{color: 'var(--color-gray-400)'}}>未設定</p>
             </div>
           </div>
         </div>
 
         {/* Location Card */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-800 mb-6">居住地情報</h2>
+        <div className="card">
+          <h2 className="text-xl font-bold mb-6" style={{color: 'var(--color-gray-800)'}}>居住地情報</h2>
           
           <div className="flex items-start gap-3 mb-4">
-            <MapPin className="w-5 h-5 text-orange-500 mt-0.5" />
+            <MapPin className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
               <p className="text-sm text-gray-600 mb-1">出身地</p>
               <p className="text-gray-400">未設定</p>
