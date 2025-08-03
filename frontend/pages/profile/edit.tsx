@@ -129,10 +129,10 @@ const ProfileEdit: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">プロフィールを読み込み中...</p>
+          <div className="w-8 h-8 rounded-full animate-spin mx-auto mb-4" style={{border: '2px solid var(--color-primary-300)', borderTop: '2px solid var(--color-primary-500)'}}></div>
+          <p style={{color: 'var(--color-gray-600)'}}>プロフィールを読み込み中...</p>
         </div>
       </div>
     );
@@ -140,12 +140,12 @@ const ProfileEdit: React.FC = () => {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error || 'プロフィール情報の取得に失敗しました'}</p>
+          <p className="mb-4" style={{color: 'var(--color-error)'}}>{error || 'プロフィール情報の取得に失敗しました'}</p>
           <button 
             onClick={() => router.push('/profile/comprehensive')}
-            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
+            className="btn btn-primary"
           >
             プロフィールページに戻る
           </button>
