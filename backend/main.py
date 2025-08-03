@@ -16,9 +16,28 @@ from routers import conversation_partners, personality, marriage_mbti, counselor
 from fastapi.responses import JSONResponse
 import random
 from urllib.parse import urlparse
+import time
+import sys
 
-# データベースのテーブルを作成
-Base.metadata.create_all(bind=engine)
+def create_tables_with_retry(max_retries=5, delay=5):
+    """データベースのテーブルを作成（リトライ機能付き）"""
+    for attempt in range(max_retries):
+        try:
+            Base.metadata.create_all(bind=engine)
+            print(f"データベーステーブル作成成功 (試行 {attempt + 1}/{max_retries})")
+            return True
+        except Exception as e:
+            print(f"データベース接続失敗 (試行 {attempt + 1}/{max_retries}): {e}")
+            if attempt < max_retries - 1:
+                print(f"{delay}秒待機中...")
+                time.sleep(delay)
+            else:
+                print("データベース接続に失敗しました。コンテナを確認してください。")
+                return False
+    return False
+
+# データベースのテーブルを作成（リトライ付き）
+create_tables_with_retry()
 
 load_dotenv()  # .env読み込み
 

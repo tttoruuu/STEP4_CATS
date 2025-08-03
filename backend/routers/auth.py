@@ -3,7 +3,6 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import Optional
-import jwt
 
 from database import get_db
 from models.user import User
@@ -41,10 +40,15 @@ async def register_user(
             username=user_data.get("email"),  # emailをusernameとして使用
             email=user_data.get("email"),
             password_hash=hashed_password,
-            full_name=user_data.get("full_name", ""),
-            birth_date=datetime.strptime(user_data.get("birth_date"), "%Y-%m-%d").date() if user_data.get("birth_date") else None,
-            hometown=user_data.get("hometown", ""),
-            hobbies=user_data.get("hobbies", "")
+            full_name=user_data.get("name", user_data.get("full_name", "")),
+            birth_date=datetime.strptime(user_data.get("birthdate"), "%Y-%m-%d").date() if user_data.get("birthdate") else None,
+            hometown=user_data.get("birthplace", ""),
+            hobbies=user_data.get("hobbies", ""),
+            konkatsu_status=user_data.get("konkatsuStatus", ""),
+            occupation=user_data.get("occupation", ""),
+            birthplace=user_data.get("birthplace", ""),
+            current_location=user_data.get("location", ""),
+            holiday_style=user_data.get("holidayStyle", "")
         )
         
         db.add(new_user)

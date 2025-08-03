@@ -35,4 +35,4 @@ COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/.env* ./
 
 # アプリケーションを実行
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
