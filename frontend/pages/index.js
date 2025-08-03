@@ -167,11 +167,11 @@ export default function MainPage() {
             </div>
           </Link>
 
-          {/* 会話ゲーム機能 */}
+          {/* 会話練習機能 */}
           <Link href="/conversation/modes">
             <div className="btn btn-accent btn-lg w-full">
               <MessageSquare className="w-5 h-5" />
-              <span>会話ゲーム</span>
+              <span>会話練習</span>
             </div>
           </Link>
 

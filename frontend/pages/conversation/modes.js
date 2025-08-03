@@ -58,7 +58,7 @@ export default function ConversationModes() {
   };
 
   return (
-    <Layout title="会話ゲームモード選択">
+    <Layout title="会話練習モード選択">
       <div className="flex flex-col items-center min-h-screen px-6 py-4" style={{background: 'var(--bg-gradient-main)', color: 'var(--color-gray-800)'}}>
         <div className="w-full max-w-md mt-8 relative">
           <button 
@@ -74,7 +74,7 @@ export default function ConversationModes() {
         </div>
         
         <h1 className="text-2xl font-bold mt-16 mb-8 text-center" style={{color: 'var(--color-primary-500)'}}>
-          会話ゲームモードを選択
+          会話練習モードを選択
         </h1>
         
         {/* ステップバイステップガイド */}
