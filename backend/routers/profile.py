@@ -80,35 +80,83 @@ async def test_profile_endpoint():
         "timestamp": "2025-08-02T00:00:00"
     }
 
+@router.get("/comprehensive-debug")
+async def get_comprehensive_profile_debug(db: Session = Depends(get_db)):
+    """デバッグ用統合プロフィール（認証なし、サンプルデータ）"""
+    return {
+        "success": True,
+        "profile": {
+            "user_id": 1,
+            "name": "テストユーザー",
+            "age": 30,
+            "birth_date": "1994年1月1日",
+            "konkatsu_experience": "初心者",
+            "occupation": "エンジニア",
+            "birthplace": "東京都",
+            "residence": "神奈川県",
+            "hobbies": ["読書", "映画鑑賞", "ゲーム"],
+            "weekend_activities": "カフェでコーヒーを飲みながら読書をするのが好きです",
+            "mbti": {
+                "mbti_type": "INFP-T",
+                "type_name": "仲介者",
+                "description": "理想主義的で、常に善を行う方法を探している"
+            },
+            "profile_image_url": None,
+            "email": "test@example.com",
+            "created_at": "2025-01-01T00:00:00",
+            "updated_at": "2025-01-02T00:00:00"
+        }
+    }
+
 @router.get("/comprehensive")
 async def get_comprehensive_profile(
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """統合プロフィール情報を取得（開発・テスト用：認証なし）"""
+    """統合プロフィール情報を取得"""
     try:
-        # 常にダミーデータを返す（テスト用）
+        # ユーザー情報を取得
+        user = current_user
+        
+        # 年齢計算
+        age = None
+        birth_date_formatted = None
+        if user.birth_date:
+            age = calculate_age(user.birth_date)
+            birth_date_formatted = user.birth_date.strftime("%Y年%m月%d日")
+        
+        # 趣味を配列に変換
+        hobbies_array = parse_hobbies(user.hobbies or "")
+        
+        # 婚活経験の日本語変換
+        konkatsu_experience_map = {
+            "beginner": "初心者",
+            "experienced": "経験あり", 
+            "returning": "再チャレンジ"
+        }
+        konkatsu_experience = konkatsu_experience_map.get(user.konkatsu_status, user.konkatsu_status or "未設定")
+        
+        # MBTI情報を取得
+        mbti_result = get_mbti_result(db, user.id)
+        
         return {
             "success": True,
             "profile": {
-                "user_id": 1,
-                "name": "田中 太郎",
-                "age": 32,
-                "birth_date": "1991年8月15日",
-                "konkatsu_experience": "初心者",
-                "occupation": "ITエンジニア",
-                "birthplace": "大阪府",
-                "residence": "東京都渋谷区",
-                "hobbies": ["読書", "ジョギング", "カフェ巡り", "映画鑑賞"],
-                "weekend_activities": "友人と食事をしたり、新しいカフェを探索したりしています。たまに一人旅も楽しんでいます。",
-                "mbti": {
-                    "mbti_type": "INFP-T",
-                    "type_name": "仲介者",
-                    "description": "内向的で創造性豊かな性格タイプです。"
-                },
-                "profile_image_url": None,
-                "email": "tanaka@example.com",
-                "created_at": "2025-08-02T00:00:00",
-                "updated_at": "2025-08-02T00:00:00"
+                "user_id": user.id,
+                "name": user.full_name or "未設定",
+                "age": age,
+                "birth_date": birth_date_formatted or "未設定",
+                "konkatsu_experience": konkatsu_experience,
+                "occupation": user.occupation or "未設定",
+                "birthplace": user.birthplace or "未設定",
+                "residence": user.current_location or "未設定",
+                "hobbies": hobbies_array if hobbies_array else ["未設定"],
+                "weekend_activities": user.holiday_style or "未設定",
+                "mbti": mbti_result,  # None if not taken
+                "profile_image_url": user.profile_image_url,
+                "email": user.email,
+                "created_at": user.created_at.isoformat() if user.created_at else None,
+                "updated_at": user.updated_at.isoformat() if user.updated_at else None
             }
         }
         
@@ -164,4 +212,56 @@ async def get_mbti_history(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="MBTI診断履歴の取得に失敗しました"
+        )
+
+@router.put("/update")
+async def update_profile(
+    profile_data: dict,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """プロフィール情報を更新"""
+    try:
+        user = current_user
+        
+        # 更新可能なフィールドのみ処理
+        if "full_name" in profile_data:
+            user.full_name = profile_data["full_name"]
+        if "birth_date" in profile_data and profile_data["birth_date"]:
+            try:
+                user.birth_date = datetime.strptime(profile_data["birth_date"], "%Y-%m-%d").date()
+            except ValueError:
+                pass  # 無効な日付は無視
+        if "konkatsu_status" in profile_data:
+            user.konkatsu_status = profile_data["konkatsu_status"]
+        if "occupation" in profile_data:
+            user.occupation = profile_data["occupation"]
+        if "birthplace" in profile_data:
+            user.birthplace = profile_data["birthplace"]
+        if "current_location" in profile_data:
+            user.current_location = profile_data["current_location"]
+        if "hobbies" in profile_data:
+            # 配列の場合は文字列に変換
+            if isinstance(profile_data["hobbies"], list):
+                user.hobbies = ", ".join(profile_data["hobbies"])
+            else:
+                user.hobbies = profile_data["hobbies"]
+        if "holiday_style" in profile_data:
+            user.holiday_style = profile_data["holiday_style"]
+        
+        # 更新日時を現在時刻に設定
+        user.updated_at = datetime.now()
+        
+        db.commit()
+        
+        return {
+            "success": True,
+            "message": "プロフィールが更新されました"
+        }
+        
+    except Exception as e:
+        print(f"プロフィール更新エラー: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="プロフィールの更新に失敗しました"
         )

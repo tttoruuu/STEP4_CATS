@@ -5,9 +5,10 @@
 STEP4_CATSアプリケーションに統合プロフィール表示機能を実装しました。UI-onlyバージョンとして、美しいカードレイアウトでプロフィール項目を表示する機能です。
 
 **実装日:** 2025-08-02  
+**最終更新:** 2025-08-03  
 **ブランチ:** `feature/profile`  
 **担当者:** Claude Code　＆　さっちぃ  
-**ステータス:** UI完成（API連携は後日実装予定）
+**ステータス:** プロフィール編集機能追加完了（開発モード）
 
 ---
 
@@ -92,6 +93,16 @@ export default function Profile() {
 - 全項目を「未設定」状態で表示
 - MBTI未診断時の診断促進機能
 - ボトムナビゲーション追加
+- **編集ボタン追加** - `/profile/edit`へのナビゲーション機能
+
+#### `frontend/pages/profile/edit.tsx` (新規作成) ⭐新規追加
+**概要:** プロフィール編集ページ（開発モード）  
+**主要機能:**
+- 詳細なプロフィール編集フォーム
+- リアルタイム入力検証
+- 趣味の動的追加・削除機能
+- 保存機能（開発モードでシミュレート）
+- comprehensive.tsxと統一されたデザイン
 
 **デザインの特徴:**
 - 柔らかいオレンジグラデーションヘッダー（`from-orange-300 to-orange-400`）
@@ -101,33 +112,52 @@ export default function Profile() {
 - ボトムナビゲーション（ホーム・プロフィールボタン）
 
 #### `frontend/services/profileAPI.ts` (更新)
-**概要:** プロフィールAPI呼び出しサービス（テスト用に一時的に修正）
+**概要:** プロフィールAPI呼び出しサービス（開発モード対応）
 **現在の状態:**
-- テスト用エンドポイント（`/test-profile`）を指す設定
-- ポート8001を使用する設定
-- 認証なしでの呼び出し
+- ダミーデータによるプロフィール取得（`getComprehensiveProfile`）
+- **開発モードプロフィール更新**（`updateProfile`） ⭐新規追加
+- 1秒待機でAPI通信をシミュレート
+- 成功メッセージの返却
 
-**注意:** この設定は開発テスト用であり、本番実装時には適切なAPI設定に戻す必要があります。
+**追加機能:**
+- プロフィール更新フィールド対応：名前、生年月日、婚活経験、職業、居住地、趣味、休日の過ごし方
+- TypeScript型安全性の確保
+- エラーハンドリングの準備（実際のAPI呼び出し用にコメントアウト）
 
-### バックエンド（テスト用実装）
+**注意:** 実際のAPI呼び出しはコメントアウトされており、本番実装時に有効化が必要です。
 
-#### `backend/main.py` (テスト用エンドポイント追加)
-**追加内容:**
-- `/test-profile`エンドポイントを追加（認証なし）
-- ダミーデータを返す実装
+### バックエンド
 
+#### `backend/routers/profile.py` (確認・検証完了) ⭐検証済み
+**概要:** プロフィール関連API実装（既存）
+**検証内容:**
+- `/api/profile/comprehensive` - プロフィール取得エンドポイント
+- `/api/profile/update` - **プロフィール更新エンドポイント** ⭐検証済み
+- `/api/profile/mbti-history` - MBTI履歴取得エンドポイント
+- 認証必須の本格的な実装
+
+**プロフィール更新機能（Line 217-267）:**
 ```python
-@app.get("/test-profile")
-async def test_profile():
-    """プロフィールテスト用エンドポイント（認証なし）"""
-    return {
-        "success": True,
-        "message": "Profile test endpoint working!",
-        "profile": {
-            # ダミーデータ
-        }
-    }
+@router.put("/update")
+async def update_profile(
+    profile_data: dict,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # フィールド更新処理
+    # full_name, birth_date, konkatsu_status, occupation, 
+    # birthplace, current_location, hobbies, holiday_style
 ```
+
+**対応フィールド:**
+- 名前（full_name）
+- 生年月日（birth_date）
+- 婚活経験（konkatsu_status）
+- 職業（occupation）
+- 出身地（birthplace）
+- 居住地（current_location）
+- 趣味（hobbies：配列→文字列変換対応）
+- 休日の過ごし方（holiday_style）
 
 ---
 
@@ -170,7 +200,8 @@ async def test_profile():
 
 ### URL
 **メインURL:** `http://localhost:3000/profile`  
-**リダイレクト先:** `http://localhost:3000/profile/comprehensive`
+**リダイレクト先:** `http://localhost:3000/profile/comprehensive`  
+**編集ページ:** `http://localhost:3000/profile/edit` ⭐新規追加
 
 ### 動作
 1. `/profile`にアクセス
@@ -178,6 +209,10 @@ async def test_profile():
 3. プロフィールUIが表示される
 4. 全ての項目は「未設定」として表示
 5. MBTIカードに「診断を受ける」ボタンが表示
+6. **「編集」ボタンをクリック** ⭐新機能
+7. `/profile/edit`でプロフィール編集フォームが表示
+8. フォーム入力後「保存する」で更新（開発モード）
+9. 自動的に`/profile/comprehensive`に戻る
 
 ---
 
@@ -194,12 +229,26 @@ async def test_profile():
 - ✅ ボトムナビゲーション
 - ✅ レスポンシブデザイン
 - ✅ プロフィールページへの自動リダイレクト
+- ✅ **プロフィール編集ページ** ⭐新規追加
+- ✅ **編集ボタン機能** ⭐新規追加
+- ✅ **フォーム入力・保存機能（開発モード）** ⭐新規追加
+
+### 編集機能 ⭐新規セクション
+- ✅ 名前、生年月日、婚活経験の編集
+- ✅ 職業、出身地、居住地の編集
+- ✅ 趣味の動的追加・削除機能
+- ✅ 休日の過ごし方の編集
+- ✅ リアルタイム入力検証
+- ✅ 保存中の状態表示
+- ✅ 成功・エラーメッセージ表示
+- ✅ 自動ページ遷移（編集→表示）
 
 ### スタイリング
 - ✅ 柔らかいオレンジ色の採用
 - ✅ アイコン付きの情報表示
 - ✅ カード型レイアウト
 - ✅ ホバー効果・トランジション
+- ✅ **統一されたデザイン（表示・編集ページ）** ⭐新規追加
 
 ---
 
@@ -218,9 +267,10 @@ async def test_profile():
 - ❌ 年齢計算機能
 
 ### 機能拡張
-- ❌ プロフィール編集機能
+- ✅ **プロフィール編集機能** ⭐完了（開発モード）
 - ❌ プロフィール画像アップロード
 - ❌ 実際の診断結果表示
+- ❌ 実際のデータ更新・保存（API連携）
 - ❌ データ更新・リフレッシュ機能
 
 ---
@@ -299,6 +349,12 @@ git commit -m "feat: プロフィールページにボトムナビゲーショ�
 
 # ドキュメント更新
 git commit -m "docs: profile.mdを現在の実装状況に合わせて更新"
+
+# プロフィール編集機能追加
+git commit -m "feat: プロフィール編集ページを実装（開発モード）"
+
+# API連携修正
+git commit -m "fix: プロフィール更新API呼び出しを開発モードに対応"
 ```
 
 ---

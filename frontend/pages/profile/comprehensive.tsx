@@ -12,92 +12,102 @@ import {
   User,
   HomeIcon
 } from 'lucide-react';
+import { 
+  getComprehensiveProfile, 
+  updateProfile, 
+  ComprehensiveProfile,
+  getKonkatsuExperienceDisplay,
+  getKonkatsuExperienceColor,
+  getMBTITypeName
+} from '../../services/profileAPI';
 
 const ComprehensiveProfilePage: React.FC = () => {
   const router = useRouter();
-  const [user, setUser] = useState({
-    name: '',
-    age: null,
-    birth_date: '',
-    konkatsu_experience: '',
-    occupation: '',
-    birthplace: '',
-    residence: '',
-    hobbies: [],
-    weekend_activities: '',
-    mbti: null,
-    email: ''
-  });
+  const [profile, setProfile] = useState<ComprehensiveProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
+  // プロフィールデータの取得（統合版）
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchProfile = async () => {
       try {
         setLoading(true);
+        console.log('プロフィール取得開始...');
         
-        // ブラウザ環境でない場合は処理を停止
-        if (typeof window === 'undefined') {
-          setLoading(false);
-          return;
-        }
-        
-        // トークンの存在確認
-        const storedToken = localStorage.getItem('token');
-        if (!storedToken) {
-          router.replace('/auth/login');
-          return;
-        }
-        
-        // JWTトークンをデコードしてユーザー情報を取得
-        const payload = JSON.parse(atob(storedToken.split('.')[1]));
-        
-        // 基本情報をトークンから設定
-        setUser({
-          name: payload.name || payload.username || 'お名前',
-          age: payload.age || null,
-          birth_date: payload.birth_date || '',
-          konkatsu_experience: payload.konkatsu_experience || '',
-          occupation: payload.occupation || '',
-          birthplace: payload.birthplace || '',
-          residence: payload.residence || '',
-          hobbies: payload.hobbies || [],
-          weekend_activities: payload.weekend_activities || '',
-          mbti: payload.mbti || null,
-          email: payload.email || ''
-        });
-        
-        // 追加でAPIからプロフィール情報を取得（可能であれば）
+        // まず統合APIからプロフィールデータを取得
         try {
-          const API_BASE_URL = process.env.NODE_ENV === 'production' 
-            ? 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io'
-            : 'http://localhost:8000';
-          
-          const response = await fetch(`${API_BASE_URL}/test-profile`);
-          if (response.ok) {
-            const profileData = await response.json();
-            console.log('API プロフィールデータ取得成功:', profileData);
-            if (profileData.success && profileData.profile) {
-              setUser(prev => ({
-                ...prev,
-                ...profileData.profile,
-                name: profileData.profile.name || prev.name
-              }));
-            }
-          }
+          const profileData = await getComprehensiveProfile();
+          console.log('プロフィール取得完了:', profileData);
+          setProfile(profileData);
+          setError(null);
+          return;
         } catch (apiError) {
-          console.log('プロフィールAPI呼び出しに失敗（トークン情報を使用）:', apiError);
+          console.log('統合API失敗、フォールバック処理開始:', apiError);
         }
         
-      } catch (error) {
-        console.error('プロフィール取得エラー:', error);
-        setError('プロフィール情報の取得に失敗しました');
+        // フォールバック: JWTトークンとtest-profileから情報取得
+        if (typeof window !== 'undefined') {
+          const storedToken = localStorage.getItem('token');
+          if (!storedToken) {
+            router.replace('/auth/login');
+            return;
+          }
+          
+          // JWTトークンをデコード
+          const payload = JSON.parse(atob(storedToken.split('.')[1]));
+          
+          let fallbackProfile = {
+            user_id: payload.sub || payload.user_id || 1,
+            name: payload.name || payload.username || '未入力',
+            age: payload.age || undefined,
+            birth_date: payload.birth_date || '未入力',
+            konkatsu_experience: payload.konkatsu_experience || '未入力',
+            occupation: payload.occupation || '未入力',
+            birthplace: payload.birthplace || '未入力',
+            residence: payload.residence || '未入力',
+            hobbies: payload.hobbies || ['未入力'],
+            weekend_activities: payload.weekend_activities || '未入力',
+            mbti: payload.mbti || undefined,
+            profile_image_url: null,
+            email: payload.email || '未入力',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          };
+          
+          // test-profileからデータを補完
+          try {
+            const API_BASE_URL = process.env.NODE_ENV === 'production' 
+              ? 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io'
+              : 'http://localhost:8000';
+            
+            const response = await fetch(`${API_BASE_URL}/test-profile`);
+            if (response.ok) {
+              const testProfileData = await response.json();
+              if (testProfileData.success && testProfileData.profile) {
+                fallbackProfile = {
+                  ...fallbackProfile,
+                  ...testProfileData.profile,
+                  name: testProfileData.profile.name || fallbackProfile.name
+                };
+              }
+            }
+          } catch (testApiError) {
+            console.log('test-profile API失敗:', testApiError);
+          }
+          
+          setProfile(fallbackProfile);
+          setError(null);
+        }
+        
+      } catch (err) {
+        console.error('プロフィール取得でエラーが発生:', err);
+        setError(err instanceof Error ? err.message : 'プロフィールの取得に失敗しました');
       } finally {
         setLoading(false);
       }
     };
-    
-    fetchUserProfile();
+
+    fetchProfile();
   }, [router]);
 
   const handleEdit = () => {
@@ -108,6 +118,22 @@ const ComprehensiveProfilePage: React.FC = () => {
     router.push('/marriage-mbti-test');
   };
 
+  // 再試行処理
+  const handleRetry = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const profileData = await getComprehensiveProfile();
+      setProfile(profileData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'プロフィールの取得に失敗しました');
+      console.error('プロフィール再取得エラー:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ローディング表示（統一デザイン）
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
@@ -119,19 +145,30 @@ const ComprehensiveProfilePage: React.FC = () => {
     );
   }
 
+  // エラー表示（統一デザイン）
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
         <div className="text-center">
           <p className="mb-4" style={{color: 'var(--color-error)'}}>{error}</p>
-          <button onClick={() => window.location.reload()} className="btn btn-primary">
-            再読み込み
+          <button onClick={handleRetry} className="btn btn-primary">
+            再試行
           </button>
         </div>
       </div>
     );
   }
 
+  // プロフィールデータがない場合
+  if (!profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
+        <div className="text-center">
+          <p style={{color: 'var(--color-gray-600)'}}>プロフィールデータが見つかりません。</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
       {/* Header Section */}
@@ -143,8 +180,8 @@ const ComprehensiveProfilePage: React.FC = () => {
             </div>
             <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 rounded-full border-3 border-white"></div>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">{user.name}</h1>
-          <p className="text-white/90 text-lg mb-4">{user.age ? `${user.age}歳` : '年齢未設定'}</p>
+          <h1 className="text-2xl font-bold text-white mb-2">{profile.name}</h1>
+          <p className="text-white/90 text-lg mb-4">{profile.age ? `${profile.age}歳` : '年齢未設定'}</p>
           <button
             onClick={handleEdit}
             className="inline-flex items-center gap-2 backdrop-blur-sm text-white px-4 py-2 rounded-full border transition-colors"
@@ -169,7 +206,9 @@ const ComprehensiveProfilePage: React.FC = () => {
             <Calendar className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
               <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>生年月日</p>
-              <p style={{color: user.birth_date ? 'var(--color-gray-800)' : 'var(--color-gray-400)'}}>{user.birth_date || '未設定'}</p>
+              <p style={{color: profile.birth_date && profile.birth_date !== '未設定' ? 'var(--color-gray-800)' : 'var(--color-gray-400)'}}>
+                {profile.birth_date || '未設定'}
+              </p>
             </div>
           </div>
 
@@ -178,10 +217,10 @@ const ComprehensiveProfilePage: React.FC = () => {
             <div className="flex-1">
               <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>婚活の経験</p>
               <span 
-                className="px-3 py-1 rounded-full text-sm font-semibold text-white" 
-                style={{backgroundColor: user.konkatsu_experience ? 'var(--color-primary-500)' : 'var(--color-gray-400)'}}
+                className="px-3 py-1 rounded-full text-sm font-semibold text-white"
+                style={{ backgroundColor: getKonkatsuExperienceColor(profile.konkatsu_experience) }}
               >
-                {user.konkatsu_experience || '未設定'}
+                {getKonkatsuExperienceDisplay(profile.konkatsu_experience)}
               </span>
             </div>
           </div>
@@ -190,7 +229,9 @@ const ComprehensiveProfilePage: React.FC = () => {
             <Briefcase className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
               <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>職業</p>
-              <p style={{color: user.occupation ? 'var(--color-gray-800)' : 'var(--color-gray-400)'}}>{user.occupation || '未設定'}</p>
+              <p style={{color: profile.occupation && profile.occupation !== '未設定' ? 'var(--color-gray-800)' : 'var(--color-gray-400)'}}>
+                {profile.occupation || '未設定'}
+              </p>
             </div>
           </div>
         </div>
@@ -203,7 +244,9 @@ const ComprehensiveProfilePage: React.FC = () => {
             <MapPin className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
               <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>出身地</p>
-              <p style={{color: user.birthplace ? 'var(--color-gray-800)' : 'var(--color-gray-400)'}}>{user.birthplace || '未設定'}</p>
+              <p style={{color: profile.birthplace && profile.birthplace !== '未設定' ? 'var(--color-gray-800)' : 'var(--color-gray-400)'}}>
+                {profile.birthplace || '未設定'}
+              </p>
             </div>
           </div>
 
@@ -211,7 +254,9 @@ const ComprehensiveProfilePage: React.FC = () => {
             <MapPin className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
               <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>現在の居住地</p>
-              <p style={{color: user.residence ? 'var(--color-gray-800)' : 'var(--color-gray-400)'}}>{user.residence || '未設定'}</p>
+              <p style={{color: profile.residence && profile.residence !== '未設定' ? 'var(--color-gray-800)' : 'var(--color-gray-400)'}}>
+                {profile.residence || '未設定'}
+              </p>
             </div>
           </div>
         </div>
@@ -220,8 +265,8 @@ const ComprehensiveProfilePage: React.FC = () => {
         <div className="card">
           <h2 className="text-xl font-bold mb-6" style={{color: 'var(--color-gray-800)'}}>趣味・興味</h2>
           <div className="flex flex-wrap gap-2">
-            {user.hobbies && user.hobbies.length > 0 ? (
-              user.hobbies.map((hobby, index) => (
+            {profile.hobbies && Array.isArray(profile.hobbies) && profile.hobbies.length > 0 && profile.hobbies[0] !== '未設定' ? (
+              profile.hobbies.map((hobby, index) => (
                 <span 
                   key={index} 
                   className="px-3 py-2 rounded-full text-sm font-medium"
@@ -244,25 +289,27 @@ const ComprehensiveProfilePage: React.FC = () => {
             <Coffee className="w-5 h-5" style={{color: 'var(--color-primary-500)'}} />
             <h2 className="text-xl font-bold" style={{color: 'var(--color-gray-800)'}}>休日の過ごし方</h2>
           </div>
-          <p className="leading-relaxed" style={{color: user.weekend_activities ? 'var(--color-gray-700)' : 'var(--color-gray-400)'}}>
-            {user.weekend_activities || '未設定'}
+          <p className="leading-relaxed" style={{color: profile.weekend_activities && profile.weekend_activities !== '未設定' ? 'var(--color-gray-700)' : 'var(--color-gray-400)'}}>
+            {profile.weekend_activities || '未設定'}
           </p>
         </div>
 
         {/* MBTI Card */}
-        <div className="card" style={{background: user.mbti ? 'var(--bg-gradient-primary)' : 'linear-gradient(to right, var(--color-secondary-50), var(--color-accent-50))', border: user.mbti ? 'none' : '1px solid var(--color-secondary-200)'}}>
-          {user.mbti ? (
+        {profile.mbti ? (
+          <div className="card" style={{background: 'var(--bg-gradient-primary)', border: 'none'}}>
             <div className="text-white">
               <div className="flex items-center gap-3 mb-4">
                 <Brain className="w-8 h-8 text-white" />
                 <div>
-                  <h3 className="text-xl font-bold mb-1">{user.mbti.mbti_type}</h3>
-                  <p className="text-white/90 font-medium">{user.mbti.type_name}</p>
+                  <h3 className="text-xl font-bold mb-1">{profile.mbti.mbti_type}</h3>
+                  <p className="text-white/90 font-medium">{getMBTITypeName(profile.mbti.mbti_type)}</p>
                 </div>
               </div>
-              <p className="text-white/90 leading-relaxed mb-4">
-                {user.mbti.description}
-              </p>
+              {profile.mbti.description && (
+                <p className="text-white/90 leading-relaxed mb-4">
+                  {profile.mbti.description}
+                </p>
+              )}
               <button
                 onClick={handleMBTITest}
                 className="btn btn-ghost text-white px-4 py-2"
@@ -271,7 +318,9 @@ const ComprehensiveProfilePage: React.FC = () => {
                 再診断する
               </button>
             </div>
-          ) : (
+          </div>
+        ) : (
+          <div className="card" style={{background: 'linear-gradient(to right, var(--color-secondary-50), var(--color-accent-50))', border: '1px solid var(--color-secondary-200)'}}>
             <div className="text-center">
               <Brain className="w-12 h-12 mx-auto mb-4" style={{color: 'var(--color-secondary-500)'}} />
               <h3 className="text-lg font-bold mb-2" style={{color: 'var(--color-gray-800)'}}>Marriage MBTI+を受けてみませんか？</h3>
@@ -285,8 +334,8 @@ const ComprehensiveProfilePage: React.FC = () => {
                 Marriage MBTI+を受ける
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* LayoutでFooterが自動追加されるので、ここの重複フッターは削除 */}
