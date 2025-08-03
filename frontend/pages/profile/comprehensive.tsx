@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { 
@@ -15,6 +15,90 @@ import {
 
 const ComprehensiveProfilePage: React.FC = () => {
   const router = useRouter();
+  const [user, setUser] = useState({
+    name: '',
+    age: null,
+    birth_date: '',
+    konkatsu_experience: '',
+    occupation: '',
+    birthplace: '',
+    residence: '',
+    hobbies: [],
+    weekend_activities: '',
+    mbti: null,
+    email: ''
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        setLoading(true);
+        
+        // ブラウザ環境でない場合は処理を停止
+        if (typeof window === 'undefined') {
+          setLoading(false);
+          return;
+        }
+        
+        // トークンの存在確認
+        const storedToken = localStorage.getItem('token');
+        if (!storedToken) {
+          router.replace('/auth/login');
+          return;
+        }
+        
+        // JWTトークンをデコードしてユーザー情報を取得
+        const payload = JSON.parse(atob(storedToken.split('.')[1]));
+        
+        // 基本情報をトークンから設定
+        setUser({
+          name: payload.name || payload.username || 'お名前',
+          age: payload.age || null,
+          birth_date: payload.birth_date || '',
+          konkatsu_experience: payload.konkatsu_experience || '',
+          occupation: payload.occupation || '',
+          birthplace: payload.birthplace || '',
+          residence: payload.residence || '',
+          hobbies: payload.hobbies || [],
+          weekend_activities: payload.weekend_activities || '',
+          mbti: payload.mbti || null,
+          email: payload.email || ''
+        });
+        
+        // 追加でAPIからプロフィール情報を取得（可能であれば）
+        try {
+          const API_BASE_URL = process.env.NODE_ENV === 'production' 
+            ? 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io'
+            : 'http://localhost:8000';
+          
+          const response = await fetch(`${API_BASE_URL}/test-profile`);
+          if (response.ok) {
+            const profileData = await response.json();
+            console.log('API プロフィールデータ取得成功:', profileData);
+            if (profileData.success && profileData.profile) {
+              setUser(prev => ({
+                ...prev,
+                ...profileData.profile,
+                name: profileData.profile.name || prev.name
+              }));
+            }
+          }
+        } catch (apiError) {
+          console.log('プロフィールAPI呼び出しに失敗（トークン情報を使用）:', apiError);
+        }
+        
+      } catch (error) {
+        console.error('プロフィール取得エラー:', error);
+        setError('プロフィール情報の取得に失敗しました');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUserProfile();
+  }, [router]);
 
   const handleEdit = () => {
     router.push('/profile/edit');
@@ -23,6 +107,30 @@ const ComprehensiveProfilePage: React.FC = () => {
   const handleMBTITest = () => {
     router.push('/marriage-mbti-test');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
+        <div className="text-center">
+          <div className="w-8 h-8 rounded-full animate-spin mx-auto mb-4" style={{border: '2px solid var(--color-primary-300)', borderTop: '2px solid var(--color-primary-500)'}}></div>
+          <p style={{color: 'var(--color-gray-600)'}}>プロフィールを読み込んでいます...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
+        <div className="text-center">
+          <p className="mb-4" style={{color: 'var(--color-error)'}}>{error}</p>
+          <button onClick={() => window.location.reload()} className="btn btn-primary">
+            再読み込み
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
@@ -35,8 +143,8 @@ const ComprehensiveProfilePage: React.FC = () => {
             </div>
             <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 rounded-full border-3 border-white"></div>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">お名前</h1>
-          <p className="text-white/90 text-lg mb-4">--歳</p>
+          <h1 className="text-2xl font-bold text-white mb-2">{user.name}</h1>
+          <p className="text-white/90 text-lg mb-4">{user.age ? `${user.age}歳` : '年齢未設定'}</p>
           <button
             onClick={handleEdit}
             className="inline-flex items-center gap-2 backdrop-blur-sm text-white px-4 py-2 rounded-full border transition-colors"
@@ -61,7 +169,7 @@ const ComprehensiveProfilePage: React.FC = () => {
             <Calendar className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
               <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>生年月日</p>
-              <p style={{color: 'var(--color-gray-400)'}}>未設定</p>
+              <p style={{color: user.birth_date ? 'var(--color-gray-800)' : 'var(--color-gray-400)'}}>{user.birth_date || '未設定'}</p>
             </div>
           </div>
 
@@ -69,8 +177,11 @@ const ComprehensiveProfilePage: React.FC = () => {
             <Users className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
               <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>婚活の経験</p>
-              <span className="px-3 py-1 rounded-full text-sm font-semibold text-white" style={{backgroundColor: 'var(--color-gray-400)'}}>
-                未設定
+              <span 
+                className="px-3 py-1 rounded-full text-sm font-semibold text-white" 
+                style={{backgroundColor: user.konkatsu_experience ? 'var(--color-primary-500)' : 'var(--color-gray-400)'}}
+              >
+                {user.konkatsu_experience || '未設定'}
               </span>
             </div>
           </div>
@@ -79,7 +190,7 @@ const ComprehensiveProfilePage: React.FC = () => {
             <Briefcase className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
               <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>職業</p>
-              <p style={{color: 'var(--color-gray-400)'}}>未設定</p>
+              <p style={{color: user.occupation ? 'var(--color-gray-800)' : 'var(--color-gray-400)'}}>{user.occupation || '未設定'}</p>
             </div>
           </div>
         </div>
@@ -91,73 +202,94 @@ const ComprehensiveProfilePage: React.FC = () => {
           <div className="flex items-start gap-3 mb-4">
             <MapPin className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
-              <p className="text-sm text-gray-600 mb-1">出身地</p>
-              <p className="text-gray-400">未設定</p>
+              <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>出身地</p>
+              <p style={{color: user.birthplace ? 'var(--color-gray-800)' : 'var(--color-gray-400)'}}>{user.birthplace || '未設定'}</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <MapPin className="w-5 h-5 text-orange-500 mt-0.5" />
+            <MapPin className="w-5 h-5 mt-0.5" style={{color: 'var(--color-primary-500)'}} />
             <div className="flex-1">
-              <p className="text-sm text-gray-600 mb-1">現在の居住地</p>
-              <p className="text-gray-400">未設定</p>
+              <p className="text-sm mb-1" style={{color: 'var(--color-gray-600)'}}>現在の居住地</p>
+              <p style={{color: user.residence ? 'var(--color-gray-800)' : 'var(--color-gray-400)'}}>{user.residence || '未設定'}</p>
             </div>
           </div>
         </div>
 
         {/* Hobbies Card */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-800 mb-6">趣味・興味</h2>
+        <div className="card">
+          <h2 className="text-xl font-bold mb-6" style={{color: 'var(--color-gray-800)'}}>趣味・興味</h2>
           <div className="flex flex-wrap gap-2">
-            <span className="px-3 py-2 bg-gray-100 text-gray-400 rounded-full text-sm font-medium border border-gray-200">
-              未設定
-            </span>
+            {user.hobbies && user.hobbies.length > 0 ? (
+              user.hobbies.map((hobby, index) => (
+                <span 
+                  key={index} 
+                  className="px-3 py-2 rounded-full text-sm font-medium"
+                  style={{backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-700)', border: '1px solid var(--color-primary-200)'}}
+                >
+                  {hobby}
+                </span>
+              ))
+            ) : (
+              <span className="px-3 py-2 rounded-full text-sm font-medium" style={{backgroundColor: 'var(--color-gray-100)', color: 'var(--color-gray-400)', border: '1px solid var(--color-gray-200)'}}>
+                未設定
+              </span>
+            )}
           </div>
         </div>
 
         {/* Weekend Activities Card */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div className="card">
           <div className="flex items-center gap-2 mb-4">
-            <Coffee className="w-5 h-5 text-orange-500" />
-            <h2 className="text-xl font-bold text-gray-800">休日の過ごし方</h2>
+            <Coffee className="w-5 h-5" style={{color: 'var(--color-primary-500)'}} />
+            <h2 className="text-xl font-bold" style={{color: 'var(--color-gray-800)'}}>休日の過ごし方</h2>
           </div>
-          <p className="text-gray-400 leading-relaxed">未設定</p>
+          <p className="leading-relaxed" style={{color: user.weekend_activities ? 'var(--color-gray-700)' : 'var(--color-gray-400)'}}>
+            {user.weekend_activities || '未設定'}
+          </p>
         </div>
 
-        {/* MBTI Card - 未診断状態 */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
-          <div className="text-center">
-            <Brain className="w-12 h-12 text-blue-500 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Marriage MBTI+を受けてみませんか？</h3>
-            <p className="text-gray-600 mb-4">
-              あなたの性格タイプを知ることで、より自分を客観的に見られるようになります。
-            </p>
-            <button
-              onClick={handleMBTITest}
-              className="bg-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors"
-            >
-              Marriage MBTI+を受ける
-            </button>
-          </div>
+        {/* MBTI Card */}
+        <div className="card" style={{background: user.mbti ? 'var(--bg-gradient-primary)' : 'linear-gradient(to right, var(--color-secondary-50), var(--color-accent-50))', border: user.mbti ? 'none' : '1px solid var(--color-secondary-200)'}}>
+          {user.mbti ? (
+            <div className="text-white">
+              <div className="flex items-center gap-3 mb-4">
+                <Brain className="w-8 h-8 text-white" />
+                <div>
+                  <h3 className="text-xl font-bold mb-1">{user.mbti.mbti_type}</h3>
+                  <p className="text-white/90 font-medium">{user.mbti.type_name}</p>
+                </div>
+              </div>
+              <p className="text-white/90 leading-relaxed mb-4">
+                {user.mbti.description}
+              </p>
+              <button
+                onClick={handleMBTITest}
+                className="btn btn-ghost text-white px-4 py-2"
+                style={{backgroundColor: 'rgba(255, 255, 255, 0.2)', border: '1px solid rgba(255, 255, 255, 0.3)'}}
+              >
+                再診断する
+              </button>
+            </div>
+          ) : (
+            <div className="text-center">
+              <Brain className="w-12 h-12 mx-auto mb-4" style={{color: 'var(--color-secondary-500)'}} />
+              <h3 className="text-lg font-bold mb-2" style={{color: 'var(--color-gray-800)'}}>Marriage MBTI+を受けてみませんか？</h3>
+              <p className="mb-4" style={{color: 'var(--color-gray-600)'}}>
+                あなたの性格タイプを知ることで、より自分を客観的に見られるようになります。
+              </p>
+              <button
+                onClick={handleMBTITest}
+                className="btn btn-secondary px-6 py-3"
+              >
+                Marriage MBTI+を受ける
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-100/70 py-4 shadow-sm">
-        <div className="max-w-md mx-auto px-6">
-          <div className="flex justify-around">
-            <Link href="/" className="flex flex-col items-center">
-              <HomeIcon className="w-6 h-6 text-gray-400" />
-              <span className="text-xs mt-1 text-gray-400">ホーム</span>
-            </Link>
-            
-            <Link href="/profile" className="flex flex-col items-center">
-              <User className="w-6 h-6 text-orange-500" />
-              <span className="text-xs mt-1 text-orange-500">プロフィール</span>
-            </Link>
-          </div>
-        </div>
-      </nav>
+      {/* LayoutでFooterが自動追加されるので、ここの重複フッターは削除 */}
     </div>
   );
 };
