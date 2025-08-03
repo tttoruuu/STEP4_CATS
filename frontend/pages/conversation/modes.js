@@ -34,12 +34,11 @@ export default function ConversationModes() {
     },
     {
       id: 'integrated-conversation',
-      title: '聞く力練習（統合型）',
-      description: '会話を引き出す・深掘りするスキルを初級・中級・上級のレベル別で体系的に習得',
+      title: '聞く力トレーニング（初級・上級）',
+      description: '会話を引き出す・深掘りするスキルを初級・上級のレベル別で体系的に習得',
       icon: TrendingUp,
       color: 'from-green-500 to-blue-500',
-      path: '/conversation/integrated-practice',
-      badge: 'おすすめ'
+      path: '/conversation/integrated-practice'
     },
     {
       id: 'free',

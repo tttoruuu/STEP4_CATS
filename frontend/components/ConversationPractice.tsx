@@ -10,11 +10,10 @@ import { ArrowLeft, Lightbulb, Search, TrendingUp, Star, Lock } from 'lucide-rea
 
 interface UserProgress {
   completedScenarios: string[];
-  currentLevel: 'beginner' | 'intermediate' | 'advanced';
+  currentLevel: 'beginner' | 'advanced';
   totalScore: number;
   levelProgress: {
     beginner: { completed: number; total: number; unlocked: boolean };
-    intermediate: { completed: number; total: number; unlocked: boolean };
     advanced: { completed: number; total: number; unlocked: boolean };
   };
 }
@@ -22,7 +21,7 @@ interface UserProgress {
 const ConversationPractice: React.FC = () => {
   const router = useRouter();
   const [currentView, setCurrentView] = useState<'levelSelect' | 'quiz' | 'shadowing'>('levelSelect');
-  const [selectedLevel, setSelectedLevel] = useState<'beginner' | 'intermediate' | 'advanced' | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<'beginner' | 'advanced' | null>(null);
   const [currentScenario, setCurrentScenario] = useState(null);
   const [userProgress, setUserProgress] = useState<UserProgress>({
     completedScenarios: [],
@@ -30,8 +29,7 @@ const ConversationPractice: React.FC = () => {
     totalScore: 0,
     levelProgress: {
       beginner: { completed: 0, total: 0, unlocked: true },
-      intermediate: { completed: 0, total: 0, unlocked: false },
-      advanced: { completed: 0, total: 0, unlocked: false }
+      advanced: { completed: 0, total: 0, unlocked: true }
     }
   });
 
@@ -43,8 +41,7 @@ const ConversationPractice: React.FC = () => {
   const calculateProgress = () => {
     const scenarios = conversationQuizData.scenarios;
     const beginnerScenarios = scenarios.filter(s => s.level === 'beginner');
-    const intermediateScenarios = scenarios.filter(s => s.level === 'intermediate');
-    const advancedScenarios = scenarios.filter(s => s.level === 'advanced');
+    const advancedScenarios = scenarios.filter(s => s.level === 'intermediate' || s.level === 'advanced');
 
     // ローカルストレージから進捗を読み込み
     const savedProgress = localStorage.getItem('conversationPracticeProgress');
@@ -54,13 +51,7 @@ const ConversationPractice: React.FC = () => {
       
       // 各レベルの完了数を計算
       const beginnerCompleted = beginnerScenarios.filter(s => completedIds.includes(s.id)).length;
-      const intermediateCompleted = intermediateScenarios.filter(s => completedIds.includes(s.id)).length;
       const advancedCompleted = advancedScenarios.filter(s => completedIds.includes(s.id)).length;
-      
-      // 中級解放条件：初級80%以上完了
-      const intermediateUnlocked = beginnerCompleted >= Math.floor(beginnerScenarios.length * 0.8);
-      // 上級解放条件：中級80%以上完了
-      const advancedUnlocked = intermediateCompleted >= Math.floor(intermediateScenarios.length * 0.8);
       
       setUserProgress({
         ...parsed,
@@ -70,15 +61,10 @@ const ConversationPractice: React.FC = () => {
             total: beginnerScenarios.length, 
             unlocked: true 
           },
-          intermediate: { 
-            completed: intermediateCompleted, 
-            total: intermediateScenarios.length, 
-            unlocked: intermediateUnlocked 
-          },
           advanced: { 
             completed: advancedCompleted, 
             total: advancedScenarios.length, 
-            unlocked: advancedUnlocked 
+            unlocked: true 
           }
         }
       });
@@ -88,8 +74,7 @@ const ConversationPractice: React.FC = () => {
         ...prev,
         levelProgress: {
           beginner: { completed: 0, total: beginnerScenarios.length, unlocked: true },
-          intermediate: { completed: 0, total: intermediateScenarios.length, unlocked: false },
-          advanced: { completed: 0, total: advancedScenarios.length, unlocked: false }
+          advanced: { completed: 0, total: advancedScenarios.length, unlocked: true }
         }
       }));
     }
@@ -100,14 +85,16 @@ const ConversationPractice: React.FC = () => {
     setUserProgress(updatedProgress);
   };
 
-  const handleLevelSelect = (level: 'beginner' | 'intermediate' | 'advanced') => {
-    if (!userProgress.levelProgress[level].unlocked) {
-      alert(`${level === 'intermediate' ? '中級' : '上級'}レベルはまだ解放されていません。前のレベルを80%以上完了してください。`);
-      return;
+  const handleLevelSelect = (level: 'beginner' | 'advanced') => {
+    setSelectedLevel(level);
+    
+    let levelScenarios;
+    if (level === 'beginner') {
+      levelScenarios = conversationQuizData.scenarios.filter(s => s.level === 'beginner');
+    } else {
+      levelScenarios = conversationQuizData.scenarios.filter(s => s.level === 'intermediate' || s.level === 'advanced');
     }
     
-    setSelectedLevel(level);
-    const levelScenarios = conversationQuizData.scenarios.filter(s => s.level === level);
     const uncompletedScenarios = levelScenarios.filter(s => !userProgress.completedScenarios.includes(s.id));
     
     if (uncompletedScenarios.length > 0) {
@@ -141,7 +128,12 @@ const ConversationPractice: React.FC = () => {
     calculateProgress();
     
     // 次の問題を選択
-    const levelScenarios = conversationQuizData.scenarios.filter(s => s.level === selectedLevel);
+    let levelScenarios;
+    if (selectedLevel === 'beginner') {
+      levelScenarios = conversationQuizData.scenarios.filter(s => s.level === 'beginner');
+    } else {
+      levelScenarios = conversationQuizData.scenarios.filter(s => s.level === 'intermediate' || s.level === 'advanced');
+    }
     const uncompletedScenarios = levelScenarios.filter(s => !updatedCompletedScenarios.includes(s.id));
     
     if (uncompletedScenarios.length > 0) {
@@ -173,34 +165,23 @@ const ConversationPractice: React.FC = () => {
     setCurrentScenario(null);
   };
 
-  const getLevelInfo = (level: 'beginner' | 'intermediate' | 'advanced') => {
+  const getLevelInfo = (level: 'beginner' | 'advanced') => {
     const info = {
       beginner: {
         title: '初級',
-        description: '基本的な会話引き出し技術',
+        description: '初対面の女性とも自然に話せる！会話を引き出すテクニック',
         color: 'from-green-500 to-green-600',
         bgColor: 'bg-green-50',
         borderColor: 'border-green-500',
-        icon: '🟢',
-        skills: ['アイスブレイク質問', '基本的な引き出し質問', '適切な相槌技術']
-      },
-      intermediate: {
-        title: '中級',
-        description: '応用的な質問と軽い深堀り',
-        color: 'from-yellow-500 to-yellow-600',
-        bgColor: 'bg-yellow-50',
-        borderColor: 'border-yellow-500',
-        icon: '🟡',
-        skills: ['話題展開テクニック', '感情フォーカス質問', '価値観を探る入門']
+        icon: '🟢'
       },
       advanced: {
         title: '上級',
-        description: '高度な深堀り質問と分析技術',
+        description: 'お見合い・デートで差をつける！相手の本音を引き出すプロ技術',
         color: 'from-red-500 to-red-600',
         bgColor: 'bg-red-50',
         borderColor: 'border-red-500',
-        icon: '🔴',
-        skills: ['価値観深堀り技術', '高度な共感技術', '未来志向の会話']
+        icon: '🔴'
       }
     };
     return info[level];
@@ -220,58 +201,24 @@ const ConversationPractice: React.FC = () => {
           </button>
           
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">統合型会話練習</h1>
-            <p className="text-gray-600">聞く力マスタープログラム</p>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">聞く力トレーニング</h1>
+            <p className="text-gray-600">会話を引き出す・深掘りするためのプログラム</p>
           </div>
 
-          {/* 総合進捗 */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-4">あなたの進捗</h2>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">{userProgress.completedScenarios.length}</div>
-                <div className="text-gray-600">完了した練習</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600">{userProgress.totalScore}</div>
-                <div className="text-gray-600">獲得ポイント</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600">
-                  {Math.round((userProgress.completedScenarios.length / conversationQuizData.scenarios.length) * 100)}%
-                </div>
-                <div className="text-gray-600">全体の完了率</div>
-              </div>
-            </div>
-          </div>
 
           {/* レベル選択 */}
-          <div className="grid md:grid-cols-3 gap-6">
-            {(['beginner', 'intermediate', 'advanced'] as const).map((level) => {
+          <div className="grid md:grid-cols-2 gap-6">
+            {(['beginner', 'advanced'] as const).map((level) => {
               const levelInfo = getLevelInfo(level);
               const progress = userProgress.levelProgress[level];
               const isUnlocked = progress.unlocked;
               
               return (
-                <div
-                  key={level}
-                  className={`relative ${!isUnlocked ? 'opacity-60' : ''}`}
-                >
+                <div key={level}>
                   <button
                     onClick={() => handleLevelSelect(level)}
-                    disabled={!isUnlocked}
-                    className={`w-full p-6 rounded-lg shadow-lg transition-all duration-200 ${
-                      isUnlocked 
-                        ? 'hover:shadow-xl hover:scale-105 cursor-pointer' 
-                        : 'cursor-not-allowed'
-                    } ${levelInfo.bgColor} border-2 ${levelInfo.borderColor}`}
+                    className={`w-full p-6 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 cursor-pointer ${levelInfo.bgColor} border-2 ${levelInfo.borderColor}`}
                   >
-                    {!isUnlocked && (
-                      <div className="absolute top-4 right-4">
-                        <Lock size={24} className="text-gray-500" />
-                      </div>
-                    )}
-                    
                     <div className="text-4xl mb-2">{levelInfo.icon}</div>
                     <h3 className={`text-xl font-bold mb-2 bg-gradient-to-r ${levelInfo.color} bg-clip-text text-transparent`}>
                       {levelInfo.title}
@@ -291,25 +238,6 @@ const ConversationPractice: React.FC = () => {
                         />
                       </div>
                     </div>
-                    
-                    {/* スキル一覧 */}
-                    <div className="text-left">
-                      <p className="text-sm font-medium text-gray-700 mb-2">習得スキル：</p>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        {levelInfo.skills.map((skill, index) => (
-                          <li key={index} className="flex items-center gap-1">
-                            <span className="text-green-500">✓</span>
-                            {skill}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    {!isUnlocked && (
-                      <div className="mt-4 text-sm text-gray-500">
-                        前のレベルを80%以上完了で解放
-                      </div>
-                    )}
                   </button>
                 </div>
               );

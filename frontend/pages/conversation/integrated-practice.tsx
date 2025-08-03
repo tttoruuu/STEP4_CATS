@@ -4,7 +4,7 @@ import ConversationPractice from '../../components/ConversationPractice';
 
 export default function IntegratedPracticePage() {
   return (
-    <Layout title="統合型会話練習 - 聞く力マスタープログラム">
+    <Layout title="聞く力トレーニング - 会話を引き出す・深掘りするためのプログラム">
       <ConversationPractice />
     </Layout>
   );

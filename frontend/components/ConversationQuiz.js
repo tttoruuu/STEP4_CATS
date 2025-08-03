@@ -53,9 +53,6 @@ const ConversationQuiz = ({
       {/* シナリオ情報 */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <span className={`px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r ${scenario.category === 'elicit' ? 'from-yellow-500 to-yellow-600' : 'from-purple-500 to-purple-600'} text-white`}>
-            {scenario.category === 'elicit' ? '引き出す' : '深める'}
-          </span>
           <span className="px-2 py-1 bg-gray-100 rounded text-sm text-gray-600">
             {scenario.level === 'beginner' ? '初級' : scenario.level === 'intermediate' ? '中級' : '上級'}
           </span>
@@ -73,7 +70,7 @@ const ConversationQuiz = ({
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0">
               <div className="w-10 h-10 bg-pink-400 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">女</span>
+                <span className="text-white text-sm font-medium">女性</span>
               </div>
             </div>
             <div className="flex-1">
