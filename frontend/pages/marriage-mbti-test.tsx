@@ -484,11 +484,7 @@ const MarriageMBTITestPage: React.FC = () => {
                   className="w-full p-6 text-left rounded-xl border-2 transition-all duration-300 transform hover:scale-[1.02] group" 
                   style={{
                     background: 'linear-gradient(to right, var(--color-primary-50), var(--color-accent-50))',
-                    borderColor: 'var(--color-primary-200)',
-                    ':hover': {
-                      background: 'linear-gradient(to right, var(--color-primary-100), var(--color-accent-100))',
-                      borderColor: 'var(--color-primary-300)'
-                    }
+                    borderColor: 'var(--color-primary-200)'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = 'linear-gradient(to right, var(--color-primary-100), var(--color-accent-100))';
