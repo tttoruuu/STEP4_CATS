@@ -46,15 +46,9 @@ const ConversationPractice: React.FC = () => {
     const beginnerScenarios = scenarios.filter(s => s.level === 'beginner');
     const advancedScenarios = scenarios.filter(s => s.level === 'advanced');
 
-    console.log('📊 calculateProgress 開始', { 
-      totalScenarios: scenarios.length, 
-      beginnerCount: beginnerScenarios.length, 
-      advancedCount: advancedScenarios.length 
-    });
 
     // ローカルストレージから進捗を読み込み
     const savedProgress = localStorage.getItem('conversationPracticeProgress');
-    console.log('📁 ローカルストレージの状態:', savedProgress);
     
     if (savedProgress && savedProgress !== 'null') {
       const parsed = JSON.parse(savedProgress);
@@ -121,7 +115,6 @@ const ConversationPractice: React.FC = () => {
   };
 
   const handleLevelSelect = (level: 'beginner' | 'advanced') => {
-    console.log('🎯 レベル選択:', level, '現在の完了済み:', userProgress.completedScenarios.length);
     setSelectedLevel(level);
     
     let levelScenarios;
@@ -137,13 +130,6 @@ const ConversationPractice: React.FC = () => {
     );
     const uncompletedScenarios = levelScenarios.filter(s => !levelCompletedIds.includes(s.id));
     
-    console.log('📊 レベル選択詳細:', {
-      level,
-      totalScenarios: levelScenarios.length,
-      completedInLevel: levelCompletedIds.length,
-      uncompletedCount: uncompletedScenarios.length,
-      levelCompletedIds
-    });
     
     if (uncompletedScenarios.length > 0) {
       // 音声がある設問を優先して選択
@@ -179,9 +165,7 @@ const ConversationPractice: React.FC = () => {
   };
 
   const handleQuizComplete = () => {
-    console.log('🎯 handleQuizComplete 開始', { currentScenario: currentScenario?.id, selectedLevel });
     if (!currentScenario || !selectedLevel) {
-      console.log('❌ currentScenario または selectedLevel が未定義');
       return;
     }
     
@@ -212,16 +196,6 @@ const ConversationPractice: React.FC = () => {
     );
     const uncompletedScenarios = levelScenarios.filter(s => !levelCompletedIds.includes(s.id));
     
-    console.log('デバッグ: handleQuizComplete', {
-      selectedLevel,
-      totalLevelScenarios: levelScenarios.length,
-      completedInThisLevel: levelCompletedIds.length,
-      uncompletedCount: uncompletedScenarios.length,
-      currentScenarioId: currentScenario.id,
-      allCompletedIds: updatedCompletedScenarios,
-      levelScenariosIds: levelScenarios.map(s => s.id),
-      levelCompletedIds: levelCompletedIds
-    });
     
     if (uncompletedScenarios.length > 0) {
       // 音声がある設問を優先して選択
@@ -238,7 +212,6 @@ const ConversationPractice: React.FC = () => {
       }
     } else {
       // レベル完了
-      console.log('レベル完了！', selectedLevel);
       setShowCompletionDialog({ show: true, type: selectedLevel });
     }
   };
@@ -277,16 +250,6 @@ const ConversationPractice: React.FC = () => {
     );
     const uncompletedScenarios = levelScenarios.filter(s => !levelCompletedIds.includes(s.id));
     
-    console.log('デバッグ: handleShadowingComplete', {
-      selectedLevel,
-      totalLevelScenarios: levelScenarios.length,
-      completedInThisLevel: levelCompletedIds.length,
-      uncompletedCount: uncompletedScenarios.length,
-      currentScenarioId: currentScenario.id,
-      allCompletedIds: updatedCompletedScenarios,
-      levelScenariosIds: levelScenarios.map(s => s.id),
-      levelCompletedIds: levelCompletedIds
-    });
     
     if (uncompletedScenarios.length > 0) {
       // 音声がある設問を優先して選択
@@ -304,7 +267,6 @@ const ConversationPractice: React.FC = () => {
       setCurrentView('quiz');
     } else {
       // レベル完了
-      console.log('レベル完了！', selectedLevel);
       setShowCompletionDialog({ show: true, type: selectedLevel });
     }
   };
@@ -333,7 +295,6 @@ const ConversationPractice: React.FC = () => {
       }
     };
     
-    console.log('🔄 進捗リセット:', resetProgress);
     saveProgress(resetProgress);
     
     if (showCompletionDialog.type === 'beginner') {
