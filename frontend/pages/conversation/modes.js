@@ -10,42 +10,33 @@ export default function ConversationModes() {
   const conversationModes = [
     {
       id: 'greeting',
-      title: '挨拶（アイスブレイク含む）',
-      description: '切り出し方や初めて会う人との会話導入練習',
+      title: '挨拶・アイスブレイク',
       icon: MessageCircle,
-      color: 'from-blue-500 to-blue-600',
       path: '/conversation/greeting'
     },
     {
       id: 'empathy',
       title: 'あいづち・共感',
-      description: '「へえ」「ほう」などの適切な相槌、相手の話に共感を示す練習',
       icon: Heart,
-      color: 'from-pink-500 to-pink-600',
       path: '/conversation/empathy-new'
     },
     {
       id: 'repeat',
-      title: '相手の会話ポイント全コピー',
-      description: '相手の言葉を要約せずそのまま繰り返す練習',
+      title: '会話ポイント全コピー',
       icon: Copy,
-      color: 'from-green-500 to-green-600',
       path: '/conversation/repeat-new'
     },
     {
       id: 'integrated-conversation',
-      title: '聞く力トレーニング（初級・上級）',
-      description: '会話を引き出す・深掘りするスキルを初級・上級のレベル別で体系的に習得',
+      title: '聞く力トレーニング',
       icon: TrendingUp,
-      color: 'from-green-500 to-blue-500',
-      path: '/conversation/integrated-practice'
+      path: '/conversation/integrated-practice',
+      badge: 'おすすめ'
     },
     {
       id: 'free',
-      title: 'フリー会話する',
-      description: '相手を登録して自由に会話を練習',
+      title: 'フリー会話',
       icon: Users,
-      color: 'from-orange-500 to-orange-600',
       path: '/conversation'
     }
   ];
@@ -71,7 +62,7 @@ export default function ConversationModes() {
         </h1>
         
         <p className="text-center mb-8 max-w-md" style={{color: 'var(--color-gray-600)'}}>
-          聞く力を向上させるための5つの練習モードから選択してください
+          会話スキルを練習して、素敵なコミュニケーションを身につけましょう
         </p>
         
         <div className="w-full max-w-md space-y-4">
@@ -80,13 +71,10 @@ export default function ConversationModes() {
             return (
               <Link key={mode.id} href={mode.path}>
                 <div 
-                  className={`card text-white relative transition-all duration-200 transform hover:scale-105 cursor-pointer`}
+                  className="card text-white relative transition-all duration-200 transform hover:scale-105 cursor-pointer"
                   style={{
-                    background: mode.id === 'greeting' ? 'var(--bg-gradient-secondary)' :
-                               mode.id === 'empathy' ? 'var(--bg-gradient-accent)' :
-                               mode.id === 'repeat' ? 'var(--color-success)' :
-                               mode.id === 'integrated-conversation' ? 'var(--bg-gradient-mixed)' :
-                               'var(--bg-gradient-primary)'
+                    background: 'var(--bg-gradient-primary)',
+                    minHeight: '80px'
                   }}
                 >
                   {mode.badge && (
@@ -94,15 +82,12 @@ export default function ConversationModes() {
                       {mode.badge}
                     </div>
                   )}
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-center gap-4 h-full">
                     <div className="flex-shrink-0">
-                      <IconComponent size={32} className="text-white" />
+                      <IconComponent size={28} className="text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg mb-2">{mode.title}</h3>
-                      <p className="text-white/90 text-sm leading-relaxed">
-                        {mode.description}
-                      </p>
+                      <h3 className="font-semibold text-lg text-center">{mode.title}</h3>
                     </div>
                   </div>
                 </div>
