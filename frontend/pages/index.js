@@ -47,20 +47,35 @@ export default function MainPage() {
       // トークンが存在する場合はユーザー情報を取得
       console.log('✅ Token found v2 - fetching user info');
       try {
-        // JWTトークンをデコードしてユーザー情報を取得（日本語対応）
-        const encodedPayload = storedToken.split('.')[1];
-        const decodedPayload = decodeURIComponent(escape(atob(encodedPayload)));
-        const payload = JSON.parse(decodedPayload);
-        console.log('Token payload:', payload);
-        
-        setUser({
-          id: payload.sub || payload.user_id || 1,
-          username: payload.name || payload.username || 'ユーザー',
-          email: payload.email || 'user@example.com'
-        });
+        // まずローカルストレージからユーザー情報を取得
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          console.log('User data from localStorage:', userData);
+          
+          const finalUser = {
+            id: userData.id || 1,
+            username: userData.name || userData.username || 'ユーザー',
+            email: userData.email || 'user@example.com'
+          };
+          console.log('🔥 Setting user from localStorage:', finalUser);
+          setUser(finalUser);
+        } else {
+          // フォールバック: JWTトークンをデコードしてユーザー情報を取得
+          const encodedPayload = storedToken.split('.')[1];
+          const decodedPayload = decodeURIComponent(escape(atob(encodedPayload)));
+          const payload = JSON.parse(decodedPayload);
+          console.log('Token payload (fallback):', payload);
+          
+          setUser({
+            id: payload.sub || payload.user_id || 1,
+            username: payload.name || payload.username || 'ユーザー',
+            email: payload.email || payload.sub || 'user@example.com'
+          });
+        }
       } catch (error) {
-        console.error('Token decode error:', error);
-        // フォールバック: デフォルト情報を使用
+        console.error('User info fetch error:', error);
+        // 最終フォールバック: デフォルト情報を使用
         setUser({
           id: 1,
           username: 'ユーザー',
@@ -74,6 +89,10 @@ export default function MainPage() {
   }, [router]);
 
   const handleLogout = () => {
+    // ローカルストレージをクリア
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
     authAPI.logout(); // APIの関数を使用
     router.push('/auth/login');
   };

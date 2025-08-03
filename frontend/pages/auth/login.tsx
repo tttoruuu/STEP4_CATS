@@ -41,10 +41,15 @@ export default function LoginPage() {
       if (res.success) {
         if (res.data && res.data.access_token) {
           localStorage.setItem('token', res.data.access_token);
+          
+          // ユーザー情報もローカルストレージに保存
+          if (res.data.user) {
+            localStorage.setItem('user', JSON.stringify(res.data.user));
+          }
         }
         window.location.href = "/";
       } else {
-        setError('メールアドレスまたはパスワードが間違っています');
+        setError(res.error || 'メールアドレスまたはパスワードが間違っています');
       }
     } catch (error) {
       console.error('Login error:', error);

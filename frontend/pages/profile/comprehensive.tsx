@@ -28,83 +28,26 @@ const ComprehensiveProfilePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // プロフィールデータの取得（統合版）
+  // プロフィールデータの取得
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
         console.log('プロフィール取得開始...');
         
-        // まず統合APIからプロフィールデータを取得
-        try {
-          const profileData = await getComprehensiveProfile();
-          console.log('プロフィール取得完了:', profileData);
-          setProfile(profileData);
-          setError(null);
-          return;
-        } catch (apiError) {
-          console.log('統合API失敗、フォールバック処理開始:', apiError);
-        }
-        
-        // フォールバック: JWTトークンとtest-profileから情報取得
-        if (typeof window !== 'undefined') {
-          const storedToken = localStorage.getItem('token');
-          if (!storedToken) {
-            router.replace('/auth/login');
-            return;
-          }
-          
-          // JWTトークンをデコード（日本語対応）
-          const encodedPayload = storedToken.split('.')[1];
-          const decodedPayload = decodeURIComponent(escape(atob(encodedPayload)));
-          const payload = JSON.parse(decodedPayload);
-          
-          let fallbackProfile = {
-            user_id: payload.sub || payload.user_id || 1,
-            name: payload.name || payload.username || '未入力',
-            age: payload.age || undefined,
-            birth_date: payload.birth_date || '未入力',
-            konkatsu_experience: payload.konkatsu_experience || '未入力',
-            occupation: payload.occupation || '未入力',
-            birthplace: payload.birthplace || '未入力',
-            residence: payload.residence || '未入力',
-            hobbies: payload.hobbies || ['未入力'],
-            weekend_activities: payload.weekend_activities || '未入力',
-            mbti: payload.mbti || undefined,
-            profile_image_url: null,
-            email: payload.email || '未入力',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          };
-          
-          // test-profileからデータを補完
-          try {
-            const API_BASE_URL = process.env.NODE_ENV === 'production' 
-              ? 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io'
-              : 'http://localhost:8000';
-            
-            const response = await fetch(`${API_BASE_URL}/test-profile`);
-            if (response.ok) {
-              const testProfileData = await response.json();
-              if (testProfileData.success && testProfileData.profile) {
-                fallbackProfile = {
-                  ...fallbackProfile,
-                  ...testProfileData.profile,
-                  name: testProfileData.profile.name || fallbackProfile.name
-                };
-              }
-            }
-          } catch (testApiError) {
-            console.log('test-profile API失敗:', testApiError);
-          }
-          
-          setProfile(fallbackProfile);
-          setError(null);
-        }
+        const profileData = await getComprehensiveProfile();
+        console.log('プロフィール取得完了:', profileData);
+        setProfile(profileData);
+        setError(null);
         
       } catch (err) {
         console.error('プロフィール取得でエラーが発生:', err);
         setError(err instanceof Error ? err.message : 'プロフィールの取得に失敗しました');
+        
+        // 認証エラーの場合はログインページにリダイレクト
+        if (err instanceof Error && err.message.includes('認証が必要')) {
+          router.replace('/auth/login');
+        }
       } finally {
         setLoading(false);
       }

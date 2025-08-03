@@ -1,22 +1,61 @@
+import axios from 'axios';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 export default async function login(email, password){
     console.log(`try to login with ${email} and ${password}`);
-    const res = await fetch(process.env.NEXT_PUBLIC_API_URL+'/login', 
-        {
-            method: 'POST',
-            credentials: 'include',
-            headers: {'Content-Type': 'application/json',},
-            body: JSON.stringify({username: email, password}),  // usernameフィールドを追加
-        }
-    );
     
-    if (res.ok) {
-        const data = await res.json();
-        return { success: true, data };
-    } else {
-        const errorData = await res.json();
+    try {
+        const response = await axios.post(`${API_BASE_URL}/login`, 
+            { username: email, password },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: false, // CORS対応
+                timeout: 10000
+            }
+        );
+        
+        if (response.data && response.data.access_token) {
+            return { 
+                success: true, 
+                data: response.data 
+            };
+        } else {
+            return { 
+                success: false, 
+                error: 'ログインレスポンスが無効です'
+            };
+        }
+        
+    } catch (error) {
+        console.error('Login API error:', error);
+        
+        if (axios.isAxiosError(error)) {
+            if (error.response?.data?.detail) {
+                return { 
+                    success: false, 
+                    error: error.response.data.detail 
+                };
+            }
+            if (error.code === 'ECONNABORTED') {
+                return { 
+                    success: false, 
+                    error: 'サーバーへの接続がタイムアウトしました' 
+                };
+            }
+            if (error.message.includes('Network Error')) {
+                return { 
+                    success: false, 
+                    error: 'ネットワーク接続に問題があります' 
+                };
+            }
+        }
+        
         return { 
             success: false, 
-            error: errorData.detail || 'ログインに失敗しました'
+            error: 'ログインに失敗しました'
         };
     }
 }
