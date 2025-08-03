@@ -265,8 +265,8 @@ export const updateProfile = async (updates: {
             // 新しいトークンを作成（簡易版 - 実際はサーバー側で行うべき）
             // 日本語文字を含む場合のエンコード対応
             const payloadString = JSON.stringify(updatedPayload);
-            const encodedPayload = btoa(unescape(encodeURIComponent(payloadString)));
-            const newToken = storedToken.split('.')[0] + '.' + encodedPayload + '.' + storedToken.split('.')[2];
+            const newEncodedPayload = btoa(unescape(encodeURIComponent(payloadString)));
+            const newToken = storedToken.split('.')[0] + '.' + newEncodedPayload + '.' + storedToken.split('.')[2];
             localStorage.setItem('token', newToken);
             
             console.log('ローカルストレージでプロフィール更新完了:', updatedPayload);
