@@ -282,27 +282,31 @@ const ConversationPractice: React.FC = () => {
   };
 
   const handleCompletionDialogYes = () => {
+    const completedType = showCompletionDialog.type;
     setShowCompletionDialog({ show: false, type: null });
     
-    // 完了後は進捗をリセットして新しいレベルを開始
-    const resetProgress = {
-      completedScenarios: [],
-      currentLevel: showCompletionDialog.type === 'beginner' ? 'advanced' : 'beginner',
-      totalScore: userProgress.totalScore,
-      levelProgress: {
-        beginner: { completed: 0, total: 7, unlocked: true },
-        advanced: { completed: 0, total: 9, unlocked: true }
+    // completedTypeがnullでないことを確認してから処理
+    if (completedType === 'beginner' || completedType === 'advanced') {
+      // 完了後は進捗をリセットして新しいレベルを開始
+      const resetProgress = {
+        completedScenarios: [],
+        currentLevel: completedType === 'beginner' ? 'advanced' as const : 'beginner' as const,
+        totalScore: userProgress.totalScore,
+        levelProgress: {
+          beginner: { completed: 0, total: 7, unlocked: true },
+          advanced: { completed: 0, total: 9, unlocked: true }
+        }
+      };
+      
+      saveProgress(resetProgress);
+      
+      if (completedType === 'beginner') {
+        // 初級完了時は上級レベルへ
+        handleLevelSelect('advanced');
+      } else {
+        // 上級完了時は初級レベルへ
+        handleLevelSelect('beginner');
       }
-    };
-    
-    saveProgress(resetProgress);
-    
-    if (showCompletionDialog.type === 'beginner') {
-      // 初級完了時は上級レベルへ
-      handleLevelSelect('advanced');
-    } else if (showCompletionDialog.type === 'advanced') {
-      // 上級完了時は初級レベルへ
-      handleLevelSelect('beginner');
     }
   };
 
