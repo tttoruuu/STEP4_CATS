@@ -21,6 +21,7 @@ interface UserProgress {
 const ConversationPractice: React.FC = () => {
   const router = useRouter();
   const [currentView, setCurrentView] = useState<'levelSelect' | 'quiz' | 'shadowing'>('levelSelect');
+  const [showCompletionDialog, setShowCompletionDialog] = useState<{ show: boolean; type: 'beginner' | 'advanced' | null }>({ show: false, type: null });
   const [selectedLevel, setSelectedLevel] = useState<'beginner' | 'advanced' | null>(null);
   const [currentScenario, setCurrentScenario] = useState(null);
   const [userProgress, setUserProgress] = useState<UserProgress>({
@@ -37,15 +38,25 @@ const ConversationPractice: React.FC = () => {
   useEffect(() => {
     calculateProgress();
   }, []);
+  
+
 
   const calculateProgress = () => {
     const scenarios = conversationQuizData.scenarios;
     const beginnerScenarios = scenarios.filter(s => s.level === 'beginner');
-    const advancedScenarios = scenarios.filter(s => s.level === 'intermediate' || s.level === 'advanced');
+    const advancedScenarios = scenarios.filter(s => s.level === 'advanced');
+
+    console.log('📊 calculateProgress 開始', { 
+      totalScenarios: scenarios.length, 
+      beginnerCount: beginnerScenarios.length, 
+      advancedCount: advancedScenarios.length 
+    });
 
     // ローカルストレージから進捗を読み込み
     const savedProgress = localStorage.getItem('conversationPracticeProgress');
-    if (savedProgress) {
+    console.log('📁 ローカルストレージの状態:', savedProgress);
+    
+    if (savedProgress && savedProgress !== 'null') {
       const parsed = JSON.parse(savedProgress);
       const completedIds = parsed.completedScenarios || [];
       
@@ -83,33 +94,160 @@ const ConversationPractice: React.FC = () => {
   const saveProgress = (updatedProgress: UserProgress) => {
     localStorage.setItem('conversationPracticeProgress', JSON.stringify(updatedProgress));
     setUserProgress(updatedProgress);
+    
+    // 進捗を即座に更新
+    const scenarios = conversationQuizData.scenarios;
+    const beginnerScenarios = scenarios.filter(s => s.level === 'beginner');
+    const advancedScenarios = scenarios.filter(s => s.level === 'advanced');
+    
+    const beginnerCompleted = beginnerScenarios.filter(s => updatedProgress.completedScenarios.includes(s.id)).length;
+    const advancedCompleted = advancedScenarios.filter(s => updatedProgress.completedScenarios.includes(s.id)).length;
+    
+    setUserProgress(prev => ({
+      ...updatedProgress,
+      levelProgress: {
+        beginner: { 
+          completed: beginnerCompleted, 
+          total: beginnerScenarios.length, 
+          unlocked: true 
+        },
+        advanced: { 
+          completed: advancedCompleted, 
+          total: advancedScenarios.length, 
+          unlocked: true 
+        }
+      }
+    }));
   };
 
   const handleLevelSelect = (level: 'beginner' | 'advanced') => {
+    console.log('🎯 レベル選択:', level, '現在の完了済み:', userProgress.completedScenarios.length);
     setSelectedLevel(level);
     
     let levelScenarios;
     if (level === 'beginner') {
       levelScenarios = conversationQuizData.scenarios.filter(s => s.level === 'beginner');
     } else {
-      levelScenarios = conversationQuizData.scenarios.filter(s => s.level === 'intermediate' || s.level === 'advanced');
+      levelScenarios = conversationQuizData.scenarios.filter(s => s.level === 'advanced');
     }
     
-    const uncompletedScenarios = levelScenarios.filter(s => !userProgress.completedScenarios.includes(s.id));
+    // 現在のレベルの完了済み問題のみを抽出
+    const levelCompletedIds = userProgress.completedScenarios.filter(id => 
+      levelScenarios.some(scenario => scenario.id === id)
+    );
+    const uncompletedScenarios = levelScenarios.filter(s => !levelCompletedIds.includes(s.id));
+    
+    console.log('📊 レベル選択詳細:', {
+      level,
+      totalScenarios: levelScenarios.length,
+      completedInLevel: levelCompletedIds.length,
+      uncompletedCount: uncompletedScenarios.length,
+      levelCompletedIds
+    });
     
     if (uncompletedScenarios.length > 0) {
-      const randomIndex = Math.floor(Math.random() * uncompletedScenarios.length);
-      setCurrentScenario(uncompletedScenarios[randomIndex]);
+      // 音声がある設問を優先して選択
+      const scenariosWithAudio = uncompletedScenarios.filter(s => 
+        s.shadowingAudio && 
+        s.shadowingAudio !== '``' && 
+        s.shadowingAudio.startsWith('http')
+      );
+      
+      if (scenariosWithAudio.length > 0) {
+        // 音声がある設問から最初のものを選択
+        setCurrentScenario(scenariosWithAudio[0]);
+      } else {
+        // 音声がない設問から最初のものを選択
+        setCurrentScenario(uncompletedScenarios[0]);
+      }
     } else {
-      // 全て完了していたら最初から
-      const randomIndex = Math.floor(Math.random() * levelScenarios.length);
-      setCurrentScenario(levelScenarios[randomIndex]);
+      // 全て完了していたら音声がある設問から最初のもの
+      const scenariosWithAudio = levelScenarios.filter(s => 
+        s.shadowingAudio && 
+        s.shadowingAudio !== '``' && 
+        s.shadowingAudio.startsWith('http')
+      );
+      
+      if (scenariosWithAudio.length > 0) {
+        setCurrentScenario(scenariosWithAudio[0]);
+      } else {
+        setCurrentScenario(levelScenarios[0]);
+      }
     }
     
     setCurrentView('quiz');
   };
 
   const handleQuizComplete = () => {
+    console.log('🎯 handleQuizComplete 開始', { currentScenario: currentScenario?.id, selectedLevel });
+    if (!currentScenario || !selectedLevel) {
+      console.log('❌ currentScenario または selectedLevel が未定義');
+      return;
+    }
+    
+    // 進捗を更新
+    const updatedCompletedScenarios = [...userProgress.completedScenarios];
+    if (!updatedCompletedScenarios.includes(currentScenario.id)) {
+      updatedCompletedScenarios.push(currentScenario.id);
+    }
+    
+    const updatedProgress = {
+      ...userProgress,
+      completedScenarios: updatedCompletedScenarios,
+      totalScore: userProgress.totalScore + 10
+    };
+    
+    saveProgress(updatedProgress);
+    
+    // 次の問題を選択
+    let levelScenarios;
+    if (selectedLevel === 'beginner') {
+      levelScenarios = conversationQuizData.scenarios.filter(s => s.level === 'beginner');
+    } else {
+      levelScenarios = conversationQuizData.scenarios.filter(s => s.level === 'advanced');
+    }
+    // 現在のレベルの完了した問題のIDのみをフィルタリング
+    const levelCompletedIds = updatedCompletedScenarios.filter(id => 
+      levelScenarios.some(scenario => scenario.id === id)
+    );
+    const uncompletedScenarios = levelScenarios.filter(s => !levelCompletedIds.includes(s.id));
+    
+    console.log('デバッグ: handleQuizComplete', {
+      selectedLevel,
+      totalLevelScenarios: levelScenarios.length,
+      completedInThisLevel: levelCompletedIds.length,
+      uncompletedCount: uncompletedScenarios.length,
+      currentScenarioId: currentScenario.id,
+      allCompletedIds: updatedCompletedScenarios,
+      levelScenariosIds: levelScenarios.map(s => s.id),
+      levelCompletedIds: levelCompletedIds
+    });
+    
+    if (uncompletedScenarios.length > 0) {
+      // 音声がある設問を優先して選択
+      const scenariosWithAudio = uncompletedScenarios.filter(s => 
+        s.shadowingAudio && 
+        s.shadowingAudio !== '``' && 
+        s.shadowingAudio.startsWith('http')
+      );
+      
+      if (scenariosWithAudio.length > 0) {
+        setCurrentScenario(scenariosWithAudio[0]);
+      } else {
+        setCurrentScenario(uncompletedScenarios[0]);
+      }
+    } else {
+      // レベル完了
+      console.log('レベル完了！', selectedLevel);
+      setShowCompletionDialog({ show: true, type: selectedLevel });
+    }
+  };
+
+  const handleShadowingStart = () => {
+    setCurrentView('shadowing');
+  };
+
+  const handleShadowingComplete = () => {
     if (!currentScenario || !selectedLevel) return;
     
     // 進捗を更新
@@ -125,34 +263,50 @@ const ConversationPractice: React.FC = () => {
     };
     
     saveProgress(updatedProgress);
-    calculateProgress();
     
     // 次の問題を選択
     let levelScenarios;
     if (selectedLevel === 'beginner') {
       levelScenarios = conversationQuizData.scenarios.filter(s => s.level === 'beginner');
     } else {
-      levelScenarios = conversationQuizData.scenarios.filter(s => s.level === 'intermediate' || s.level === 'advanced');
+      levelScenarios = conversationQuizData.scenarios.filter(s => s.level === 'advanced');
     }
-    const uncompletedScenarios = levelScenarios.filter(s => !updatedCompletedScenarios.includes(s.id));
+    // 現在のレベルの完了した問題のIDのみをフィルタリング
+    const levelCompletedIds = updatedCompletedScenarios.filter(id => 
+      levelScenarios.some(scenario => scenario.id === id)
+    );
+    const uncompletedScenarios = levelScenarios.filter(s => !levelCompletedIds.includes(s.id));
+    
+    console.log('デバッグ: handleShadowingComplete', {
+      selectedLevel,
+      totalLevelScenarios: levelScenarios.length,
+      completedInThisLevel: levelCompletedIds.length,
+      uncompletedCount: uncompletedScenarios.length,
+      currentScenarioId: currentScenario.id,
+      allCompletedIds: updatedCompletedScenarios,
+      levelScenariosIds: levelScenarios.map(s => s.id),
+      levelCompletedIds: levelCompletedIds
+    });
     
     if (uncompletedScenarios.length > 0) {
-      const randomIndex = Math.floor(Math.random() * uncompletedScenarios.length);
-      setCurrentScenario(uncompletedScenarios[randomIndex]);
+      // 音声がある設問を優先して選択
+      const scenariosWithAudio = uncompletedScenarios.filter(s => 
+        s.shadowingAudio && 
+        s.shadowingAudio !== '``' && 
+        s.shadowingAudio.startsWith('http')
+      );
+      
+      if (scenariosWithAudio.length > 0) {
+        setCurrentScenario(scenariosWithAudio[0]);
+      } else {
+        setCurrentScenario(uncompletedScenarios[0]);
+      }
+      setCurrentView('quiz');
     } else {
       // レベル完了
-      alert('このレベルの全ての問題を完了しました！');
-      setCurrentView('levelSelect');
+      console.log('レベル完了！', selectedLevel);
+      setShowCompletionDialog({ show: true, type: selectedLevel });
     }
-  };
-
-  const handleShadowingStart = () => {
-    setCurrentView('shadowing');
-  };
-
-  const handleShadowingComplete = () => {
-    handleQuizComplete();
-    setCurrentView('quiz');
   };
 
   const handleBackToQuiz = () => {
@@ -160,6 +314,39 @@ const ConversationPractice: React.FC = () => {
   };
 
   const handleBackToLevelSelect = () => {
+    setCurrentView('levelSelect');
+    setSelectedLevel(null);
+    setCurrentScenario(null);
+  };
+
+  const handleCompletionDialogYes = () => {
+    setShowCompletionDialog({ show: false, type: null });
+    
+    // 完了後は進捗をリセットして新しいレベルを開始
+    const resetProgress = {
+      completedScenarios: [],
+      currentLevel: showCompletionDialog.type === 'beginner' ? 'advanced' : 'beginner',
+      totalScore: userProgress.totalScore,
+      levelProgress: {
+        beginner: { completed: 0, total: 7, unlocked: true },
+        advanced: { completed: 0, total: 9, unlocked: true }
+      }
+    };
+    
+    console.log('🔄 進捗リセット:', resetProgress);
+    saveProgress(resetProgress);
+    
+    if (showCompletionDialog.type === 'beginner') {
+      // 初級完了時は上級レベルへ
+      handleLevelSelect('advanced');
+    } else if (showCompletionDialog.type === 'advanced') {
+      // 上級完了時は初級レベルへ
+      handleLevelSelect('beginner');
+    }
+  };
+
+  const handleCompletionDialogNo = () => {
+    setShowCompletionDialog({ show: false, type: null });
     setCurrentView('levelSelect');
     setSelectedLevel(null);
     setCurrentScenario(null);
@@ -203,6 +390,7 @@ const ConversationPractice: React.FC = () => {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">聞く力トレーニング</h1>
             <p className="text-gray-600">会話を引き出す・深掘りするためのプログラム</p>
+            
           </div>
 
 
@@ -301,6 +489,41 @@ const ConversationPractice: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* レベル完了ダイアログ */}
+      {showCompletionDialog.show && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md mx-4 shadow-2xl">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🎉</div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                {showCompletionDialog.type === 'beginner' ? '初級' : '上級'}レベルを完了しました！
+              </h2>
+              <p className="text-lg text-gray-600 mb-6">おめでとうございます。</p>
+              <p className="text-gray-700 mb-8">
+                {showCompletionDialog.type === 'beginner' 
+                  ? '上級レベルに進みますか？' 
+                  : 'もう1回初級レベルに取り組みますか？'
+                }
+              </p>
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={handleCompletionDialogYes}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  はい
+                </button>
+                <button
+                  onClick={handleCompletionDialogNo}
+                  className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors font-medium"
+                >
+                  いいえ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

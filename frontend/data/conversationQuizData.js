@@ -66,7 +66,7 @@ export const conversationQuizData = {
       ],
       correctAnswer: "C",
       explanation: "相手が「趣味がない」と言っても、休日の過ごし方や興味があることは必ずあります。別の角度から質問することで会話が続きます。",
-      shadowingAudio: "/audio/shadowing/elicit_001.mp3",
+      shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e1-a.mp3",
       shadowingText: "休日はどんなことをして過ごされているんですか？",
       tip: "「趣味」という言葉にこだわらず、「休日の過ごし方」「最近気になること」など、別の表現で聞いてみましょう。",
       createdAt: "2025-01-21",
@@ -106,10 +106,10 @@ export const conversationQuizData = {
           score: 3
         }
       ],
-      correctAnswer: "D",
-      explanation: "「やりがい」について聞くことで、相手の内面や価値観を知ることができ、より深いつながりを築けます。",
-      shadowingAudio: "/audio/shadowing/deepen_001.mp3",
-      shadowingText: "事務のお仕事で一番やりがいを感じるのはどんな時ですか？",
+      correctAnswer: "C",
+      explanation: "「事務」という一般的な回答に対して、「どんな会社で」「どんな業務を」など具体的に深掘りすることで、相手の詳しい状況を知ることができます。",
+      shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e2-a.mp3",
+      shadowingText: "どんな会社で働かれているんですか？",
       tip: "職業名だけでなく、「やりがい」「楽しい瞬間」「大変なこと」など、感情に関わる質問をすると相手の人柄が見えてきます。",
       createdAt: "2025-01-21",
       updatedAt: "2025-01-21"
@@ -131,8 +131,8 @@ export const conversationQuizData = {
         },
         {
           id: "B",
-          text: "沖縄のどこが一番印象的でしたか？",
-          feedback: "⭐ 良い深掘りです！具体的な体験を聞くことで、相手の旅行について詳しく知ることができます。",
+          text: "沖縄のどこが一番印象に残りましたか？",
+          feedback: "⭐ 素晴らしい深掘りです！相手の感動ポイントや価値観を知ることができ、より深い会話に発展します。",
           score: 3
         },
         {
@@ -148,10 +148,10 @@ export const conversationQuizData = {
           score: 2
         }
       ],
-      correctAnswer: "B",
-      explanation: "「どこが印象的だったか」を聞くことで、相手の価値観や感動したポイントを知ることができ、会話が深まります。",
-      shadowingAudio: "/audio/shadowing/deepen_002.mp3",
-      shadowingText: "沖縄のどこが一番印象的でしたか？",
+      correctAnswer: "C",
+      explanation: "旅行の話では、期間や場所よりも「印象に残ったこと」「感動したこと」を聞くことで、相手の価値観や感性を知ることができます。",
+      shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e3-a.mp3",
+      shadowingText: "沖縄のどこが一番印象に残りましたか？",
       tip: "体験談を聞く時は「どこが印象的だったか」「どんな気持ちになったか」など、感情や感想を聞くと相手の人柄が見えてきます。",
       createdAt: "2025-01-21",
       updatedAt: "2025-01-21"
@@ -192,7 +192,7 @@ export const conversationQuizData = {
       ],
       correctAnswer: "C",
       explanation: "生い立ちが性格に与えた影響を聞くことで、相手の自己理解や内面的な部分を知ることができ、より深いつながりを築けます。",
-      shadowingAudio: "/audio/shadowing/deepen_003.mp3",
+      shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e4-a.mp3",
       shadowingText: "真ん中だと、どんな性格になりましたか？",
       tip: "家族構成を聞いた後は、それが相手にどんな影響を与えたかを聞くと、相手の価値観や性格形成について深く理解できます。",
       createdAt: "2025-01-21",
@@ -234,7 +234,7 @@ export const conversationQuizData = {
       ],
       correctAnswer: "A",
       explanation: "「何が苦手か」を具体的に聞くことで、相手の好みを理解し、今後のデートプランにも活かせます。",
-      shadowingAudio: "/audio/shadowing/elicit_002.mp3",
+      shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e5-a.mp3",
       shadowingText: "そうなんですか。何が苦手なんですか？",
       tip: "好き嫌いがあることを否定せず、具体的に聞くことで相手への理解を深めましょう。",
       createdAt: "2025-01-28",
@@ -251,33 +251,32 @@ export const conversationQuizData = {
       options: [
         {
           id: "A",
-          text: "大丈夫ですか？何か力になれることがあれば聞きますよ。",
-          feedback: "⭐ 素晴らしい対応です！相手を気遣いながら、話を聞く姿勢を示しています。",
-          score: 3
+          text: "仕事の悩みは誰にでもありますよ。",
+          feedback: "❌ 一般論で済ませてしまい、相手の具体的な悩みを聞く機会を逃しています。",
+          score: 0
         },
         {
           id: "B",
-          text: "仕事の悩みって大変ですよね。",
-          feedback: "△ 共感はありますが、相手が具体的に話せる質問をしていません。",
-          score: 1
+          text: "どんなことが特に不安に感じられるんですか？",
+          feedback: "⭐ 素晴らしい質問です！相手の具体的な悩みを聞くことで、理解を深め、適切なサポートができます。",
+          score: 3
         },
         {
           id: "C",
-          text: "どんな悩みか聞いてもいいですか？",
-          feedback: "○ 良い質問ですが、もう少し相手への配慮があるとより良いです。",
-          score: 2
+          text: "転職を考えているんですか？",
+          feedback: "❌ 勝手に解決策を想定してしまい、まずは話を聞くことが大切です。",
+          score: 0
         },
         {
           id: "D",
-          text: "仕事の話は暗くなるからやめましょう。",
-          feedback: "❌ 相手の気持ちを無視してしまっています。聞く姿勢が大切です。",
-          score: 0
+          text: "私も仕事で悩むことがあります。",
+          feedback: "△ 共感は良いですが、相手の話をもっと詳しく聞いてみましょう。",
+          score: 1
         }
       ],
-      correctAnswer: "A",
-      explanation: "相手を気遣いながら話を聞く姿勢を示すことで、信頼関係を築けます。",
-      shadowingAudio: "/audio/shadowing/elicit_003.mp3",
-      shadowingText: "大丈夫ですか？何か力になれることがあれば聞きますよ。",
+      correctAnswer: "B",
+      explanation: "悩みを話してくれたことは信頼の証。丁寧に受け止めて聞く姿勢を示しましょう。",
+      shadowingText: "どんなことが特に不安に感じられるんですか？",
       tip: "悩みを話してくれたことは信頼の証。丁寧に受け止めて聞く姿勢を示しましょう。",
       createdAt: "2025-01-28",
       updatedAt: "2025-01-28"
@@ -294,32 +293,32 @@ export const conversationQuizData = {
         {
           id: "A",
           text: "インドア派なんですね。",
-          feedback: "△ レッテルを貼ってしまい、会話が続きにくいです。",
-          score: 1
-        },
-        {
-          id: "B",
-          text: "家ではどんなことをして過ごされているんですか？",
-          feedback: "⭐ 素晴らしい質問です！具体的な過ごし方を聞くことで、相手の興味を知れます。",
-          score: 3
-        },
-        {
-          id: "C",
-          text: "外出はあまりお好きではないんですか？",
-          feedback: "❌ ネガティブな印象を与える質問になっています。",
+          feedback: "❌ ラベリングして終わってしまい、具体的な過ごし方を聞けていません。",
           score: 0
         },
         {
+          id: "B",
+          text: "外に出ることはないんですか？",
+          feedback: "❌ 否定的な印象を与えてしまいます。まずは家での過ごし方を聞いてみましょう。",
+          score: 0
+        },
+        {
+          id: "C",
+          text: "家でゆっくりする時は、どんなことをされているんですか？",
+          feedback: "⭐ 良い質問です！「ゆっくり」の具体的な内容を聞くことで、相手の趣味や好みが分かります。",
+          score: 3
+        },
+        {
           id: "D",
-          text: "私もよく家でゆっくりしますよ。",
-          feedback: "○ 共感は良いですが、相手についてもっと詳しく聞いてみましょう。",
-          score: 2
+          text: "私も家にいることが多いです。",
+          feedback: "△ 共感は良いですが、相手の具体的な過ごし方をもっと聞いてみましょう。",
+          score: 1
         }
       ],
-      correctAnswer: "B",
-      explanation: "「どんなことをして過ごすか」を聞くことで、相手の具体的な興味や趣味を知ることができます。",
-      shadowingAudio: "/audio/shadowing/elicit_004.mp3",
-      shadowingText: "家ではどんなことをして過ごされているんですか？",
+      correctAnswer: "C",
+      explanation: "「家でゆっくり」という漠然とした表現の中に、読書、映画、料理など様々な趣味が隠れています。",
+      // shadowingAudio: "``", // 音声なし - 準備中
+      shadowingText: "家でゆっくりする時は、どんなことをされているんですか？",
       tip: "「家でゆっくり」にも様々な過ごし方があります。決めつけずに詳しく聞いてみましょう。",
       createdAt: "2025-01-28",
       updatedAt: "2025-01-28"
@@ -360,7 +359,7 @@ export const conversationQuizData = {
       ],
       correctAnswer: "B",
       explanation: "不安の内容を具体的に聞くことで、相手の価値観や大切にしていることが分かります。",
-      shadowingAudio: "/audio/shadowing/elicit_005.mp3",
+      // shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/elicit_005.mp3", // 音声無効化 - advanced_002との混同を防ぐ
       shadowingText: "どんなことが特に不安に感じられるんですか？",
       tip: "不安な気持ちを話してくれたことを大切に受け止め、具体的に聞いてみましょう。",
       createdAt: "2025-01-28",
@@ -378,33 +377,33 @@ export const conversationQuizData = {
       options: [
         {
           id: "A",
-          text: "お疲れ様です。でも今日は楽しい時間にしましょう！",
-          feedback: "❌ 相手の気持ちを受け流してしまい、共感が不足しています。",
+          text: "何があったか詳しく教えて。",
+          feedback: "❌ いきなり詳細を求めすぎです。まずは相手の気持ちに寄り添いましょう。",
           score: 0
         },
         {
           id: "B",
-          text: "大変でしたね。もしよろしければ、お話聞かせてもらえますか？無理にとは言いませんが。",
-          feedback: "⭐ 完璧です！相手の感情に寄り添い、聞く姿勢を示しつつプレッシャーを与えない配慮が素晴らしい。",
+          text: "お疲れさま。話したくなったら聞かせてね。今日は美味しいものを食べてリラックスしよう。",
+          feedback: "⭐ 完璧な対応！相手の気持ちを受け止めつつ、無理に聞き出そうとせず、今の時間を大切にする配慮が素晴らしいです。",
           score: 3
         },
         {
           id: "C",
-          text: "仕事の愚痴は聞きたくないですね。せっかくのデートなのに。",
-          feedback: "❌ 相手の気持ちを完全に無視した自己中心的な発言です。",
+          text: "そんな時こそ楽しまなきゃ！",
+          feedback: "❌ 相手の感情を軽視している印象を与えてしまいます。",
           score: 0
         },
         {
           id: "D",
-          text: "そんな時は美味しいものを食べて忘れましょう！",
-          feedback: "△ 明るくしようとする気持ちは良いですが、まず相手の感情を受け止めることが大切です。",
-          score: 1
+          text: "職場の人間関係は難しいからね。",
+          feedback: "❌ 決めつけと一般論で、相手の具体的な状況を理解しようとしていません。",
+          score: 0
         }
       ],
       correctAnswer: "B",
       explanation: "相手の感情に寄り添い、話したければ聞く姿勢を示しつつ、プレッシャーを与えない配慮が上級者の対応です。",
-      shadowingAudio: "/audio/shadowing/advanced_001.mp3",
-      shadowingText: "大変でしたね。もしよろしければ、お話聞かせてもらえますか？無理にとは言いませんが。",
+      shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/a1-a.mp3",
+      shadowingText: "お疲れさま。話したくなったら聞かせてね。今日は美味しいものを食べてリラックスしよう。",
       tip: "相手の表情や声のトーンから感情を察知し、その気持ちを最優先に考えて対応しましょう。",
       createdAt: "2025-01-29",
       updatedAt: "2025-01-29"
@@ -426,8 +425,8 @@ export const conversationQuizData = {
         },
         {
           id: "B",
-          text: "イメージできないのは自然なことだと思います。何か不安に感じることがあるんでしょうか？",
-          feedback: "⭐ 素晴らしい対応！相手の気持ちを受容しつつ、優しく本音を聞こうとしています。",
+          text: "どんなところが特に不安に感じるのか、よかったら聞かせてもらえる？",
+          feedback: "⭐ 素晴らしい対応！相手の不安を否定せず、具体的な内容を聞くことで理解を深めようとしています。",
           score: 3
         },
         {
@@ -443,10 +442,10 @@ export const conversationQuizData = {
           score: 1
         }
       ],
-      correctAnswer: "B",
-      explanation: "相手の複雑な感情を受け入れ、批判せずに本音を引き出すことで、より深い信頼関係を築けます。",
-      shadowingAudio: "/audio/shadowing/advanced_002.mp3",
-      shadowingText: "イメージできないのは自然なことだと思います。何か不安に感じることがあるんでしょうか？",
+      correctAnswer: "B", 
+      explanation: "将来への不安は誰にでもあります。まずは相手の具体的な不安を理解することから始めましょう。",
+      shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/a2-a.mp3",
+      shadowingText: "どんなところが特に不安に感じるのか、よかったら聞かせてもらえる？",
       tip: "沈黙や表情の変化は相手からの重要なサイン。言葉以上に気持ちを読み取る力が大切です。",
       createdAt: "2025-01-29",
       updatedAt: "2025-01-29"
@@ -463,8 +462,8 @@ export const conversationQuizData = {
       options: [
         {
           id: "A",
-          text: "僕も似たような経験があります。辛かったでしょうね。その経験から、パートナーに何を一番大切にしてほしいと思うようになりましたか？",
-          feedback: "⭐ 完璧な対応！同レベルの自己開示で信頼関係を築き、共感してから建設的な質問で会話を深めています。",
+          text: "辛い経験を話してくれてありがとう。そういう経験があったからこそ、今の君の考え方があるんだね。",
+          feedback: "⭐ 完璧な対応！過去の経験を肯定的に捉え、相手の成長を認めています。信頼関係が深まります。",
           score: 3
         },
         {
@@ -487,9 +486,9 @@ export const conversationQuizData = {
         }
       ],
       correctAnswer: "A",
-      explanation: "相手の深い自己開示には、同レベルの開示と共感で応え、さらに建設的な方向へ導くことが上級スキルです。",
-      shadowingAudio: "/audio/shadowing/advanced_003.mp3",
-      shadowingText: "僕も似たような経験があります。辛かったでしょうね。その経験から、パートナーに何を一番大切にしてほしいと思うようになりましたか？",
+      explanation: "過去の辛い経験を話してくれたことへの感謝と、その経験を肯定的に捉える視点が重要です。",
+      shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/a3-a.mp3",
+      shadowingText: "辛い経験を話してくれてありがとう。そういう経験があったからこそ、今の君の考え方があるんだね。",
       tip: "相手の自己開示のレベルに合わせて、自分も同程度の深さで開示することで信頼関係が深まります。",
       createdAt: "2025-01-29",
       updatedAt: "2025-01-29"
@@ -511,8 +510,8 @@ export const conversationQuizData = {
         },
         {
           id: "B",
-          text: "話してくれてありがとう。実は僕も親との関係で悩んだ時期があって...家族って近いからこそ難しいこともありますよね。",
-          feedback: "⭐ 素晴らしい自己開示！相手への感謝を示し、似た経験で共感を示しつつ、一般化して相手を支えています。",
+          text: "今日、よく実家に連れて行ってくれたね。きっと勇気が必要だったと思う。君の気持ちを大切にしたいよ。",
+          feedback: "⭐ 素晴らしい対応！相手の勇気を認め、感情に寄り添っています。家族関係の複雑さを理解している姿勢が伝わります。",
           score: 3
         },
         {
@@ -529,9 +528,9 @@ export const conversationQuizData = {
         }
       ],
       correctAnswer: "B",
-      explanation: "家族の複雑な問題には、まず開示への感謝を表し、似た経験での共感を示すことが重要です。",
-      shadowingAudio: "/audio/shadowing/advanced_004.mp3",
-      shadowingText: "話してくれてありがとう。実は僕も親との関係で悩んだ時期があって...家族って近いからこそ難しいこともありますよね。",
+      explanation: "家族関係の問題はデリケートです。解決を急がず、まずは相手の気持ちを理解し、寄り添うことが重要です。",
+      shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/a4-a.mp3",
+      shadowingText: "今日、よく実家に連れて行ってくれたね。きっと勇気が必要だったと思う。君の気持ちを大切にしたいよ。",
       tip: "デリケートな家族の話では、相手を孤立させないよう、似た経験や一般的な理解を示すことが大切です。",
       createdAt: "2025-01-29",
       updatedAt: "2025-01-29"
@@ -548,33 +547,33 @@ export const conversationQuizData = {
       options: [
         {
           id: "A",
-          text: "仕事以外に何をしたいんですか？趣味とか？",
-          feedback: "△ 表面的な質問に留まっており、深い価値観の探究になっていません。",
-          score: 1
-        },
-        {
-          id: "B",
-          text: "そう感じるのは、心の中で本当に大切にしたいものが他にもあるからかもしれませんね。どんな時に一番充実感を感じますか？",
-          feedback: "⭐ 完璧な深掘り！相手の内面の価値観に焦点を当て、本質的な質問で人生観を探究しています。",
+          text: "君がそんなふうに考えているなんて知らなかった。どんな時にそう感じるの？",
+          feedback: "⭐ 完璧な対応！相手の新たな一面を知ったことへの驚きと、具体的な状況を聞く姿勢が素晴らしいです。",
           score: 3
         },
         {
+          id: "B",
+          text: "仕事と家庭のバランスが大切だよね。",
+          feedback: "❌ 一般論で終わってしまい、相手の具体的な気持ちを聞けていません。",
+          score: 0
+        },
+        {
           id: "C",
-          text: "仕事は大切ですが、プライベートも充実させないとダメですよね。",
-          feedback: "○ 一般的なアドバイスですが、相手個人の価値観をもっと深く理解する必要があります。",
-          score: 2
+          text: "僕がいるから大丈夫だよ。",
+          feedback: "❌ 相手の内面的な悩みを理解せず、自分の存在で解決しようとしています。",
+          score: 0
         },
         {
           id: "D",
-          text: "僕も同じことを考えたことがあります。バランスが大切ですよね。",
-          feedback: "△ 共感は示していますが、相手の価値観を深く探ることができていません。",
-          score: 1
+          text: "仕事があるだけでも幸せじゃない？",
+          feedback: "❌ 相手の悩みを軽視し、現状で満足するよう促している印象です。",
+          score: 0
         }
       ],
-      correctAnswer: "B",
-      explanation: "人生観を探るには、表面的な活動ではなく、内面の価値観や充実感の源泉を質問することが重要です。",
-      shadowingAudio: "/audio/shadowing/advanced_005.mp3",
-      shadowingText: "そう感じるのは、心の中で本当に大切にしたいものが他にもあるからかもしれませんね。どんな時に一番充実感を感じますか？",
+      correctAnswer: "A",
+      explanation: "パートナーの人生観や価値観を深く理解する貴重な機会です。相手の内面に興味を示すことが重要です。",
+      shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/a5-a.mp3",
+      shadowingText: "君がそんなふうに考えているなんて知らなかった。どんな時にそう感じるの？",
       tip: "価値観の探究では、「なぜ」「どんな時に」という質問で、相手の深い動機や感情を引き出しましょう。",
       createdAt: "2025-01-29",
       updatedAt: "2025-01-29"
@@ -615,7 +614,7 @@ export const conversationQuizData = {
       ],
       correctAnswer: "B",
       explanation: "価値観の背景にある経験や動機を探ることで、相手をより深く理解し、共通の価値観を見つけられます。",
-      shadowingAudio: "/audio/shadowing/advanced_006.mp3",
+      // shadowingAudio: "``", // 音声なし - 準備中
       shadowingText: "素敵な考えですね。そう思うようになったのは、何か特別な経験があったからですか？",
       tip: "相手の価値観には必ず形成の背景があります。その源泉を理解することで、より深いつながりが生まれます。",
       createdAt: "2025-01-29",
@@ -658,7 +657,7 @@ export const conversationQuizData = {
       ],
       correctAnswer: "A",
       explanation: "重要な人生決断では、相手の自主性を尊重し、サポートの意思を示しつつ、不安を取り除くことが大切です。",
-      shadowingAudio: "/audio/shadowing/advanced_007.mp3",
+      // shadowingAudio: "``", // 音声なし - 準備中
       shadowingText: "僕のことは気にしないで、自分の気持ちを一番大切にして。一緒に考えられることがあれば何でも言って。",
       tip: "人生の重要な決断では、アドバイスより先に、相手への信頼とサポートの気持ちを伝えることが重要です。",
       createdAt: "2025-01-29",
@@ -700,7 +699,7 @@ export const conversationQuizData = {
       ],
       correctAnswer: "B",
       explanation: "健康問題というデリケートな話題では、詳細を聞くより先に、開示への感謝とサポートの意思を示すことが重要です。",
-      shadowingAudio: "/audio/shadowing/advanced_008.mp3",
+      // shadowingAudio: "``", // 音声なし - 準備中
       shadowingText: "話してくれてありがとう。無理をしないでくださいね。何かサポートできることがあればいつでも言ってください。",
       tip: "健康問題では、相手のプライバシーを尊重し、必要以上に踏み込まずサポートの姿勢を示すことが大切です。",
       createdAt: "2025-01-29",

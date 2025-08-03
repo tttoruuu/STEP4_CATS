@@ -16,7 +16,7 @@
   id: "elicit_001",
   category: "elicit", 
   level: "beginner",
-  shadowingAudio: "/audio/shadowing/elicit_001.mp3",
+  shadowingAudio: "/audio/shadowing/e1-a.mp3",
   shadowingText: "休日はどんなことをして過ごされているんですか？",
   // ... その他のフィールド
 }
@@ -25,20 +25,20 @@
 ### 現在設定されているMP3ファイル一覧
 
 #### 初級レベル（7問）
-- `/audio/shadowing/elicit_001.mp3` - "休日はどんなことをして過ごされているんですか？"
-- `/audio/shadowing/deepen_001.mp3` - "どんな会社で働かれているんですか？"
-- `/audio/shadowing/deepen_002.mp3` - "沖縄のどこが一番印象に残りましたか？"
-- `/audio/shadowing/deepen_003.mp3` - "真ん中だと、どんな性格になりましたか？"
-- `/audio/shadowing/elicit_002.mp3` - "そうなんですか。何が苦手なんですか？"
+- `/audio/shadowing/e1-a.mp3` - "休日はどんなことをして過ごされているんですか？"
+- `/audio/shadowing/e2-a.mp3` - "どんな会社で働かれているんですか？"
+- `/audio/shadowing/e3-a.mp3` - "沖縄のどこが一番印象に残りましたか？"
+- `/audio/shadowing/e4-a.mp3` - "真ん中だと、どんな性格になりましたか？"
+- `/audio/shadowing/e5-a.mp3` - "そうなんですか。何が苦手なんですか？"
 - `/audio/shadowing/elicit_003.mp3` - "どんなことが特に不安に感じられるんですか？"
 - `/audio/shadowing/elicit_004.mp3` - "家でゆっくりする時は、どんなことをされているんですか？"
 
 #### 上級レベル（8問）
-- `/audio/shadowing/advanced_001.mp3`
-- `/audio/shadowing/advanced_002.mp3`
-- `/audio/shadowing/advanced_003.mp3`
-- `/audio/shadowing/advanced_004.mp3`
-- `/audio/shadowing/advanced_005.mp3`
+- `/audio/shadowing/a1-a.mp3`
+- `/audio/shadowing/a2-a.mp3`
+- `/audio/shadowing/a3-a.mp3`
+- `/audio/shadowing/a4-a.mp3`
+- `/audio/shadowing/a5-a.mp3`
 - `/audio/shadowing/advanced_006.mp3`
 - `/audio/shadowing/advanced_007.mp3`
 - `/audio/shadowing/advanced_008.mp3`
@@ -116,10 +116,10 @@ AZURE_BLOB_BASE_URL=https://<storage-account-name>.blob.core.windows.net/audio-f
 
 ```javascript
 // 現在の設定（相対パス）
-shadowingAudio: "/audio/shadowing/elicit_001.mp3"
+shadowingAudio: "/audio/shadowing/e1-a.mp3"
 
 // Azure Blob Storage使用時（絶対URL）
-shadowingAudio: "https://<storage-account-name>.blob.core.windows.net/audio-files/audio/shadowing/elicit_001.mp3"
+shadowingAudio: "https://<storage-account-name>.blob.core.windows.net/audio-files/audio/shadowing/e1-a.mp3"
 ```
 
 ### 3. 動的URL生成の実装（推奨）
