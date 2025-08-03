@@ -50,7 +50,8 @@ jobs:
       - name: Frontend Build Test
         env:
           NODE_ENV: production
-          NEXT_PUBLIC_API_URL: http://localhost:8000
+          NEXT_PUBLIC_API_URL: https://step4-cats-api.azurewebsites.net/api
+          CI: true
         run: |
           cd frontend
           npm run build
