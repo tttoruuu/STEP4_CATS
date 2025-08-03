@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getApiEndpoint, validateEnvironment, logEnvironmentInfo } from '../lib/env-config.js';
 // =====================================
 // HTTPS強制変換ユーティリティ
 // =====================================
@@ -154,81 +155,23 @@ const setupAxiosInterceptors = () => {
 if (typeof window !== 'undefined') {
   setupAxiosInterceptors();
 }
-// APIのベースURL - 環境に応じて適切に設定
-const API_BASE_URL = (() => {
-  // 1. サーバーサイドでの実行
-  if (typeof window === 'undefined') {
-    const url = process.env.INTERNAL_API_URL || 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io';
-    
-    return url;
-  }
-  
-  // 2. クライアントサイドでの実行 - ウィンドウオブジェクトから直接取得を試みる
-  // これによりNext.jsのgetInitialPropsで渡されたAPIUrlをキャプチャできる
-  if (typeof window !== 'undefined' && window.__NEXT_DATA__?.props?.pageProps?.apiUrl) {
-    const apiUrl = window.__NEXT_DATA__.props.pageProps.apiUrl;
-    
-    return apiUrl;
-  }
-  
-  // 3. 環境変数から取得
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    
-    return apiUrl;
-  }
-  
-  // 4. ハードコードされた本番環境のURL (フォールバック)
-  if (process.env.NODE_ENV === 'production') {
-    const prodUrl = 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io';
-    
-    return prodUrl;
-  }
-  
-  // 5. デフォルト値
-  
-  return 'http://localhost:8000';
-})();
-// 本番環境ではHTTPSを強制する - 改善版
+// APIのベースURL - 新しい環境検出システムを使用
+const API_BASE_URL = getApiEndpoint();
+// 環境検証と最終的なAPIエンドポイント設定
 const FINAL_API_BASE_URL = (() => {
-  // 変数の初期化
-  let apiUrl = API_BASE_URL;
-  const isProduction = process.env.NODE_ENV === 'production';
-  const isBrowser = typeof window !== 'undefined';
-  const isHttpsPage = isBrowser && window.location.protocol === 'https:';
-  const isLocalhost = apiUrl.includes('localhost') || apiUrl.includes('127.0.0.1');
+  // 環境検証を実行
+  const validation = validateEnvironment();
   
-  console.log('[API URL初期化]', {
-    original: apiUrl,
-    isProduction,
-    isBrowser,
-    isHttpsPage,
-    isLocalhost
-  });
-  
-  // ローカルホスト以外で本番環境またはHTTPSページからアクセスしている場合
-  if (!isLocalhost && (isProduction || isHttpsPage)) {
-    // URLにプロトコルが含まれていない場合はhttpsを追加
-    if (!apiUrl.startsWith('http')) {
-      apiUrl = 'https://' + apiUrl;
-      
-    }
-    
-    // httpをhttpsに変換
-    if (apiUrl.startsWith('http:')) {
-      apiUrl = 'https:' + apiUrl.substring(5);
-      
-    }
+  if (!validation.isValid) {
+    console.error('[API] 環境設定エラー:', validation.errors);
+    // エラーがあってもフォールバックで動作継続
   }
   
-  // さらにMixed Content対策: HTTPS環境からHTTPへのアクセスを試みていたら強制変換
-  if (isBrowser && isHttpsPage && apiUrl.startsWith('http:')) {
-    apiUrl = 'https:' + apiUrl.substring(5);
-    
+  if (validation.warnings.length > 0) {
+    console.warn('[API] 環境設定警告:', validation.warnings);
   }
   
-  
-  return apiUrl;
+  return validation.apiUrl;
 })();
 
 // ===========================================
@@ -313,15 +256,21 @@ const getEffectiveAPIURL = () => {
 // 5. 初期化時の自動チェック
 let hasInitialized = false;
 const initializeAPIDebug = async () => {
-  if (!hasInitialized && typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  if (!hasInitialized && typeof window !== 'undefined') {
     hasInitialized = true;
-    logAPISettings();
     
-    // 少し遅延してヘルスチェック実行
-    setTimeout(async () => {
-      await quickHealthCheck();
-      console.log('💡 デバッグコマンド: window.apiHelp()');
-    }, 2000);
+    // 新しい環境検出システムの情報を表示
+    logEnvironmentInfo();
+    
+    if (process.env.NODE_ENV === 'development') {
+      logAPISettings();
+      
+      // 少し遅延してヘルスチェック実行
+      setTimeout(async () => {
+        await quickHealthCheck();
+        console.log('💡 デバッグコマンド: window.apiHelp()');
+      }, 2000);
+    }
   }
 };
 

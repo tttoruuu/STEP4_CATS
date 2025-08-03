@@ -1,7 +1,24 @@
 import "../styles/globals.css";
 import getConfig from 'next/config';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 export default function App({ Component, pageProps }) {
+  const router = useRouter();
+  
+  // 🚨 EMERGENCY LOGIN FIX 🚨
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.pathname === '/') {
+      const token = localStorage.getItem('token');
+      console.log('🚨 EMERGENCY FIX: Token check', !!token);
+      if (!token) {
+        console.log('🚨 EMERGENCY FIX: No token, redirecting...');
+        router.replace('/auth/login-chat');
+      } else {
+        console.log('🚨 EMERGENCY FIX: Token found, staying on home');
+      }
+    }
+  }, [router]);
   // 環境変数をクライアントサイドで利用できるようにする
   const { publicRuntimeConfig } = getConfig() || {};
   
