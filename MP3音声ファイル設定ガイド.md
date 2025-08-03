@@ -3,45 +3,97 @@
 ## 概要
 聞く力トレーニング機能では、Azure Blob StorageにアップロードされたMP3ファイルを使用してシャドーイング練習を提供します。
 
+**最終更新**: 2025年8月3日  
+**音声対応状況**: 15問中10問で音声対応完了
+
 ---
 
-## 現在の音声ファイル設定状況
+## 🎵 現在の音声ファイル設定状況
 
 ### conversationQuizDataでの設定
-各シナリオには`shadowingAudio`フィールドでMP3ファイルのパスが設定されています。
+各シナリオには`shadowingAudio`フィールドでMP3ファイルの完全URLが設定されています。
 
 ```javascript
-// 例：初級問題のMP3設定
+// 例：音声対応済み問題
 {
   id: "elicit_001",
   category: "elicit", 
   level: "beginner",
-  shadowingAudio: "/audio/shadowing/e1-a.mp3",
+  shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e1-a.mp3",
   shadowingText: "休日はどんなことをして過ごされているんですか？",
+  // ... その他のフィールド
+}
+
+// 例：音声準備中問題（shadowingAudioプロパティなし）
+{
+  id: "elicit_003",
+  category: "elicit", 
+  level: "beginner",
+  // shadowingAudio: undefined（プロパティなし）
+  shadowingText: "どんなことが特に不安に感じられるんですか？",
   // ... その他のフィールド
 }
 ```
 
 ### 現在設定されているMP3ファイル一覧
 
-#### 初級レベル（7問）
-- `/audio/shadowing/e1-a.mp3` - "休日はどんなことをして過ごされているんですか？"
-- `/audio/shadowing/e2-a.mp3` - "どんな会社で働かれているんですか？"
-- `/audio/shadowing/e3-a.mp3` - "沖縄のどこが一番印象に残りましたか？"
-- `/audio/shadowing/e4-a.mp3` - "真ん中だと、どんな性格になりましたか？"
-- `/audio/shadowing/e5-a.mp3` - "そうなんですか。何が苦手なんですか？"
-- `/audio/shadowing/elicit_003.mp3` - "どんなことが特に不安に感じられるんですか？"
-- `/audio/shadowing/elicit_004.mp3` - "家でゆっくりする時は、どんなことをされているんですか？"
+#### ✅ 音声対応済み
 
-#### 上級レベル（8問）
-- `/audio/shadowing/a1-a.mp3`
-- `/audio/shadowing/a2-a.mp3`
-- `/audio/shadowing/a3-a.mp3`
-- `/audio/shadowing/a4-a.mp3`
-- `/audio/shadowing/a5-a.mp3`
-- `/audio/shadowing/advanced_006.mp3`
-- `/audio/shadowing/advanced_007.mp3`
-- `/audio/shadowing/advanced_008.mp3`
+**初級レベル（5問）**
+- `https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e1-a.mp3` - "休日はどんなことをして過ごされているんですか？"
+- `https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e2-a.mp3` - "どんな会社で働かれているんですか？"
+- `https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e3-a.mp3` - "沖縄のどこが一番印象に残りましたか？"
+- `https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e4-a.mp3` - "真ん中だと、どんな性格になりましたか？"
+- `https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e5-a.mp3` - "そうなんですか。何が苦手なんですか？"
+
+**上級レベル（5問）**
+- `https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/a1-a.mp3` - "お疲れさま。話したくなったら聞かせてね。今日は美味しいものを食べてリラックスしよう。"
+- `https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/a2-a.mp3` - "どんなところが特に不安に感じるのか、よかったら聞かせてもらえる？"
+- `https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/a3-a.mp3` - "辛い経験を話してくれてありがとう。そういう経験があったからこそ、今の君の考え方があるんだね。"
+- `https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/a4-a.mp3` - "今日、よく実家に連れて行ってくれたね。きっと勇気が必要だったと思う。君の気持ちを大切にしたいよ。"
+- `https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/a5-a.mp3` - "君がそんなふうに考えているなんて知らなかった。どんな時にそう感じるの？"
+
+#### ⏳ 音声準備中（「音声は準備中です」表示）
+
+**初級レベル（2問）**
+- `elicit_003` - "どんなことが特に不安に感じられるんですか？"
+- `elicit_004` - "家でゆっくりする時は、どんなことをされているんですか？"
+
+**上級レベル（3問）**
+- `advanced_006` - "素敵な考え方だね。君にとって『お互いが成長し続ける』って、どんなイメージなのか聞かせて。"
+- `advanced_007` - "僕のことは気にしないで、自分の気持ちを一番大切にして。一緒に考えられることがあれば何でも言って。"
+- `advanced_008` - "話してくれてありがとう。無理をしないでくださいね。何かサポートできることがあればいつでも言ってください。"
+
+---
+
+## 🎯 実装済み機能
+
+### 音声エラーハンドリング
+- **音声準備中の問題**: `shadowingAudio`プロパティが未定義の場合、「音声は準備中です」エラー画面を表示
+- **無効な音声URL**: 空文字、バッククォート、無効なURLの場合はエラー処理
+- **ネットワークエラー**: 音声読み込み失敗時のフォールバック処理
+
+### 出題順序の最適化
+- **音声優先出題**: 音声がある設問を優先的に出題
+- **順序ベース選択**: ランダム選択から音声対応問題を優先する順序選択に変更
+
+### 音声再生機能
+```javascript
+// ShadowingPractice.jsでの実装
+const isValidAudio = (audioUrl) => {
+  if (audioUrl === undefined || audioUrl === null) return false;
+  if (!audioUrl) return false;
+  const trimmed = String(audioUrl).trim();
+  if (trimmed === '' || trimmed === '``' || trimmed.match(/^`+$/)) return false;
+  if (!trimmed.startsWith('http')) return false;
+  return true;
+};
+
+// advanced_002の特別処理（音声URL強制設定）
+if (scenario.id === 'advanced_002') {
+  audioUrl = 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/a2-a.mp3';
+}
+```
 
 ---
 
