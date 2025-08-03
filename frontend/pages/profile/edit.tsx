@@ -122,7 +122,20 @@ const ProfileEdit: React.FC = () => {
       
     } catch (err) {
       console.error('プロフィール更新エラー:', err);
-      setError(err instanceof Error ? err.message : 'プロフィールの更新に失敗しました。');
+      
+      // エラーメッセージを分かりやすく表示
+      let errorMessage = 'プロフィールの更新に失敗しました。';
+      if (err instanceof Error) {
+        if (err.message.includes('Network Error') || err.message.includes('CORS')) {
+          errorMessage = 'ネットワーク接続に問題があります。しばらく時間をおいて再度お試しください。';
+        } else if (err.message.includes('timeout')) {
+          errorMessage = 'サーバーへの接続がタイムアウトしました。再度お試しください。';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setSaving(false);
     }

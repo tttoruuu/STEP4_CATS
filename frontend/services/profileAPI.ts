@@ -113,8 +113,10 @@ export const getComprehensiveProfile = async (): Promise<ComprehensiveProfile> =
       const storedToken = localStorage.getItem('token');
       if (storedToken) {
         try {
-          // JWTトークンをデコード
-          const payload = JSON.parse(atob(storedToken.split('.')[1]));
+          // JWTトークンをデコード（日本語対応）
+          const encodedPayload = storedToken.split('.')[1];
+          const decodedPayload = decodeURIComponent(escape(atob(encodedPayload)));
+          const payload = JSON.parse(decodedPayload);
           
           let fallbackProfile: ComprehensiveProfile = {
             user_id: payload.sub || payload.user_id || 1,
@@ -219,8 +221,12 @@ export const updateProfile = async (updates: {
         `${API_BASE_URL}/api/profile/update`,
         updates,
         {
-          headers: getAuthHeaders(),
+          headers: {
+            ...getAuthHeaders(),
+            'Content-Type': 'application/json',
+          },
           timeout: 8000,
+          withCredentials: false, // CORS対応
         }
       );
 
@@ -230,14 +236,17 @@ export const updateProfile = async (updates: {
       }
     } catch (apiError) {
       console.log('統合API更新失敗、ローカルストレージ更新:', apiError);
+      // CORSエラーやネットワークエラーの場合はローカル保存にフォールバック
       
       // フォールバック: ローカルストレージに保存
       if (typeof window !== 'undefined') {
         const storedToken = localStorage.getItem('token');
         if (storedToken) {
           try {
-            // JWTトークンをデコードして更新
-            const payload = JSON.parse(atob(storedToken.split('.')[1]));
+            // JWTトークンをデコードして更新（日本語対応）
+            const encodedPayload = storedToken.split('.')[1];
+            const decodedPayload = decodeURIComponent(escape(atob(encodedPayload)));
+            const payload = JSON.parse(decodedPayload);
             
             // 更新データをペイロードに反映
             const updatedPayload = {
@@ -254,7 +263,10 @@ export const updateProfile = async (updates: {
             };
             
             // 新しいトークンを作成（簡易版 - 実際はサーバー側で行うべき）
-            const newToken = storedToken.split('.')[0] + '.' + btoa(JSON.stringify(updatedPayload)) + '.' + storedToken.split('.')[2];
+            // 日本語文字を含む場合のエンコード対応
+            const payloadString = JSON.stringify(updatedPayload);
+            const encodedPayload = btoa(unescape(encodeURIComponent(payloadString)));
+            const newToken = storedToken.split('.')[0] + '.' + encodedPayload + '.' + storedToken.split('.')[2];
             localStorage.setItem('token', newToken);
             
             console.log('ローカルストレージでプロフィール更新完了:', updatedPayload);

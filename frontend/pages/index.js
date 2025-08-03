@@ -47,8 +47,10 @@ export default function MainPage() {
       // トークンが存在する場合はユーザー情報を取得
       console.log('✅ Token found v2 - fetching user info');
       try {
-        // JWTトークンをデコードしてユーザー情報を取得
-        const payload = JSON.parse(atob(storedToken.split('.')[1]));
+        // JWTトークンをデコードしてユーザー情報を取得（日本語対応）
+        const encodedPayload = storedToken.split('.')[1];
+        const decodedPayload = decodeURIComponent(escape(atob(encodedPayload)));
+        const payload = JSON.parse(decodedPayload);
         console.log('Token payload:', payload);
         
         setUser({

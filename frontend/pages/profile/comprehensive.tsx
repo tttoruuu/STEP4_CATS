@@ -54,8 +54,10 @@ const ComprehensiveProfilePage: React.FC = () => {
             return;
           }
           
-          // JWTトークンをデコード
-          const payload = JSON.parse(atob(storedToken.split('.')[1]));
+          // JWTトークンをデコード（日本語対応）
+          const encodedPayload = storedToken.split('.')[1];
+          const decodedPayload = decodeURIComponent(escape(atob(encodedPayload)));
+          const payload = JSON.parse(decodedPayload);
           
           let fallbackProfile = {
             user_id: payload.sub || payload.user_id || 1,
