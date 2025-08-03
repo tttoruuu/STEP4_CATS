@@ -30,8 +30,7 @@ export default function ConversationModes() {
       id: 'integrated-conversation',
       title: '聞く力トレーニング',
       icon: TrendingUp,
-      path: '/conversation/integrated-practice',
-      badge: 'おすすめ'
+      path: '/conversation/integrated-practice'
     },
     {
       id: 'free',
