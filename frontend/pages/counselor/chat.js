@@ -159,7 +159,10 @@ export default function CounselorChat() {
       
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/counselor/save`, {
         method: 'POST',
-        headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
         body: JSON.stringify(body)
       });
 
@@ -203,29 +206,22 @@ export default function CounselorChat() {
 
     try {
       // 実際のAPIを呼び出し
-      const headers = {
-        'Content-Type': 'application/json'
-      };
-      
-      // 開発環境以外では認証が必要
-      if (process.env.NODE_ENV !== 'development') {
-        const token = localStorage.getItem('token');
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/counselor/chat`, {
         method: 'POST',
-        headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
         body: JSON.stringify({
           message: userMessage.content,
           context: messages.slice(-10).map(m => `${m.type}: ${m.content}`).join('\n')
         })
       });
-
+      
       if (!response.ok) {
-        throw new Error('API request failed');
+        throw new Error(`API Error: ${response.status}`);
       }
-
+      
       const data = await response.json();
       const aiResponse = {
         id: Date.now() + 1,

@@ -409,13 +409,31 @@ export default function AuthChat() {
     const res = await login(email, password);
     
     if (res.success){
+      // ログイン成功時、トークンを保存
+      if (res.data && res.data.access_token) {
+        localStorage.setItem('token', res.data.access_token);
+        console.log('Token saved:', res.data.access_token.substring(0, 20) + '...');
+      }
+      
       // ログイン成功時のメッセージを表示
       setTimeout(() => {
         addBotMessage('ありがとうございます、パスワードを確認しました!');
       }, 500);
       setTimeout(() => {
-        router.push("/mypage");
-      }, 5000); // ログイン時は5秒後に遷移
+        // トークンが確実に保存されているか再確認
+        const savedToken = localStorage.getItem('token');
+        console.log('Token verification before redirect:', !!savedToken);
+        if (savedToken) {
+          router.push("/");
+        } else {
+          console.error('Token not found after save, retrying...');
+          // トークンが見つからない場合は再保存して遷移
+          if (res.data && res.data.access_token) {
+            localStorage.setItem('token', res.data.access_token);
+          }
+          setTimeout(() => router.push("/"), 1000);
+        }
+      }, 2000); // 2秒後に遷移（短縮）
     } else {
       // ログイン失敗時のメッセージを表示
       setTimeout(() => {
