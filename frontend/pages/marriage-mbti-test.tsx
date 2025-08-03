@@ -70,20 +70,8 @@ const MarriageMBTITestPage: React.FC = () => {
           isLoading: false
         }));
         
-        // 保存された進捗があれば復元
-        const savedProgress = getMarriageMBTIProgressFromLocal();
-        if (savedProgress) {
-          const hoursSinceProgress = (new Date().getTime() - new Date(savedProgress.timestamp).getTime()) / (1000 * 60 * 60);
-          if (hoursSinceProgress <= 24) { // 24時間以内の進捗のみ復元
-            setState(prev => ({
-              ...prev,
-              currentStep: savedProgress.currentStep as Step,
-              currentQuestionIndex: savedProgress.currentQuestionIndex,
-              mbtiAnswers: savedProgress.mbtiAnswers,
-              marriageAnswers: savedProgress.marriageAnswers
-            }));
-          }
-        }
+        // 自動復元は無効化：常に開始画面から表示
+        // ユーザーが明示的に「続きから」を選択した場合のみ進捗を復元
         
       } catch (error) {
         console.error('質問の取得に失敗:', error);
@@ -287,13 +275,13 @@ const MarriageMBTITestPage: React.FC = () => {
   if (state.isLoading) {
     return (
       <Layout title="Marriage MBTI+ 診断" hideFooter={true}>
-        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
           <div className="text-center">
-            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-rose-500 to-blue-500 rounded-full flex items-center justify-center">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center" style={{background: 'var(--bg-gradient-primary)'}}>
               <Loader2 className="w-10 h-10 text-white animate-spin" />
             </div>
-            <h2 className="text-lg font-medium text-gray-800 mb-2">質問を読み込んでいます...</h2>
-            <p className="text-sm text-gray-600">Marriage MBTI+ 診断の準備中です</p>
+            <h2 className="text-lg font-medium mb-2" style={{color: 'var(--color-gray-800)'}}>質問を読み込んでいます...</h2>
+            <p className="text-sm" style={{color: 'var(--color-gray-600)'}}>Marriage MBTI+ 診断の準備中です</p>
           </div>
         </div>
       </Layout>
@@ -304,14 +292,14 @@ const MarriageMBTITestPage: React.FC = () => {
   if (state.error) {
     return (
       <Layout title="Marriage MBTI+ 診断" hideFooter={true}>
-        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
           <div className="max-w-md mx-auto px-6 py-8">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-rose-200/30 shadow-xl">
+            <div className="card card-glass">
               <div className="text-center mb-6">
-                <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                  <AlertCircle className="w-8 h-8 text-red-500" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{backgroundColor: 'var(--color-error)', opacity: 0.1}}>
+                  <AlertCircle className="w-8 h-8" style={{color: 'var(--color-error)'}} />
                 </div>
-                <h2 className="text-lg font-medium text-gray-800 mb-2">エラーが発生しました</h2>
+                <h2 className="text-lg font-medium mb-2" style={{color: 'var(--color-gray-800)'}}>エラーが発生しました</h2>
               </div>
               
               <ErrorAlert
@@ -330,13 +318,13 @@ const MarriageMBTITestPage: React.FC = () => {
   if (state.isAnalyzing) {
     return (
       <Layout title="Marriage MBTI+ 診断" hideFooter={true}>
-        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
           <div className="text-center">
-            <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-rose-500 to-blue-500 rounded-full flex items-center justify-center">
+            <div className="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center" style={{background: 'var(--bg-gradient-primary)'}}>
               <Brain className="w-12 h-12 text-white animate-pulse" />
             </div>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">分析中...</h2>
-            <p className="text-lg text-gray-600 mb-4">
+            <h2 className="text-xl font-bold mb-4" style={{color: 'var(--color-gray-800)'}}>分析中...</h2>
+            <p className="text-lg mb-4" style={{color: 'var(--color-gray-600)'}}>
               あなたのMBTIタイプと結婚観を<br />
               詳しく分析しています
             </p>
@@ -345,8 +333,8 @@ const MarriageMBTITestPage: React.FC = () => {
                 {[0, 1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="w-2 h-2 bg-gradient-to-r from-rose-500 to-blue-500 rounded-full animate-bounce"
-                    style={{ animationDelay: `${i * 0.2}s` }}
+                    className="w-2 h-2 rounded-full animate-bounce"
+                    style={{ backgroundColor: 'var(--color-primary-400)', animationDelay: `${i * 0.2}s` }}
                   ></div>
                 ))}
               </div>
@@ -358,30 +346,30 @@ const MarriageMBTITestPage: React.FC = () => {
   }
 
   return (
-    <Layout title="Marriage MBTI+ 診断" hideFooter={state.currentStep !== 'result'}>
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-indigo-100">
+    <Layout title="Marriage MBTI+ 診断" hideFooter={false}>
+      <div className="min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
         {/* ヘッダー */}
-        <header className="bg-white/80 backdrop-blur-sm border-b border-rose-200/30 sticky top-0 z-10">
+        <header className="header">
           <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Heart className="w-6 h-6 text-rose-500" />
-              <h1 className="text-xl font-bold text-gray-800">Marriage MBTI+</h1>
+              <Heart className="w-6 h-6" style={{color: 'var(--color-primary-500)'}} />
+              <h1 className="text-xl font-bold" style={{color: 'var(--color-gray-800)'}}>Marriage MBTI+</h1>
             </div>
             {(state.currentStep === 'mbti' || state.currentStep === 'marriage') && (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm" style={{color: 'var(--color-gray-600)'}}>
                   {state.currentStep === 'mbti' ? 'MBTI診断' : '結婚観診断'}
                 </span>
-                <span className="text-sm font-medium text-rose-600">
+                <span className="text-sm font-medium" style={{color: 'var(--color-primary-600)'}}>
                   {state.currentQuestionIndex + 1} / {state.currentStep === 'mbti' ? totalMBTIQuestions : totalMarriageQuestions}
                 </span>
               </div>
             )}
           </div>
           {(state.currentStep === 'mbti' || state.currentStep === 'marriage') && (
-            <div className="h-1 bg-gray-200">
+            <div className="progress">
               <div 
-                className="h-full bg-gradient-to-r from-rose-500 to-blue-500 transition-all duration-500 ease-out"
+                className="progress-bar"
                 style={{ width: `${getProgress()}%` }}
               />
             </div>
@@ -394,46 +382,80 @@ const MarriageMBTITestPage: React.FC = () => {
         {state.currentStep === 'intro' && (
           <div className="text-center space-y-8 animate-fade-in">
             <div className="space-y-4">
-              <div className="w-24 h-24 bg-gradient-to-br from-rose-500 to-blue-500 rounded-full flex items-center justify-center mx-auto">
+              <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto" style={{background: 'var(--bg-gradient-primary)'}}>
                 <Brain className="w-12 h-12 text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-800">Marriage MBTI+</h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              <h2 className="text-3xl font-bold" style={{color: 'var(--color-gray-800)'}}>Marriage MBTI+</h2>
+              <p className="text-lg max-w-2xl mx-auto leading-relaxed" style={{color: 'var(--color-gray-600)'}}>
                 MBTI診断と結婚観の分析により、あなたに最適なパートナーのタイプと<br />
                 恋愛・結婚における傾向を詳しく診断します。
               </p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-6 mt-12">
-              <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-rose-200/30 hover:shadow-lg transition-shadow">
-                <Users className="w-8 h-8 text-rose-500 mb-3" />
-                <h3 className="font-semibold text-gray-800 mb-2">MBTI診断</h3>
-                <p className="text-sm text-gray-600">16の性格タイプから、あなたの基本的な性格を分析</p>
-                <div className="text-xs text-rose-600 mt-2 font-medium">16問・選択式</div>
+              <div className="card card-glass">
+                <Users className="w-8 h-8 mb-3" style={{color: 'var(--color-primary-500)'}} />
+                <h3 className="font-semibold mb-2" style={{color: 'var(--color-gray-800)'}}>MBTI診断</h3>
+                <p className="text-sm" style={{color: 'var(--color-gray-600)'}}>16の性格タイプから、あなたの基本的な性格を分析</p>
+                <div className="text-xs mt-2 font-medium" style={{color: 'var(--color-primary-600)'}}>16問・選択式</div>
               </div>
-              <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-blue-200/30 hover:shadow-lg transition-shadow">
-                <Heart className="w-8 h-8 text-blue-500 mb-3" />
-                <h3 className="font-semibold text-gray-800 mb-2">結婚観診断</h3>
-                <p className="text-sm text-gray-600">恋愛・結婚に対する価値観と優先度を詳細分析</p>
-                <div className="text-xs text-blue-600 mt-2 font-medium">10問・5段階評価</div>
+              <div className="card card-glass">
+                <Heart className="w-8 h-8 mb-3" style={{color: 'var(--color-secondary-500)'}} />
+                <h3 className="font-semibold mb-2" style={{color: 'var(--color-gray-800)'}}>結婚観診断</h3>
+                <p className="text-sm" style={{color: 'var(--color-gray-600)'}}>恋愛・結婚に対する価値観と優先度を詳細分析</p>
+                <div className="text-xs mt-2 font-medium" style={{color: 'var(--color-secondary-600)'}}>10問・5段階評価</div>
               </div>
-              <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-indigo-200/30 hover:shadow-lg transition-shadow">
-                <Target className="w-8 h-8 text-indigo-500 mb-3" />
-                <h3 className="font-semibold text-gray-800 mb-2">相性アドバイス</h3>
-                <p className="text-sm text-gray-600">最適なパートナータイプと具体的なアドバイスを提供</p>
-                <div className="text-xs text-indigo-600 mt-2 font-medium">総合26問・約10分</div>
+              <div className="card card-glass">
+                <Target className="w-8 h-8 mb-3" style={{color: 'var(--color-accent-500)'}} />
+                <h3 className="font-semibold mb-2" style={{color: 'var(--color-gray-800)'}}>相性アドバイス</h3>
+                <p className="text-sm" style={{color: 'var(--color-gray-600)'}}>最適なパートナータイプと具体的なアドバイスを提供</p>
+                <div className="text-xs mt-2 font-medium" style={{color: 'var(--color-accent-600)'}}>総合26問・約10分</div>
               </div>
             </div>
 
-            <button
-              onClick={() => setState(prev => ({ ...prev, currentStep: 'mbti' }))}
-              className="bg-gradient-to-r from-rose-500 to-blue-500 text-white px-8 py-4 rounded-xl font-medium text-lg hover:from-rose-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto"
-            >
-              診断を開始する
-              <ArrowRight className="w-5 h-5" />
-            </button>
+            <div className="space-y-4">
+              <button
+                onClick={() => {
+                  // 新しく診断を開始（進捗をクリア）
+                  clearMarriageMBTIProgressFromLocal();
+                  setState(prev => ({ 
+                    ...prev, 
+                    currentStep: 'mbti',
+                    currentQuestionIndex: 0,
+                    mbtiAnswers: [],
+                    marriageAnswers: []
+                  }));
+                }}
+                className="btn btn-primary btn-lg mx-auto text-lg px-8 py-4"
+              >
+                診断を開始する
+                <ArrowRight className="w-5 h-5" />
+              </button>
+              
+              {/* 保存された進捗がある場合は続行ボタンも表示 */}
+              {getMarriageMBTIProgressFromLocal() && (
+                <button
+                  onClick={() => {
+                    const savedProgress = getMarriageMBTIProgressFromLocal();
+                    if (savedProgress) {
+                      setState(prev => ({
+                        ...prev,
+                        currentStep: savedProgress.currentStep as Step,
+                        currentQuestionIndex: savedProgress.currentQuestionIndex,
+                        mbtiAnswers: savedProgress.mbtiAnswers,
+                        marriageAnswers: savedProgress.marriageAnswers
+                      }));
+                    }
+                  }}
+                  className="btn btn-ghost mx-auto px-6 py-3"
+                >
+                  前回の続きから
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
+            </div>
             
-            <div className="text-xs text-gray-500 max-w-md mx-auto">
+            <div className="text-xs max-w-md mx-auto" style={{color: 'var(--color-gray-500)'}}>
               正直に回答することで、より正確で詳細な分析結果が得られます。<br />
               診断は途中で中断・再開が可能です。
             </div>
@@ -443,15 +465,15 @@ const MarriageMBTITestPage: React.FC = () => {
         {/* MBTI診断画面 */}
         {state.currentStep === 'mbti' && state.mbtiQuestions.length > 0 && (
           <div className="max-w-2xl mx-auto animate-slide-in">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-rose-200/30 shadow-xl">
+            <div className="card card-glass">
               <div className="mb-6">
-                <span className="inline-block bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                <span className="inline-block px-3 py-1 rounded-full text-sm font-medium mb-4" style={{backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-700)'}}>
                   MBTI診断
                 </span>
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                <h3 className="text-2xl font-bold mb-4" style={{color: 'var(--color-gray-800)'}}>
                   質問 {state.currentQuestionIndex + 1}
                 </h3>
-                <p className="text-lg text-gray-700 leading-relaxed">
+                <p className="text-lg leading-relaxed" style={{color: 'var(--color-gray-700)'}}>
                   {state.mbtiQuestions[state.currentQuestionIndex]?.question}
                 </p>
               </div>
@@ -459,25 +481,53 @@ const MarriageMBTITestPage: React.FC = () => {
               <div className="space-y-4">
                 <button
                   onClick={() => handleMBTIAnswer('A')}
-                  className="w-full p-6 text-left bg-gradient-to-r from-rose-50 to-blue-50 hover:from-rose-100 hover:to-blue-100 rounded-xl border border-rose-200/50 hover:border-rose-300/50 transition-all duration-300 transform hover:scale-[1.02] group"
+                  className="w-full p-6 text-left rounded-xl border-2 transition-all duration-300 transform hover:scale-[1.02] group" 
+                  style={{
+                    background: 'linear-gradient(to right, var(--color-primary-50), var(--color-accent-50))',
+                    borderColor: 'var(--color-primary-200)',
+                    ':hover': {
+                      background: 'linear-gradient(to right, var(--color-primary-100), var(--color-accent-100))',
+                      borderColor: 'var(--color-primary-300)'
+                    }
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'linear-gradient(to right, var(--color-primary-100), var(--color-accent-100))';
+                    e.currentTarget.style.borderColor = 'var(--color-primary-300)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'linear-gradient(to right, var(--color-primary-50), var(--color-accent-50))';
+                    e.currentTarget.style.borderColor = 'var(--color-primary-200)';
+                  }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-800 font-medium">
+                    <span className="font-medium" style={{color: 'var(--color-gray-800)'}}>
                       A. {state.mbtiQuestions[state.currentQuestionIndex]?.optionA}
                     </span>
-                    <ArrowRight className="w-5 h-5 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" style={{color: 'var(--color-primary-500)'}} />
                   </div>
                 </button>
                 
                 <button
                   onClick={() => handleMBTIAnswer('B')}
-                  className="w-full p-6 text-left bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border border-blue-200/50 hover:border-blue-300/50 transition-all duration-300 transform hover:scale-[1.02] group"
+                  className="w-full p-6 text-left rounded-xl border-2 transition-all duration-300 transform hover:scale-[1.02] group"
+                  style={{
+                    background: 'linear-gradient(to right, var(--color-secondary-50), var(--color-accent-50))',
+                    borderColor: 'var(--color-secondary-200)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'linear-gradient(to right, var(--color-secondary-100), var(--color-accent-100))';
+                    e.currentTarget.style.borderColor = 'var(--color-secondary-300)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'linear-gradient(to right, var(--color-secondary-50), var(--color-accent-50))';
+                    e.currentTarget.style.borderColor = 'var(--color-secondary-200)';
+                  }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-800 font-medium">
+                    <span className="font-medium" style={{color: 'var(--color-gray-800)'}}>
                       B. {state.mbtiQuestions[state.currentQuestionIndex]?.optionB}
                     </span>
-                    <ArrowRight className="w-5 h-5 text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" style={{color: 'var(--color-secondary-500)'}} />
                   </div>
                 </button>
               </div>
@@ -485,7 +535,10 @@ const MarriageMBTITestPage: React.FC = () => {
               {(state.currentQuestionIndex > 0 || state.currentStep !== 'mbti' || state.mbtiAnswers.length > 0) && (
                 <button
                   onClick={handlePrevious}
-                  className="mt-6 flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+                  className="mt-6 flex items-center gap-2 transition-colors"
+                  style={{color: 'var(--color-gray-600)'}}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-gray-800)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-gray-600)'}
                 >
                   <ArrowLeft className="w-4 h-4" />
                   前の質問に戻る
@@ -498,15 +551,15 @@ const MarriageMBTITestPage: React.FC = () => {
         {/* 結婚観診断画面 */}
         {state.currentStep === 'marriage' && state.marriageQuestions.length > 0 && (
           <div className="max-w-2xl mx-auto animate-slide-in">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-blue-200/30 shadow-xl">
+            <div className="card card-glass">
               <div className="mb-6">
-                <span className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                <span className="inline-block px-3 py-1 rounded-full text-sm font-medium mb-4" style={{backgroundColor: 'var(--color-secondary-100)', color: 'var(--color-secondary-700)'}}>
                   結婚観診断
                 </span>
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                <h3 className="text-2xl font-bold mb-4" style={{color: 'var(--color-gray-800)'}}>
                   質問 {state.currentQuestionIndex + 1}
                 </h3>
-                <p className="text-lg text-gray-700 leading-relaxed">
+                <p className="text-lg leading-relaxed" style={{color: 'var(--color-gray-700)'}}>
                   {state.marriageQuestions[state.currentQuestionIndex]?.question}
                 </p>
               </div>
@@ -516,13 +569,25 @@ const MarriageMBTITestPage: React.FC = () => {
                   <button
                     key={value}
                     onClick={() => handleMarriageAnswer(value)}
-                    className="w-full p-4 text-left bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border border-blue-200/50 hover:border-blue-300/50 transition-all duration-300 transform hover:scale-[1.02] group"
+                    className="w-full p-4 text-left rounded-xl border-2 transition-all duration-300 transform hover:scale-[1.02] group"
+                    style={{
+                      background: 'linear-gradient(to right, var(--color-secondary-50), var(--color-accent-50))',
+                      borderColor: 'var(--color-secondary-200)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(to right, var(--color-secondary-100), var(--color-accent-100))';
+                      e.currentTarget.style.borderColor = 'var(--color-secondary-300)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(to right, var(--color-secondary-50), var(--color-accent-50))';
+                      e.currentTarget.style.borderColor = 'var(--color-secondary-200)';
+                    }}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-800 font-medium">
+                      <span className="font-medium" style={{color: 'var(--color-gray-800)'}}>
                         {state.marriageQuestions[state.currentQuestionIndex]?.options[value - 1]}
                       </span>
-                      <ArrowRight className="w-5 h-5 text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" style={{color: 'var(--color-secondary-500)'}} />
                     </div>
                   </button>
                 ))}
@@ -530,7 +595,10 @@ const MarriageMBTITestPage: React.FC = () => {
 
               <button
                 onClick={handlePrevious}
-                className="mt-6 flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+                className="mt-6 flex items-center gap-2 transition-colors"
+                style={{color: 'var(--color-gray-600)'}}
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-gray-800)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-gray-600)'}
               >
                 <ArrowLeft className="w-4 h-4" />
                 前の質問に戻る

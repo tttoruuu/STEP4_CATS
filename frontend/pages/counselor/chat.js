@@ -47,7 +47,20 @@ export default function CounselorChat() {
   // サーバーから現在時刻を取得
   const fetchCurrentTime = async () => {
     try {
-      const apiUrl = 'http://localhost:8000/api/counselor/current-time';
+      // 環境に応じたAPIURLを取得
+      const getApiUrl = () => {
+        if (typeof window !== 'undefined') {
+          const hostname = window.location.hostname;
+          if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8000';
+          } else {
+            return process.env.NEXT_PUBLIC_API_URL || 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io';
+          }
+        }
+        return 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io';
+      };
+
+      const apiUrl = `${getApiUrl()}/api/counselor/current-time`;
       console.log('Fetching current time from:', apiUrl);
       const response = await fetch(apiUrl);
       if (response.ok) {
@@ -56,9 +69,29 @@ export default function CounselorChat() {
         setCurrentTime(data.formatted_time);
       } else {
         console.error('Time fetch failed:', response.status);
+        // フォールバック: ローカル時刻を使用
+        const now = new Date();
+        const formatted = now.toLocaleString('ja-JP', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        setCurrentTime(formatted);
       }
     } catch (error) {
       console.error('Failed to fetch current time:', error);
+      // フォールバック: ローカル時刻を使用
+      const now = new Date();
+      const formatted = now.toLocaleString('ja-JP', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      setCurrentTime(formatted);
     }
   };
 

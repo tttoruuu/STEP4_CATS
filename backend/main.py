@@ -36,11 +36,10 @@ logger = logging.getLogger(__name__)
 origins = [
     "http://localhost:3000",  # ローカル開発環境
     "http://frontend:3000",   # Docker Compose環境
+    "https://miraim-frontend.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # 現在のフロントエンド
+    "https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io",   # 現在のバックエンド（self）
     "https://frontend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",  # 旧本番環境のフロントエンド（HTTPS）
-    "https://aca-wild-australiaeast.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # 現在の本番環境フロントエンド
-    # 以下を追加 - Azureの各リビジョンURLも許可
-    "https://frontend-container--*.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
-    "https://aca-wild-australiaeast--*.icymoss-273d47c5.australiaeast.azurecontainerapps.io",
+    "https://aca-wild-australiaeast.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # 旧本番環境フロントエンド
     # ユーザーがアクセスする可能性のあるカスタムドメイン
     "https://*.azurecontainerapps.io",
     "https://*.azurewebsites.net",
@@ -58,13 +57,15 @@ if ENV == "production" and FRONTEND_ORIGIN:
 if ENV == "production":
     # 本番環境でワイルドカードが制限されている場合、各サブドメインを個別に追加
     production_origins = [
+        "https://miraim-frontend--login-fix.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # ログイン修正版
+        "https://miraim-frontend--0000004.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン4
+        "https://miraim-frontend--0000005.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン5
         "https://frontend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
         "https://frontend-container--2.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
         "https://frontend-container--3.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
         "https://aca-wild-australiaeast.icymoss-273d47c5.australiaeast.azurecontainerapps.io",
         "https://aca-wild-australiaeast--0000004.icymoss-273d47c5.australiaeast.azurecontainerapps.io",
         "https://aca-wild-australiaeast--0000005.icymoss-273d47c5.australiaeast.azurecontainerapps.io",
-        # 必要に応じて他のリビジョンも追加
     ]
     origins.extend(production_origins)
 

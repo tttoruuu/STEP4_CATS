@@ -9,7 +9,7 @@ import { AuthStep, AuthMode, UserData, Message } from '@/types/auth';
 import { validateInput, getNextStep, getStepProgress } from '@/utils/authFlow';
 import login from './login';
 import register from './register';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 const INITIAL_MESSAGES: Message[] = [
   {
@@ -376,76 +376,42 @@ export default function AuthChat() {
   };
 
   const handleComplete = async (finalUserData: UserData) => {
-    if (mode == 'register'){
-      try {
-        const res = await register(finalUserData);
-        console.log('Registration response:', res);
-        
-        if (res.success) {
-          // 登録成功時のメッセージを表示
-          setTimeout(() => {
-            addBotMessage('登録が完了しました！🎊\n\nMiraimへようこそ！\n素敵な出会いが待っていますよ ✨');
-          }, 500);
-          
-        } else {
-          // 登録失敗時のメッセージを表示
-          setTimeout(() => {
-            addBotMessage(`申し訳ありません。登録に失敗しました。\n${res.error}\n\nもう一度お試しください。`);
-          }, 500);
+    try {
+      const res = await register(finalUserData);
+      console.log('Registration response:', res);
+      
+      if (res.success) {
+        // 登録成功時、トークンを保存
+        if (res.data && res.data.access_token) {
+          localStorage.setItem('token', res.data.access_token);
         }
         
-      } catch (error) {
-        console.error('Registration error:', error);
+        // 登録成功時のメッセージを表示
+        setTimeout(() => {
+          addBotMessage('登録が完了しました！🎊\n\nMiraimへようこそ！\n素敵な出会いが待っていますよ ✨\n\nホーム画面に移動します...');
+        }, 500);
+        
+        // 登録成功後もホーム画面に遷移
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2500);
+        
+      } else {
         // 登録失敗時のメッセージを表示
         setTimeout(() => {
-          addBotMessage('申し訳ありません。登録に失敗しました。\nもう一度お試しください。');
+          addBotMessage(`申し訳ありません。登録に失敗しました。\n${res.error}\n\nもう一度お試しください。`);
         }, 500);
       }
-      return;
-    }
-
-    const email = finalUserData.email;
-    const password = finalUserData.password;
-    const res = await login(email, password);
-    
-    if (res.success){
-      // ログイン成功時、トークンを保存
-      if (res.data && res.data.access_token) {
-        localStorage.setItem('token', res.data.access_token);
-      }
       
-      // ログイン成功時のメッセージを表示
+    } catch (error) {
+      console.error('Registration error:', error);
+      // 登録失敗時のメッセージを表示
       setTimeout(() => {
-        addBotMessage('ログイン成功しました！🎉\nホーム画面に移動します...');
-      }, 500);
-      
-      // シンプルに遷移（元に戻す）
-      setTimeout(() => {
-        router.push("/");
-      }, 1500);
-    } else {
-      // ログイン失敗時のメッセージを表示
-      setTimeout(() => {
-        addBotMessage(`あら、パスワードが一致しないようです 😅\n\nもう一度確認してお試しください。\nパスワードを忘れてしまった場合は、「パスワードを忘れた方」を押して教えてくださいね。`);
-        setCurrentStep('password_confirm');
+        addBotMessage('申し訳ありません。登録に失敗しました。\nもう一度お試しください。');
       }, 500);
     }
   };
 
-  const handleModeSwitch = () => {
-    const newMode = mode === 'register' ? 'login' : 'register';
-    setMode(newMode);
-    setCurrentStep('start');
-    setUserData({});
-    setMessages(INITIAL_MESSAGES);
-    
-    if (newMode === 'login') {
-      setTimeout(() => {
-        addBotMessage('おかえりなさい！👋\nMiraimにログインしましょう。\n\nメールアドレスを教えてください。');
-        setCurrentStep('email_confirm');
-      }, 1000);
-    }
-  };
 
   const handleForgotPassword = () => {
     // パスワードを忘れた場合の処理を直接実行
@@ -512,7 +478,7 @@ export default function AuthChat() {
           
           <div className="text-center">
             <h1 className="text-xl font-bold text-gray-800">
-              {mode === 'register' ? '新規登録' : 'ログイン'}
+              新規登録
             </h1>
             {progress && (
               <ProgressIndicator 
@@ -522,12 +488,12 @@ export default function AuthChat() {
             )}
           </div>
 
-          <button
-            onClick={handleModeSwitch}
+          <a
+            href="/auth/login"
             className="text-orange-600 hover:text-orange-700 font-medium transition-colors"
           >
-            {mode === 'register' ? 'ログイン' : '新規登録'}
-          </button>
+            ログイン
+          </a>
         </div>
       </div>
 

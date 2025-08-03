@@ -242,10 +242,13 @@ async def counselor_chat(
     try:
         # OpenAI クライアントの初期化
         api_key = os.getenv("OPENAI_API_KEY")
+        print(f"[DEBUG] OpenAI API Key present: {bool(api_key)}")
         if not api_key:
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
+        print(f"[DEBUG] Creating OpenAI client...")
         client = OpenAI(api_key=api_key)
+        print(f"[DEBUG] OpenAI client created successfully")
         
         # メッセージの構築
         messages = [
@@ -259,6 +262,7 @@ async def counselor_chat(
         # ユーザーのメッセージを追加
         messages.append({"role": "user", "content": request.message})
         
+        print(f"[DEBUG] Calling OpenAI API with {len(messages)} messages...")
         # OpenAI APIを呼び出し
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -266,8 +270,10 @@ async def counselor_chat(
             temperature=0.8,
             max_tokens=300,  # 文字数制限のため調整
             presence_penalty=0.1,
-            frequency_penalty=0.1
+            frequency_penalty=0.1,
+            timeout=30  # 30秒タイムアウトを追加
         )
+        print(f"[DEBUG] OpenAI API call successful")
         
         ai_message = response.choices[0].message.content
         
@@ -289,7 +295,13 @@ async def counselor_chat(
         
     except Exception as e:
         # OpenAI APIエラーの場合はフォールバック応答
-        print(f"OpenAI API Error: {str(e)}")
+        print(f"[ERROR] OpenAI API Error: {str(e)}")
+        print(f"[ERROR] Error type: {type(e).__name__}")
+        
+        # より詳細なエラー情報をログに出力
+        import traceback
+        print(f"[ERROR] Full traceback: {traceback.format_exc()}")
+        
         fallback_message = "申し訳ございません。現在、システムに一時的な問題が発生しております。お悩みをお聞かせいただければ、私なりのアドバイスをさせていただきます。どのようなことでお困りでしょうか？"
         
         return ChatResponse(

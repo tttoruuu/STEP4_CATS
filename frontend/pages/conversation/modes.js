@@ -52,23 +52,26 @@ export default function ConversationModes() {
   ];
 
   return (
-    <Layout title="会話練習モード選択">
-      <div className="flex flex-col items-center min-h-screen bg-[#F5F5F5] text-gray-800 px-6 py-4">
+    <Layout title="会話ゲームモード選択">
+      <div className="flex flex-col items-center min-h-screen px-6 py-4" style={{background: 'var(--bg-gradient-main)', color: 'var(--color-gray-800)'}}>
         <div className="w-full max-w-md mt-8 relative">
           <button 
             onClick={() => router.push('/')}
-            className="text-[#FF8551] flex items-center gap-1 hover:opacity-80 transition-opacity absolute left-0"
+            className="flex items-center gap-1 transition-opacity absolute left-0"
+            style={{color: 'var(--color-primary-500)'}}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
           >
             <ArrowLeft size={18} />
             <span>もどる</span>
           </button>
         </div>
         
-        <h1 className="text-2xl font-bold mt-16 mb-8 text-center text-[#FF8551]">
-          会話練習モードを選択
+        <h1 className="text-2xl font-bold mt-16 mb-8 text-center" style={{color: 'var(--color-primary-500)'}}>
+          会話ゲームモードを選択
         </h1>
         
-        <p className="text-center text-gray-600 mb-8 max-w-md">
+        <p className="text-center mb-8 max-w-md" style={{color: 'var(--color-gray-600)'}}>
           聞く力を向上させるための5つの練習モードから選択してください
         </p>
         
@@ -77,9 +80,18 @@ export default function ConversationModes() {
             const IconComponent = mode.icon;
             return (
               <Link key={mode.id} href={mode.path}>
-                <div className={`bg-gradient-to-r ${mode.color} p-6 rounded-xl text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 cursor-pointer relative`}>
+                <div 
+                  className={`card text-white relative transition-all duration-200 transform hover:scale-105 cursor-pointer`}
+                  style={{
+                    background: mode.id === 'greeting' ? 'var(--bg-gradient-secondary)' :
+                               mode.id === 'empathy' ? 'var(--bg-gradient-accent)' :
+                               mode.id === 'repeat' ? 'var(--color-success)' :
+                               mode.id === 'integrated-conversation' ? 'var(--bg-gradient-mixed)' :
+                               'var(--bg-gradient-primary)'
+                  }}
+                >
                   {mode.badge && (
-                    <div className="absolute top-2 right-2 bg-white text-green-600 text-xs px-2 py-1 rounded font-medium">
+                    <div className="absolute top-2 right-2 bg-white text-xs px-2 py-1 rounded font-medium" style={{color: 'var(--color-success)'}}>
                       {mode.badge}
                     </div>
                   )}
@@ -102,7 +114,12 @@ export default function ConversationModes() {
         
         <div className="mt-8 text-center">
           <Link href="/conversation/tips-selection">
-            <span className="text-[#FF8551] hover:opacity-80 transition-opacity cursor-pointer">
+            <span 
+              className="transition-opacity cursor-pointer"
+              style={{color: 'var(--color-primary-500)'}}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+            >
               会話のTips
             </span>
           </Link>

@@ -801,6 +801,7 @@ export const getCategories = () => {
 };
 
 export const getScenariosByCategory = (category) => {
+  
   return conversationQuizData.scenarios.filter(scenario => scenario.category === category);
 };
 

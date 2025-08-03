@@ -6,16 +6,23 @@ import { useRouter } from 'next/router';
 export default function App({ Component, pageProps }) {
   const router = useRouter();
   
-  // 🚨 EMERGENCY LOGIN FIX 🚨
+  // 🚨 LOGIN FIX v2 🚨
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.pathname === '/') {
+    if (typeof window !== 'undefined') {
       const token = localStorage.getItem('token');
-      console.log('🚨 EMERGENCY FIX: Token check', !!token);
-      if (!token) {
-        console.log('🚨 EMERGENCY FIX: No token, redirecting...');
-        router.replace('/auth/login-chat');
-      } else {
-        console.log('🚨 EMERGENCY FIX: Token found, staying on home');
+      const currentPath = window.location.pathname;
+      
+      console.log('🚨 LOGIN FIX v2: Token check', { token: !!token, path: currentPath });
+      
+      // ホーム画面でトークンがない場合のみリダイレクト
+      if (currentPath === '/' && !token) {
+        console.log('🚨 LOGIN FIX v2: No token on home, redirecting...');
+        router.replace('/auth/login');
+      }
+      // ログインページでトークンがある場合はホームに遷移
+      else if ((currentPath === '/auth/login' || currentPath === '/auth/login-chat') && token) {
+        console.log('🚨 LOGIN FIX v2: Token found on login page, redirecting to home...');
+        router.replace('/');
       }
     }
   }, [router]);

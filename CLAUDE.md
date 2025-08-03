@@ -98,6 +98,7 @@ Claude Code作業時は必ずこのファイルを確認してください。
 # ビルド: npm run build
 # リント: npm run lint
 # 型チェック: npm run type-check
+# 環境変数検証: npm run validate-env
 
 # バックエンド（FastAPI）
 # 開発サーバー: uvicorn main:app --reload
@@ -113,6 +114,46 @@ Claude Code作業時は必ずこのファイルを確認してください。
 # モデル学習: python scripts/train_model.py
 # 音声処理テスト: python scripts/test_voice_analysis.py
 ```
+
+## 📋 運用スクリプト一覧
+
+### 🚀 デプロイスクリプト
+```bash
+# メインデプロイ（推奨）
+./scripts/deploy.sh                    # フル・デプロイ
+./scripts/deploy.sh --frontend-only    # フロントエンドのみ
+./scripts/deploy.sh --backend-only     # バックエンドのみ
+./scripts/deploy.sh --verify-only      # 状態確認のみ
+
+# デプロイ後チェック・修正
+./scripts/deploy-check.sh              # 完全チェック  
+./scripts/deploy-check.sh --env-only   # 環境変数のみ
+./scripts/deploy-check.sh --status-only # ステータスのみ
+```
+
+### 🧪 テスト・検証スクリプト
+```bash
+# 本番環境テスト
+./scripts/production-test.sh
+
+# フロントエンド環境変数検証
+cd frontend && npm run validate-env
+cd frontend && npm run validate-env:production
+```
+
+### 🗄️ データベーススクリプト
+```bash
+# データベース作成・初期化
+python scripts/create-databases.py
+```
+
+### 🎵 開発ツール
+```bash
+# TTS音声サンプル生成
+node scripts/generate-tts-samples.js
+```
+
+詳細は `scripts/README.md` を参照してください。
 
 ### Git運用ルール（チーム開発）
 ```bash
@@ -279,16 +320,136 @@ UserProfile {
 ```
 
 ## デプロイ手順
+
+### 開発環境
 ```bash
-# 開発環境
 # 初回セットアップ: make setup
 # 開発サーバー起動: make dev  
 # テスト実行: make test
 # コード品質チェック: make lint
+```
 
-# 本番環境
-# GitHub Actions（mainブランチ）で自動デプロイ
-# Azure Container Apps へのデプロイ
-# データベースマイグレーション実行
-# ヘルスチェック確認
+### 🚀 本番環境デプロイ（推奨：Azure CLI直接）
+
+#### ⚡ ワンコマンドデプロイ（推奨）
+```bash
+# フロントエンド・バックエンド両方をデプロイ
+./scripts/deploy.sh
+
+# フロントエンドのみデプロイ
+./scripts/deploy.sh --frontend-only
+
+# バックエンドのみデプロイ
+./scripts/deploy.sh --backend-only
+
+# デプロイ状態確認のみ
+./scripts/deploy.sh --verify-only
+```
+
+#### 📋 デプロイスクリプトの機能
+- **自動ビルド**: Docker イメージの自動ビルド
+- **環境変数検証**: 本番環境設定の自動チェック
+- **タイムスタンプタグ**: `YYYYMMDDHHMMSS` 形式の一意タグ
+- **Container Registry**: 自動プッシュ
+- **Container Apps**: 自動更新・デプロイ
+- **疎通確認**: エンドポイントの自動テスト
+- **後処理チェック**: デプロイ後の自動検証
+
+#### 🛡️ 安全なデプロイフロー
+1. **前提条件チェック**: Azure認証・Docker・Container Registry
+2. **環境変数検証**: 本番環境設定の確認
+3. **並行ビルド**: フロントエンド・バックエンドの同時処理
+4. **段階的デプロイ**: イメージプッシュ → Container Apps更新
+5. **自動検証**: 疎通確認・ヘルスチェック
+6. **完了確認**: デプロイ結果サマリー表示
+
+### 🔄 従来方法（GitHub Actions）
+```bash
+# GitHub Actions経由のデプロイも利用可能
+git add -A
+git commit -m "deploy: 本番環境デプロイ"
+git push origin main
+# → GitHub Actions が自動実行
+```
+
+### 🚨 【重要】環境切り替え問題の完全解決
+デプロイ後に以下のルールを必ず実行すること：
+
+```bash
+# 1. デプロイ後チェック（自動実行）
+./scripts/deploy-check.sh
+
+# 2. 手動での環境変数確認
+az containerapp show --name miraim-frontend --resource-group rg-001-gen9 --query "properties.template.containers[0].env"
+
+# 3. 緊急時の修正コマンド
+./scripts/deploy-check.sh --env-only
+
+# 4. フロントエンド環境検証
+cd frontend && npm run validate-env:production
+```
+
+## 🔧 環境切り替え問題の根本解決
+
+### 問題の原因
+- ローカル開発環境（localhost:8000）と本番環境（Container Apps FQDN）の設定混在
+- 環境変数の設定不整合
+- デプロイ時の設定検証不足
+
+### 解決策（実装済み）
+
+#### 1. 自動環境検出システム
+```bash
+# 場所: frontend/lib/env-config.js
+# 機能: ホスト名とNode環境から適切なAPIエンドポイントを自動選択
+# 効果: ローカル/本番の自動判定、設定ミス防止
+```
+
+#### 2. ビルド時環境検証
+```bash
+# 自動実行: npm run build（検証後にビルド）
+# 手動実行: npm run validate-env
+# 効果: ビルド前に環境設定の問題を検出
+```
+
+#### 3. デプロイ時自動チェック
+```bash
+# 実行コマンド: ./scripts/deploy-check.sh
+# 機能: Container Apps環境変数の確認・自動修正
+# 効果: デプロイ後の設定不整合を自動解決
+```
+
+#### 4. Container Apps環境変数の強制設定
+```bash
+# 確実な本番環境設定
+NEXT_PUBLIC_API_URL=https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io
+NODE_ENV=production
+ENVIRONMENT=production
+```
+
+### 運用ルール（厳守）
+
+#### デプロイ時（必須）
+1. `./scripts/deploy-check.sh` を実行
+2. 環境変数設定の自動検証・修正
+3. エンドポイント疎通確認
+
+#### ローカル開発時
+1. 環境変数は自動判定（手動設定不要）
+2. 本番APIを使用する場合は明示的に設定
+3. `npm run validate-env` で設定確認
+
+#### トラブルシューティング
+```bash
+# 環境設定の確認
+npm run validate-env
+
+# Container Apps環境変数の確認
+az containerapp show --name miraim-frontend --resource-group rg-001-gen9 --query "properties.template.containers[0].env"
+
+# 緊急修正
+./scripts/deploy-check.sh --env-only
+
+# 完全チェック
+./scripts/deploy-check.sh
 ```

@@ -73,7 +73,13 @@
       "Bash(az containerapp logs show:*)",
       "Bash(az acr repository show-tags:*)",
       "Bash(az containerapp update:*)",
-      "Bash(az containerapp revision list:*)"
+      "Bash(az containerapp revision list:*)",
+      "Bash(az account show:*)",
+      "Bash(az containerapp registry set:*)",
+      "Bash(./scripts/deploy-check.sh:*)",
+      "Bash(./scripts/deploy.sh:*)",
+      "Bash(NODE_ENV=production npm run build)",
+      "Bash(NODE_ENV=production NEXT_PUBLIC_API_URL=https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io npm run build)"
     ],
     "deny": []
   }

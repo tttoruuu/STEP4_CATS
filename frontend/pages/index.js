@@ -44,13 +44,27 @@ export default function MainPage() {
         return;
       }
       
-      // トークンが存在する場合はユーザー情報を設定
-      console.log('✅ Token found v2 - setting user info');
-      setUser({
-        id: 1,
-        username: 'test_user_v2',
-        email: 'test@example.com'
-      });
+      // トークンが存在する場合はユーザー情報を取得
+      console.log('✅ Token found v2 - fetching user info');
+      try {
+        // JWTトークンをデコードしてユーザー情報を取得
+        const payload = JSON.parse(atob(storedToken.split('.')[1]));
+        console.log('Token payload:', payload);
+        
+        setUser({
+          id: payload.sub || payload.user_id || 1,
+          username: payload.name || payload.username || 'ユーザー',
+          email: payload.email || 'user@example.com'
+        });
+      } catch (error) {
+        console.error('Token decode error:', error);
+        // フォールバック: デフォルト情報を使用
+        setUser({
+          id: 1,
+          username: 'ユーザー',
+          email: 'user@example.com'
+        });
+      }
       setLoading(false);
     };
 
@@ -59,31 +73,27 @@ export default function MainPage() {
 
   const handleLogout = () => {
     authAPI.logout(); // APIの関数を使用
-    router.push('/auth/login-chat');
+    router.push('/auth/login');
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-gray-800 bg-gradient-to-br from-orange-50 to-pink-50">
+      <div className="min-h-screen flex flex-col items-center justify-center text-gray-800" style={{background: 'var(--bg-gradient-main)'}}>
         <div className="text-center space-y-6">
           {/* ロゴ */}
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-xl font-bold">M</span>
-            </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
-              Miraim
-            </h1>
+          <div className="logo mb-4">
+            <Heart className="w-8 h-8" style={{color: 'var(--color-primary-500)'}} />
+            <span>Miraim</span>
           </div>
           
           {/* ローディングアニメーション */}
           <div className="space-y-4">
             <div className="flex justify-center space-x-1">
-              <div className="w-3 h-3 bg-orange-400 rounded-full animate-bounce"></div>
-              <div className="w-3 h-3 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-3 h-3 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              <div className="w-3 h-3 rounded-full animate-bounce" style={{backgroundColor: 'var(--color-primary-400)'}}></div>
+              <div className="w-3 h-3 rounded-full animate-bounce" style={{backgroundColor: 'var(--color-primary-400)', animationDelay: '0.1s'}}></div>
+              <div className="w-3 h-3 rounded-full animate-bounce" style={{backgroundColor: 'var(--color-primary-400)', animationDelay: '0.2s'}}></div>
             </div>
-            <p className="text-orange-600 font-medium">ホーム画面を準備中...</p>
+            <p className="font-medium" style={{color: 'var(--color-primary-600)'}}>ホーム画面を準備中...</p>
           </div>
         </div>
       </div>
@@ -92,21 +102,23 @@ export default function MainPage() {
   
   if (error && !user.username) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-gray-800 bg-[#F5F5F5] px-6">
-        <p className="text-red-500 mb-4">{error}</p>
-        <button 
-          onClick={() => router.push('/auth/login-chat')}
-          className="bg-gradient-to-r from-[#FF8551] to-[#FFA46D] hover:opacity-90 text-white font-medium py-2 px-4 rounded-full"
-        >
-          ログイン画面に戻る
-        </button>
+      <div className="min-h-screen flex flex-col items-center justify-center text-gray-800 px-6" style={{background: 'var(--bg-gradient-main)'}}>
+        <div className="card text-center">
+          <p className="mb-4" style={{color: 'var(--color-error)'}}>{error}</p>
+          <button 
+            onClick={() => router.push('/auth/login')}
+            className="btn btn-primary"
+          >
+            ログイン画面に戻る
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <Layout title="ホーム" hideHeader={true}>
-      <main className="max-w-sm mx-auto px-6 py-8 bg-[#F5F5F5] min-h-screen">
+      <main className="max-w-sm mx-auto px-6 py-8 min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
       <div className="w-40 h-40 relative mb-4 flex justify-center mx-auto">
               <Image
                 src="/images/logo.png"
@@ -118,62 +130,64 @@ export default function MainPage() {
             </div> 
 
         {/* プロフィールセクション */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-2.5">
-            <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-gray-100 bg-white">
-              <Image
-                src="/images/demo.png"
-                alt={user.username}
-                width={56}
-                height={56}
-                className="object-cover"
-              />
+        <div className="card mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 bg-white" style={{borderColor: 'var(--color-gray-200)'}}>
+                <Image
+                  src="/images/demo.png"
+                  alt={user.username}
+                  width={56}
+                  height={56}
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-medium" style={{color: 'var(--color-gray-800)'}}>{user.username}</span>
+                <span className="text-sm" style={{color: 'var(--color-gray-500)'}}>ようこそ！</span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm text-gray-500">{user.username.toLowerCase()}</span>
-            </div>
+            
+            <button className="btn btn-outline btn-sm">
+              編集する
+            </button>
           </div>
-          
-          <button className="px-2.5 py-1.5 rounded-full border border-[#FF8551] text-[#FF8551] text-xs flex items-center gap-1 hover:bg-[#FFF1E9] transition-colors">
-            <span className="text-xs"></span>
-            編集する
-          </button>
         </div>
 
         {/* メインテキスト */}
-        <h2 className="text-[#FF8551] text-xl font-medium mb-8">今日は何をしますか？</h2>
+        <h2 className="text-xl font-medium mb-8" style={{color: 'var(--color-primary-600)'}}>今日は何をしますか？</h2>
 
         {/* メニューボタン */}
         <nav className="flex flex-col space-y-4">
-          {/* パーソナルカウンセラー */}
+          {/* AIカウンセラー */}
           <Link href="/counselor">
-            <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-gradient-to-r from-[#FF8551] to-[#FFA46D] text-white rounded-3xl shadow-md transition-all hover:opacity-90">
+            <div className="btn btn-primary btn-lg w-full">
               <User className="w-5 h-5" />
-              <span className="text-lg font-medium">AIカウンセラー</span>
+              <span>AIカウンセラー</span>
             </div>
           </Link>
 
-          {/* 会話練習機能 */}
+          {/* 会話ゲーム機能 */}
           <Link href="/conversation/modes">
-            <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white rounded-3xl shadow-md transition-all hover:opacity-90">
+            <div className="btn btn-accent btn-lg w-full">
               <MessageSquare className="w-5 h-5" />
-              <span className="text-lg font-medium">会話練習</span>
+              <span>会話ゲーム</span>
             </div>
           </Link>
 
-          {/* 相性診断機能 */}
+          {/* MBTI Marriage診断機能 */}
           <Link href="/marriage-mbti-test">
-            <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-gradient-to-r from-[#EC4899] to-[#F97316] text-white rounded-3xl shadow-md transition-all hover:opacity-90">
+            <div className="btn btn-secondary btn-lg w-full">
               <Heart className="w-5 h-5" />
-              <span className="text-lg font-medium">相性診断</span>
+              <span>MBTI Marriage</span>
             </div>
           </Link>
 
           {/* スタイリング提案機能 */}
           <Link href="/styling">
-            <div className="flex items-center gap-3 justify-center w-full py-6 px-6 bg-gradient-to-r from-[#059669] to-[#0891B2] text-white rounded-3xl shadow-md transition-all hover:opacity-90">
+            <div className="btn btn-mixed btn-lg w-full">
               <Palette className="w-5 h-5" />
-              <span className="text-lg font-medium">スタイリング提案</span>
+              <span>スタイリング提案</span>
             </div>
           </Link>
         </nav>
@@ -181,7 +195,8 @@ export default function MainPage() {
         {/* ログアウト */}
         <button
           onClick={handleLogout}
-          className="w-full mt-4 text-center text-sm text-red-500 hover:text-red-600 transition-colors py-2"
+          className="w-full mt-6 text-center text-sm transition-colors py-2 hover:underline"
+          style={{color: 'var(--color-error)'}}
         >
           ログアウト
         </button>

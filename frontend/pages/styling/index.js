@@ -59,7 +59,7 @@ export default function StylingIndex() {
 
   return (
     <Layout title="スタイリング提案">
-      <main className="max-w-sm mx-auto px-6 py-8 bg-[#F5F5F5] min-h-screen">
+      <main className="max-w-sm mx-auto px-6 py-8 min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
         {/* ヘッダー */}
         <div className="text-center mb-8">
           <div className="w-32 h-32 relative mb-4 flex justify-center mx-auto">
@@ -71,26 +71,26 @@ export default function StylingIndex() {
               className="object-contain"
             />
           </div>
-          <h1 className="text-2xl font-bold text-[#FF8551] mb-2">スタイリング提案</h1>
-          <p className="text-gray-600 text-sm">
+          <h1 className="text-2xl font-bold mb-2" style={{color: 'var(--color-primary-500)'}}>スタイリング提案</h1>
+          <p className="text-sm" style={{color: 'var(--color-gray-600)'}}>
             あなたの魅力を最大限に引き出す<br />
             トータルスタイリングをサポート
           </p>
         </div>
 
         {/* 進捗状況 */}
-        <div className="bg-white p-6 rounded-xl shadow-sm mb-6">
+        <div className="card mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-medium text-gray-800">スタイリング進捗</h3>
-            <span className="text-[#FF8551] font-medium">{Math.round(completionRate)}%</span>
+            <h3 className="font-medium" style={{color: 'var(--color-gray-800)'}}>スタイリング進捗</h3>
+            <span className="font-medium" style={{color: 'var(--color-primary-500)'}}>{Math.round(completionRate)}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+          <div className="progress mb-4">
             <div 
-              className="bg-gradient-to-r from-[#FF8551] to-[#FFA46D] h-2 rounded-full transition-all duration-300"
+              className="progress-bar"
               style={{ width: `${completionRate}%` }}
             ></div>
           </div>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm" style={{color: 'var(--color-gray-600)'}}>
             {completedCategories} / {totalCategories} カテゴリー完了
           </p>
         </div>
@@ -99,26 +99,35 @@ export default function StylingIndex() {
         <div className="space-y-4 mb-8">
           {styleCategories.map((category) => (
             <Link key={category.id} href={category.link}>
-              <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
+              <div className="card">
                 <div className="flex items-start gap-4">
-                  <div className={`bg-gradient-to-r ${category.color} p-3 rounded-xl text-white`}>
+                  <div 
+                    className="p-3 rounded-xl text-white"
+                    style={{
+                      background: category.id === 'skincare' ? 'var(--color-success)' :
+                                 category.id === 'fashion' ? 'var(--bg-gradient-secondary)' :
+                                 category.id === 'hair' ? 'var(--bg-gradient-accent)' :
+                                 'var(--bg-gradient-primary)'
+                    }}
+                  >
                     {category.icon}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-medium text-gray-800">{category.title}</h3>
+                      <h3 className="font-medium" style={{color: 'var(--color-gray-800)'}}>{category.title}</h3>
                       {userProfile[category.id] && (
-                        <span className="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">
+                        <span className="text-xs px-2 py-1 rounded-full" style={{backgroundColor: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-success)'}}>
                           完了
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 mb-3">{category.description}</p>
+                    <p className="text-sm mb-3" style={{color: 'var(--color-gray-600)'}}>{category.description}</p>
                     <div className="flex flex-wrap gap-1">
                       {category.features.map((feature, index) => (
                         <span
                           key={index}
-                          className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
+                          className="inline-block px-2 py-1 text-xs rounded-full"
+                          style={{backgroundColor: 'var(--color-gray-100)', color: 'var(--color-gray-600)'}}
                         >
                           {feature}
                         </span>
@@ -132,7 +141,7 @@ export default function StylingIndex() {
         </div>
 
         {/* マンダム製品推薦 */}
-        <div className="bg-gradient-to-r from-[#FF8551] to-[#FFA46D] p-6 rounded-xl text-white mb-6">
+        <div className="p-6 rounded-xl text-white mb-6" style={{background: 'var(--bg-gradient-primary)'}}>
           <div className="flex items-center gap-3 mb-3">
             <ShoppingBag className="w-6 h-6" />
             <h3 className="font-medium">おすすめ製品</h3>
@@ -141,30 +150,30 @@ export default function StylingIndex() {
             あなたに最適化されたマンダム製品をAIが選んでご提案します
           </p>
           <Link href="/styling/products">
-            <button className="bg-white text-[#FF8551] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium">
+            <button className="btn btn-ghost text-sm px-4 py-2" style={{backgroundColor: 'white', color: 'var(--color-primary-500)'}}>
               製品を見る
             </button>
           </Link>
         </div>
 
         {/* スタイリングのコツ */}
-        <div className="bg-white p-6 rounded-xl shadow-sm mb-6">
-          <h3 className="font-medium text-gray-800 mb-4">スタイリングのコツ</h3>
-          <div className="space-y-3 text-sm text-gray-600">
+        <div className="card mb-6">
+          <h3 className="font-medium mb-4" style={{color: 'var(--color-gray-800)'}}>スタイリングのコツ</h3>
+          <div className="space-y-3 text-sm" style={{color: 'var(--color-gray-600)'}}>
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-[#FF8551] rounded-full mt-2 flex-shrink-0"></div>
+              <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{backgroundColor: 'var(--color-primary-500)'}}></div>
               <p>第一印象は見た目が55%を占めると言われています</p>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-[#FF8551] rounded-full mt-2 flex-shrink-0"></div>
+              <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{backgroundColor: 'var(--color-primary-500)'}}></div>
               <p>清潔感が最も重要なポイントです</p>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-[#FF8551] rounded-full mt-2 flex-shrink-0"></div>
+              <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{backgroundColor: 'var(--color-primary-500)'}}></div>
               <p>自分に似合うスタイルを見つけることが大切です</p>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-[#FF8551] rounded-full mt-2 flex-shrink-0"></div>
+              <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{backgroundColor: 'var(--color-primary-500)'}}></div>
               <p>継続的なケアが美しさを保つ秘訣です</p>
             </div>
           </div>
@@ -174,7 +183,10 @@ export default function StylingIndex() {
         <div className="text-center">
           <button
             onClick={() => router.back()}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="transition-colors"
+            style={{color: 'var(--color-gray-500)'}}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-gray-700)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-gray-500)'}
           >
             ← ホームに戻る
           </button>
