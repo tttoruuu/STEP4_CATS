@@ -7,38 +7,55 @@ import { ArrowLeft, MessageCircle, Heart, Copy, TrendingUp, Users } from 'lucide
 export default function ConversationModes() {
   const router = useRouter();
 
-  const conversationModes = [
-    {
-      id: 'greeting',
-      title: '挨拶・アイスブレイク',
-      icon: MessageCircle,
-      path: '/conversation/greeting'
+  const conversationCategories = {
+    basic: {
+      title: '基本練習',
+      description: '会話の基本スキルを練習',
+      modes: [
+        {
+          id: 'greeting',
+          title: '挨拶・アイスブレイク',
+          icon: MessageCircle,
+          path: '/conversation/greeting',
+          step: 1
+        },
+        {
+          id: 'empathy',
+          title: 'あいづち・共感',
+          icon: Heart,
+          path: '/conversation/empathy-new',
+          step: 2
+        },
+        {
+          id: 'repeat',
+          title: '会話ポイント全コピー',
+          icon: Copy,
+          path: '/conversation/repeat-new',
+          step: 3
+        }
+      ]
     },
-    {
-      id: 'empathy',
-      title: 'あいづち・共感',
-      icon: Heart,
-      path: '/conversation/empathy-new'
-    },
-    {
-      id: 'repeat',
-      title: '会話ポイント全コピー',
-      icon: Copy,
-      path: '/conversation/repeat-new'
-    },
-    {
-      id: 'integrated-conversation',
-      title: '聞く力トレーニング',
-      icon: TrendingUp,
-      path: '/conversation/integrated-practice'
-    },
-    {
-      id: 'free',
-      title: 'フリー会話',
-      icon: Users,
-      path: '/conversation'
+    advanced: {
+      title: '応用練習',
+      description: 'より高度な会話スキルを習得',
+      modes: [
+        {
+          id: 'integrated-conversation',
+          title: '聞く力トレーニング',
+          icon: TrendingUp,
+          path: '/conversation/integrated-practice',
+          step: 4
+        },
+        {
+          id: 'free',
+          title: 'フリー会話',
+          icon: Users,
+          path: '/conversation',
+          step: 5
+        }
+      ]
     }
-  ];
+  };
 
   return (
     <Layout title="会話ゲームモード選択">
@@ -60,39 +77,84 @@ export default function ConversationModes() {
           会話ゲームモードを選択
         </h1>
         
-        <p className="text-center mb-8 max-w-md" style={{color: 'var(--color-gray-600)'}}>
-          会話スキルを練習して、素敵なコミュニケーションを身につけましょう
-        </p>
-        
-        <div className="w-full max-w-md space-y-4">
-          {conversationModes.map((mode) => {
-            const IconComponent = mode.icon;
-            return (
-              <Link key={mode.id} href={mode.path}>
+        {/* ステップバイステップガイド */}
+        <div className="card mb-6 max-w-md">
+          <h3 className="font-semibold mb-4 text-center" style={{color: 'var(--color-primary-600)'}}>📈 おすすめ学習フロー</h3>
+          <div className="flex items-center justify-between mb-2">
+            {[1, 2, 3, 4, 5].map((step, index) => (
+              <div key={step} className="flex items-center">
                 <div 
-                  className="card text-white relative transition-all duration-200 transform hover:scale-105 cursor-pointer"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold"
                   style={{
-                    background: 'var(--bg-gradient-primary)',
-                    minHeight: '80px'
+                    backgroundColor: step <= 1 ? 'var(--color-primary-500)' : 'var(--color-gray-300)',
+                    color: step <= 1 ? 'white' : 'var(--color-gray-600)'
                   }}
                 >
-                  {mode.badge && (
-                    <div className="absolute top-2 right-2 bg-white text-xs px-2 py-1 rounded font-medium" style={{color: 'var(--color-success)'}}>
-                      {mode.badge}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-4 h-full">
-                    <div className="flex-shrink-0">
-                      <IconComponent size={28} className="text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg text-center">{mode.title}</h3>
-                    </div>
-                  </div>
+                  {step}
                 </div>
-              </Link>
-            );
-          })}
+                {index < 4 && (
+                  <div 
+                    className="w-8 h-0.5 mx-1"
+                    style={{backgroundColor: step < 1 ? 'var(--color-primary-500)' : 'var(--color-gray-300)'}}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-center" style={{color: 'var(--color-gray-600)'}}>
+            基本から始めて、ステップアップしていきましょう
+          </p>
+        </div>
+
+        <div className="w-full max-w-md space-y-6">
+          {Object.entries(conversationCategories).map(([categoryKey, category]) => (
+            <div key={categoryKey}>
+              {/* カテゴリータイトル */}
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold mb-1" style={{color: 'var(--color-primary-600)'}}>
+                  {category.title}
+                </h2>
+                <p className="text-sm" style={{color: 'var(--color-gray-500)'}}>
+                  {category.description}
+                </p>
+              </div>
+              
+              {/* モードボタン */}
+              <div className="space-y-3">
+                {category.modes.map((mode) => {
+                  const IconComponent = mode.icon;
+                  return (
+                    <Link key={mode.id} href={mode.path}>
+                      <div 
+                        className="card text-white relative transition-all duration-200 transform hover:scale-105 cursor-pointer"
+                        style={{
+                          background: 'var(--bg-gradient-primary)',
+                          minHeight: '70px'
+                        }}
+                      >
+                        {/* ステップ番号 */}
+                        <div 
+                          className="absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                          style={{backgroundColor: 'rgba(255, 255, 255, 0.2)'}}
+                        >
+                          {mode.step}
+                        </div>
+                        
+                        <div className="flex items-center gap-4 h-full pl-10">
+                          <div className="flex-shrink-0">
+                            <IconComponent size={24} className="text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-base">{mode.title}</h3>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
         
         <div className="mt-8 text-center">
