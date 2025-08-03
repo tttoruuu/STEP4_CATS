@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Layout from '../../components/Layout';
 import {
   ArrowLeft,
   Save,
@@ -155,14 +156,18 @@ const ProfileEdit: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Layout title="プロフィール編集" hideHeader={true}>
+      <div className="min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
       {/* Header */}
-      <div className="bg-gradient-to-b from-orange-500 to-orange-300 pt-8 pb-6 px-4">
+      <div className="pt-8 pb-6 px-4 rounded-b-3xl" style={{background: 'var(--bg-gradient-primary)'}}>
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center mb-4">
             <button 
               onClick={() => router.push('/profile/comprehensive')}
-              className="text-white flex items-center gap-2 hover:bg-white/20 rounded-lg px-3 py-2 transition-colors"
+              className="text-white flex items-center gap-2 rounded-lg px-3 py-2 transition-colors"
+              style={{backgroundColor: 'rgba(255, 255, 255, 0.2)'}}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
             >
               <ArrowLeft className="w-5 h-5" />
               <span>戻る</span>
@@ -361,7 +366,8 @@ const ProfileEdit: React.FC = () => {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </Layout>
   );
 };
 

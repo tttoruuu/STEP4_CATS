@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Layout from '../../components/Layout';
 import { 
   Edit3, 
   MapPin, 
@@ -136,41 +137,49 @@ const ComprehensiveProfilePage: React.FC = () => {
   // ローディング表示（統一デザイン）
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
-        <div className="text-center">
-          <div className="w-8 h-8 rounded-full animate-spin mx-auto mb-4" style={{border: '2px solid var(--color-primary-300)', borderTop: '2px solid var(--color-primary-500)'}}></div>
-          <p style={{color: 'var(--color-gray-600)'}}>プロフィールを読み込んでいます...</p>
+      <Layout title="プロフィール" hideHeader={true}>
+        <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
+          <div className="text-center">
+            <div className="w-8 h-8 rounded-full animate-spin mx-auto mb-4" style={{border: '2px solid var(--color-primary-300)', borderTop: '2px solid var(--color-primary-500)'}}></div>
+            <p style={{color: 'var(--color-gray-600)'}}>プロフィールを読み込んでいます...</p>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   // エラー表示（統一デザイン）
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
-        <div className="text-center">
-          <p className="mb-4" style={{color: 'var(--color-error)'}}>{error}</p>
-          <button onClick={handleRetry} className="btn btn-primary">
-            再試行
-          </button>
+      <Layout title="プロフィール" hideHeader={true}>
+        <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
+          <div className="text-center">
+            <p className="mb-4" style={{color: 'var(--color-error)'}}>{error}</p>
+            <button onClick={handleRetry} className="btn btn-primary">
+              再試行
+            </button>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   // プロフィールデータがない場合
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
-        <div className="text-center">
-          <p style={{color: 'var(--color-gray-600)'}}>プロフィールデータが見つかりません。</p>
+      <Layout title="プロフィール" hideHeader={true}>
+        <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
+          <div className="text-center">
+            <p style={{color: 'var(--color-gray-600)'}}>プロフィールデータが見つかりません。</p>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
+  
   return (
-    <div className="min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
+    <Layout title="プロフィール" hideHeader={true}>
+      <div className="min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
       {/* Header Section */}
       <div className="pt-8 pb-8 px-4 rounded-b-3xl" style={{background: 'var(--bg-gradient-primary)'}}>
         <div className="max-w-4xl mx-auto text-center">
@@ -338,8 +347,8 @@ const ComprehensiveProfilePage: React.FC = () => {
         )}
       </div>
 
-      {/* LayoutでFooterが自動追加されるので、ここの重複フッターは削除 */}
-    </div>
+      </div>
+    </Layout>
   );
 };
 
