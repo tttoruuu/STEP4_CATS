@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getApiEndpoint, validateEnvironment, logEnvironmentInfo } from '../lib/env-config';
+import { getApiEndpoint, validateEnvironment, logEnvironmentInfo } from '../lib/env-config.js';
 // =====================================
 // HTTPS強制変換ユーティリティ
 // =====================================
