@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { getPlayableAudioUrl } from '../utils/audioUtils';
 
 const ShadowingPractice = ({ 
   scenario, 
   onComplete, 
   onBack 
 }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!scenario) {
     console.error('シナリオが未定義:', scenario);
@@ -25,46 +25,16 @@ const ShadowingPractice = ({
     );
   }
 
-  // 音声ファイルの有効性チェック（null、undefined、空文字、バッククォート等を全てnull扱い）
-  const isValidAudio = (audioUrl) => {
-    // undefinedやnullの場合は即座にfalse
-    if (audioUrl === undefined || audioUrl === null) {
-      return false;
-    }
-    
-    // 空文字やfalsy値の場合
-    if (!audioUrl) {
-      return false;
-    }
-    
-    const trimmed = String(audioUrl).trim();
-    
-    // バッククォートのパターンをチェック
-    if (trimmed === '' || trimmed === '``' || trimmed === '` `' || trimmed.match(/^`+$/)) {
-      return false;
-    }
-    
-    // HTTPSで始まるかチェック
-    if (!trimmed.startsWith('http')) {
-      return false;
-    }
-    
-    return true;
-  };
-
-  // elicit_003（問題6）は強制的に音声なしとして扱う
-  if (!isValidAudio(scenario.shadowingAudio) || scenario.id === 'elicit_003') {
+  if (!scenario.shadowingAudio) {
+    console.warn('シャドーイング音声が見つかりません:', scenario);
     return (
       <div className="max-w-2xl mx-auto p-6">
-        <div className="text-center mb-4">
-          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center gap-2 justify-center">
-            <AlertCircle className="text-yellow-600" size={20} />
-            <span className="text-yellow-800">音声は準備中です</span>
-          </div>
+        <div className="text-center text-gray-500">
+          シャドーイング練習音声が設定されていません
         </div>
         <button
           onClick={onBack}
-          className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          className="mt-4 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
         >
           戻る
         </button>
@@ -113,63 +83,34 @@ const ShadowingPractice = ({
             実際に音声を聞いてから、シャドウイングしてみましょう。
           </p>
           
-          {/* Azure Blob Storage MP3再生 */}
-          {(!isValidAudio(scenario.shadowingAudio) || scenario.id === 'elicit_003') && (
-            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center gap-2">
-              <AlertCircle className="text-yellow-600" size={20} />
-              <span className="text-yellow-800 text-sm">音声は準備中です</span>
-            </div>
-          )}
-          
+          {/* Azure Blob音声再生 */}
           <div className="flex items-center gap-3">
             <button
-              onClick={() => {
-                if (isPlaying) return;
-                
-                let audioUrl = scenario.shadowingAudio;
-                
-                // advanced_002は強制的にa2-a.mp3を使用
-                if (scenario.id === 'advanced_002') {
-                  audioUrl = 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/a2-a.mp3';
+              onClick={async () => {
+                try {
+                  setIsLoading(true);
+
+                  // Azure Blob Storageから音声URL取得
+                  const audioUrl = await getPlayableAudioUrl(scenario.shadowingAudio);
+                  
+                  // 音声を再生
+                  const audio = new Audio(audioUrl);
+                  audio.play().catch(error => {
+                    console.error('音声再生エラー:', error);
+                    alert('音声の再生に失敗しました。');
+                  });
+
+                } catch (error) {
+                  console.error('音声取得エラー:', error);
+                  alert('音声の再生に失敗しました。ネットワーク接続を確認してください。');
+                } finally {
+                  setIsLoading(false);
                 }
-                
-                // advanced_002は強制的に音声再生を許可
-                if (scenario.id === 'advanced_002') {
-                  // 音声再生処理をスキップして直接再生
-                } else if (!isValidAudio(audioUrl) || scenario.id === 'elicit_003') {
-                  alert('音声は準備中です');
-                  return;
-                }
-                
-                // 音声を直接再生を試行
-                setIsPlaying(true);
-                
-                const audio = new Audio(audioUrl);
-                
-                audio.addEventListener('ended', () => {
-                  setIsPlaying(false);
-                });
-                
-                audio.addEventListener('error', () => {
-                  console.error('音声再生エラー:', audioUrl);
-                  setIsPlaying(false);
-                  alert('音声は準備中です');
-                });
-                
-                audio.play().catch(error => {
-                  console.error('音声再生エラー:', error);
-                  setIsPlaying(false);
-                  alert('音声は準備中です');
-                });
               }}
-              disabled={isPlaying}
-              className={`px-4 py-2 rounded-lg transition-colors font-medium ${
-                isPlaying 
-                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
+              disabled={isLoading}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isPlaying ? '再生中...' : '練習する'}
+              {isLoading ? '音声読み込み中...' : '音声で練習する'}
             </button>
           </div>
         </div>

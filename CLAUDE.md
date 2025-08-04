@@ -20,6 +20,10 @@ Claude Code作業時は必ずこのファイルを確認してください。
 
 **婚活男性向け「内面スタイリング」トータルサポートアプリ**
 
+### 🌐 本番環境URL
+- **フロントエンド**: https://miraim-frontend.icymoss-273d47c5.australiaeast.azurecontainerapps.io
+- **バックエンドAPI**: https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io
+
 **重要**: 詳細な機能仕様・計画は `APP_PLAN.md` を参照すること
 
 **ビジョン**：結婚相談所に通う真剣な婚活男性のコミュニケーション能力を向上させ、理想的なパートナーとの出会いを実現する  
