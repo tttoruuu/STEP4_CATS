@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: './frontend/frontend/package-lock.json'
+          cache-dependency-path: './frontend/package-lock.json'
       
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -48,6 +48,10 @@ jobs:
         continue-on-error: true
       
       - name: Frontend Build Test
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_API_URL: https://step4-cats-api.azurewebsites.net/api
+          CI: true
         run: |
           cd frontend
           npm run build
