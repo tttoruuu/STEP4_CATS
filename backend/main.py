@@ -78,7 +78,12 @@ if ENV == "production":
     production_origins = [
         "https://miraim-frontend--login-fix.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # ログイン修正版
         "https://miraim-frontend--0000004.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン4
-        "https://miraim-frontend--0000005.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン5
+        "https://miraim-frontend--0000005.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン5  
+        "https://miraim-frontend--0000010.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン10
+        "https://miraim-frontend--v1754319363.icymoss-273d47c5.australiaeast.azurecontainerapps.io", # 修正版1
+        "https://miraim-frontend--v1754320376.icymoss-273d47c5.australiaeast.azurecontainerapps.io", # 修正版2
+        "https://miraim-frontend--quickfix1754323427.icymoss-273d47c5.australiaeast.azurecontainerapps.io", # クイック修正
+        "https://miraim-frontend--prod1754323663.icymoss-273d47c5.australiaeast.azurecontainerapps.io", # 本番版
         "https://frontend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
         "https://frontend-container--2.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
         "https://frontend-container--3.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",
