@@ -14,6 +14,59 @@ Claude Code作業時は必ずこのファイルを確認してください。
 # 更新時は必ずアナウンス: 「CLAUDE.mdを更新しますが良いですか？」→事後報告でOK
 ```
 
+## 📚 【最重要】ドキュメント自動参照ルール
+
+### 🤖 Claude Code作業時の必須確認事項
+
+**作業開始時に必ず以下を自動確認すること：**
+
+1. **UI実装時** → `/docs/UI_DESIGN_GUIDE.md` を必ず参照（ネオモーフィズムスタイル）
+2. **新機能開発時** → `/docs/features/` 内の既存仕様を確認
+3. **ファイル作成時** → `/docs/DOCUMENTATION_RULES.md` のルールに従う
+4. **デプロイ時** → `/scripts/deploy.sh` を使用
+
+### 📁 ファイル作成場所の自動判定ルール
+
+```bash
+# 新規ファイル作成時の配置ルール（Claude Codeはこれに従うこと）
+機能仕様書 → /docs/features/機能名.md（kebab-case）
+作業記録 → /docs/meetings/YYYY-MM-DD_内容.md
+UIコンポーネント → /frontend/components/ui/
+APIエンドポイント → /backend/routers/
+テストファイル → 対象ファイルと同じディレクトリ内に*.test.*
+
+# 絶対にやってはいけないこと
+❌ ルートディレクトリに個人メモ.mdを作成
+❌ /docs直下に機能仕様を作成（必ず/features/へ）
+❌ 日本語ファイル名の使用（meetings除く）
+```
+
+### 🔍 必須参照ドキュメント優先順位
+
+```bash
+1. このファイル（CLAUDE.md） - 基本ルール
+2. /docs/DOCUMENTATION_RULES.md - ドキュメント作成ルール
+3. /docs/UI_DESIGN_GUIDE.md - UI実装時
+4. /docs/features/ - 機能開発時
+5. APP_PLAN.md - 仕様確認時
+```
+
+### ⚡ Claude Code自動判定フロー
+
+```
+ユーザー依頼
+  ↓
+1. タスク種別判定（UI/機能/バグ修正/ドキュメント）
+  ↓
+2. 関連ドキュメント自動参照
+  ↓
+3. 適切なディレクトリでファイル作成/編集
+  ↓
+4. CLAUDE.mdのルールに従って実行
+```
+
+**重要**: このセクションはClaude Codeが自動的に参照し、適切な場所にファイルを作成するための指示です。チームメンバーは特に指定しなくても、Claude Codeが正しく動作します。
+
 ## プロジェクト基本概要
 
 **GitHubリポジトリ**: https://github.com/tttoruuu/STEP4_CATS.git

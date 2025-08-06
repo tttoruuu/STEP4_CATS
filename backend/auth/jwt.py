@@ -9,13 +9,21 @@ import logging
 from datetime import datetime, timedelta
 from typing import Optional
 
+# ロガーの初期化
+logger = logging.getLogger(__name__)
+
 # JWTの設定
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key")
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    logger.warning("SECRET_KEY環境変数が設定されていません。開発環境用のデフォルト値を使用します。")
+    SECRET_KEY = "development-only-key-please-change-in-production"
+    if os.getenv("ENV") == "production":
+        raise ValueError("本番環境でSECRET_KEYが設定されていません。セキュリティリスクがあります。")
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24時間
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-logger = logging.getLogger(__name__)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()

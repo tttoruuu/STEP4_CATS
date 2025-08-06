@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import axios from 'axios';
 import Layout from '../../components/Layout';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Edit } from 'lucide-react';
+import { api } from '../../services/api';
 
 export default function UserInfo() {
   const router = useRouter();
@@ -19,10 +19,13 @@ export default function UserInfo() {
 
     const fetchUser = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/me', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setUser(response.data);
+        // 統合プロフィールAPIを使用
+        const response = await api.get('/api/profile/comprehensive');
+        if (response.data.success && response.data.profile) {
+          setUser(response.data.profile);
+        } else {
+          setError('プロフィール情報の取得に失敗しました');
+        }
       } catch (err) {
         setError('ユーザー情報の取得に失敗しました。');
         console.error('ユーザー情報の取得に失敗しました。', err);
@@ -79,6 +82,16 @@ export default function UserInfo() {
         )}
 
         <div className="bg-white shadow rounded-lg p-6">
+          <div className="flex justify-between items-start mb-4">
+            <h1 className="text-2xl font-bold">プロフィール情報</h1>
+            <button
+              onClick={() => router.push('/profile/edit')}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            >
+              <Edit size={18} />
+              編集する
+            </button>
+          </div>
           <div className="flex items-center space-x-4">
             {user.profile_image_url ? (
               <img
@@ -92,8 +105,8 @@ export default function UserInfo() {
               </div>
             )}
             <div>
-              <h2 className="text-2xl font-bold">{user.full_name}</h2>
-              <p className="text-gray-500">@{user.username}</p>
+              <h2 className="text-2xl font-bold">{user.name || user.full_name}</h2>
+              <p className="text-gray-500">{user.age ? `${user.age}歳` : ''}</p>
             </div>
           </div>
 
@@ -107,11 +120,15 @@ export default function UserInfo() {
                 </div>
                 <div>
                   <dt className="text-sm font-medium text-gray-500">生年月日</dt>
-                  <dd className="text-sm text-gray-900">{user.birth_date}</dd>
+                  <dd className="text-sm text-gray-900">{user.birth_date || '未設定'}</dd>
                 </div>
                 <div>
                   <dt className="text-sm font-medium text-gray-500">出身地</dt>
-                  <dd className="text-sm text-gray-900">{user.hometown || '未設定'}</dd>
+                  <dd className="text-sm text-gray-900">{user.birthplace || user.hometown || '未設定'}</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">現在地</dt>
+                  <dd className="text-sm text-gray-900">{user.residence || user.current_location || '未設定'}</dd>
                 </div>
               </dl>
             </div>
@@ -120,12 +137,18 @@ export default function UserInfo() {
               <h3 className="text-lg font-medium text-gray-900">その他の情報</h3>
               <dl className="mt-2 space-y-2">
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">趣味</dt>
-                  <dd className="text-sm text-gray-900">{user.hobbies || '未設定'}</dd>
+                  <dt className="text-sm font-medium text-gray-500">職業</dt>
+                  <dd className="text-sm text-gray-900">{user.occupation || '未設定'}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">所属結婚相談所</dt>
-                  <dd className="text-sm text-gray-900">{user.matchmaking_agency || '未設定'}</dd>
+                  <dt className="text-sm font-medium text-gray-500">趣味</dt>
+                  <dd className="text-sm text-gray-900">
+                    {Array.isArray(user.hobbies) ? user.hobbies.join('、') : (user.hobbies || '未設定')}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">婚活経験</dt>
+                  <dd className="text-sm text-gray-900">{user.konkatsu_experience || '未設定'}</dd>
                 </div>
               </dl>
             </div>

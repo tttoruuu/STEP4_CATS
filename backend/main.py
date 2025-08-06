@@ -7,6 +7,8 @@ import os
 import logging
 from dotenv import load_dotenv
 from database import SessionLocal, engine, Base, get_db
+import asyncio
+from contextlib import asynccontextmanager
 from models.user import User
 from models.conversation_partner import ConversationPartner
 from models import schemas
@@ -18,9 +20,10 @@ import random
 from urllib.parse import urlparse
 import time
 import sys
+from middleware.error_handler import register_exception_handlers, error_handler_middleware
 
-def create_tables_with_retry(max_retries=5, delay=5):
-    """データベースのテーブルを作成（リトライ機能付き）"""
+async def create_tables_with_retry(max_retries=5, delay=5):
+    """データベースのテーブルを作成（リトライ機能付き・非同期版）"""
     for attempt in range(max_retries):
         try:
             Base.metadata.create_all(bind=engine)
@@ -30,14 +33,21 @@ def create_tables_with_retry(max_retries=5, delay=5):
             print(f"データベース接続失敗 (試行 {attempt + 1}/{max_retries}): {e}")
             if attempt < max_retries - 1:
                 print(f"{delay}秒待機中...")
-                time.sleep(delay)
+                await asyncio.sleep(delay)
             else:
                 print("データベース接続に失敗しました。コンテナを確認してください。")
                 return False
     return False
 
-# データベースのテーブルを作成（リトライ付き）
-create_tables_with_retry()
+# 非同期スタートアップイベント用のライフサイクル管理
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # スタートアップ時の処理
+    await create_tables_with_retry()
+    logger.info("アプリケーション起動完了")
+    yield
+    # シャットダウン時の処理
+    logger.info("アプリケーションをシャットダウンしています...")
 
 load_dotenv()  # .env読み込み
 
@@ -96,7 +106,8 @@ if ENV == "production":
 app = FastAPI(
     title="Miraim - 婚活男性向け総合サポートAPI",
     version="2.0.0",
-    description="Marriage MBTI+、会話練習、AIカウンセラー機能を統合した婚活支援API"
+    description="Marriage MBTI+、会話練習、AIカウンセラー機能を統合した婚活支援API",
+    lifespan=lifespan
 )
 
 app.add_middleware(
@@ -106,6 +117,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# エラーハンドリングの登録
+register_exception_handlers(app)
+app.middleware("http")(error_handler_middleware)
 
 # ルーター追加（順序重要）
 app.include_router(auth.router)

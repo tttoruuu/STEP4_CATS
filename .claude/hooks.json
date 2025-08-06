@@ -1,0 +1,10 @@
+{
+  "post_edit": {
+    "command": "if [[ \"$EDITED_FILE\" == *.ts ]] || [[ \"$EDITED_FILE\" == *.tsx ]]; then echo \"🔧 フォーマット中: $EDITED_FILE\" && cd \"$(dirname \"$EDITED_FILE\")\" && npx prettier --write \"$(basename \"$EDITED_FILE\")\" && npx eslint --fix \"$(basename \"$EDITED_FILE\")\" 2>/dev/null || true; echo \"✅ フォーマット完了\" && osascript -e 'display notification \"TypeScriptフォーマット完了\" with title \"Claude Code\" sound name \"Glass\"'; fi",
+    "description": "バックグラウンドでも通知されるTypeScriptフォーマット"
+  },
+  "user-prompt-submit-hook": {
+    "command": "osascript -e 'display notification \"質問を受け付けました\" with title \"Claude Code\" sound name \"Ping\"'",
+    "description": "ユーザーの質問送信時に音で通知"
+  }
+}

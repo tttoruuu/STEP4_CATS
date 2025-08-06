@@ -31,8 +31,14 @@ COPY --from=builder /app/styles ./styles
 COPY --from=builder /app/pages ./pages
 COPY --from=builder /app/components ./components
 COPY --from=builder /app/services ./services
+COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/.env* ./
 
-# アプリケーションを実行
-CMD ["npm", "run", "dev"]
+# 本番環境変数を設定
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# 本番モードでアプリケーションを実行
+EXPOSE 3000
+CMD ["npm", "start"]

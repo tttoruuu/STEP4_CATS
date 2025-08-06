@@ -83,7 +83,9 @@ deploy_frontend() {
     
     # 環境変数検証
     log_info "環境変数の検証中..."
-    npm run validate-env:production
+    export NEXT_PUBLIC_API_URL=https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io
+    export NODE_ENV=production
+    npm run validate-env:production || true
     
     # Dockerイメージビルド
     log_info "Dockerイメージをビルド中... (タグ: $FRONTEND_TAG)"

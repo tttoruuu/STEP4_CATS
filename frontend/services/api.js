@@ -1076,6 +1076,10 @@ const apiService = {
   getImageUrl,
   baseUrl: FINAL_API_BASE_URL,  // APIのベースURLを公開
 };
+// Named export for api
+export const api = apiService;
+
+// Default export for backward compatibility
 export default apiService;
 
 // ===========================================
