@@ -63,11 +63,11 @@ export default function GreetingPracticeNew() {
 
   return (
     <Layout title="挨拶・アイスブレイク練習">
-      <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+      <div className="flex flex-col min-h-screen bg-[var(--bg-color)]">
         <div className="w-full max-w-md mx-auto mt-8 px-6 relative h-10">
           <button 
             onClick={() => router.push('/conversation/modes')}
-            className="text-blue-600 flex items-center gap-1 hover:opacity-80 transition-opacity absolute left-6 top-0"
+            className="text-[var(--primary-orange)] flex items-center gap-1 hover:opacity-80 transition-opacity absolute left-6 top-0"
           >
             <ArrowLeft size={18} />
             <span className="leading-normal">もどる</span>
@@ -77,22 +77,22 @@ export default function GreetingPracticeNew() {
         <div className="flex-1 flex flex-col items-center px-6 py-4">
           <div className="w-full max-w-md">
             {/* ヘッダー */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 mb-6 shadow-sm border border-white/40">
+            <div className="neo-card p-6 mb-6">
               <div className="flex items-center gap-3 mb-4">
-                <MessageCircle className="text-blue-600" size={24} />
-                <h1 className="text-xl font-bold text-blue-600">挨拶・アイスブレイク</h1>
+                <MessageCircle className="text-[var(--primary-orange)]" size={24} />
+                <h1 className="text-xl font-bold text-[var(--primary-orange)]">挨拶・アイスブレイク</h1>
               </div>
               
               <div className="mb-4">
-                <h2 className="font-semibold text-gray-800 mb-2">
+                <h2 className="font-semibold text-[var(--text-primary)] mb-2">
                   {currentAudio.scenario}
                 </h2>
-                <p className="text-gray-600 text-sm mb-3">
+                <p className="text-[var(--text-secondary)] text-sm mb-3">
                   初対面での適切な挨拶と会話のきっかけ作りを練習しましょう
                 </p>
                 
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <p className="text-sm text-blue-700">
+                <div className="bg-[var(--pale-orange)] p-3 rounded-lg">
+                  <p className="text-sm text-[var(--primary-orange)]">
                     <strong>ワンポイント:</strong> {currentAudio.tip}
                   </p>
                 </div>

@@ -86,10 +86,16 @@ if ENV == "production" and FRONTEND_ORIGIN:
 if ENV == "production":
     # 本番環境でワイルドカードが制限されている場合、各サブドメインを個別に追加
     production_origins = [
-        "https://miraim-frontend--login-fix.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # ログイン修正版
-        "https://miraim-frontend--0000004.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン4
-        "https://miraim-frontend--0000005.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン5  
+        "https://miraim-frontend--0000012.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン12（最新）
+        "https://miraim-frontend--0000011.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン11
         "https://miraim-frontend--0000010.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン10
+        "https://miraim-frontend--0000009.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン9
+        "https://miraim-frontend--0000008.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン8
+        "https://miraim-frontend--0000007.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン7
+        "https://miraim-frontend--0000006.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン6
+        "https://miraim-frontend--0000005.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン5
+        "https://miraim-frontend--0000004.icymoss-273d47c5.australiaeast.azurecontainerapps.io",    # リビジョン4
+        "https://miraim-frontend--login-fix.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # ログイン修正版
         "https://miraim-frontend--v1754319363.icymoss-273d47c5.australiaeast.azurecontainerapps.io", # 修正版1
         "https://miraim-frontend--v1754320376.icymoss-273d47c5.australiaeast.azurecontainerapps.io", # 修正版2
         "https://miraim-frontend--quickfix1754323427.icymoss-273d47c5.australiaeast.azurecontainerapps.io", # クイック修正

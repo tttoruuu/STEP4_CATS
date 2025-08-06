@@ -60,11 +60,11 @@ export default function RepeatPracticeNew() {
 
   return (
     <Layout title="会話ポイント全コピー練習">
-      <div className="flex flex-col min-h-screen bg-gradient-to-br from-green-50 to-green-100">
+      <div className="flex flex-col min-h-screen bg-[var(--bg-color)]">
         <div className="w-full max-w-md mx-auto mt-8 px-6 relative h-10">
           <button 
             onClick={() => router.push('/conversation/modes')}
-            className="text-green-600 flex items-center gap-1 hover:opacity-80 transition-opacity absolute left-6 top-0"
+            className="text-[var(--primary-orange)] flex items-center gap-1 hover:opacity-80 transition-opacity absolute left-6 top-0"
           >
             <ArrowLeft size={18} />
             <span className="leading-normal">もどる</span>
@@ -74,37 +74,37 @@ export default function RepeatPracticeNew() {
         <div className="flex-1 flex flex-col items-center px-6 py-4">
           <div className="w-full max-w-md">
             {/* ヘッダー */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 mb-6 shadow-sm border border-white/40">
+            <div className="neo-card p-6 mb-6">
               <div className="flex items-center gap-3 mb-4">
-                <Copy className="text-green-600" size={24} />
-                <h1 className="text-xl font-bold text-green-600">会話ポイント全コピー</h1>
+                <Copy className="text-[var(--primary-orange)]" size={24} />
+                <h1 className="text-xl font-bold text-[var(--primary-orange)]">会話ポイント全コピー</h1>
               </div>
               
               <div className="mb-4">
-                <h2 className="font-semibold text-gray-800 mb-2">
+                <h2 className="font-semibold text-[var(--text-primary)] mb-2">
                   {currentAudio.scenario}
                 </h2>
-                <p className="text-gray-600 text-sm mb-3">
+                <p className="text-[var(--text-secondary)] text-sm mb-3">
                   相手の話を繰り返してから、関連する質問をしてみましょう
                 </p>
                 
-                <div className="bg-green-50 p-3 rounded-lg">
-                  <p className="text-sm text-green-700">
+                <div className="bg-[var(--pale-orange)] p-3 rounded-lg">
+                  <p className="text-sm text-[var(--primary-orange)]">
                     <strong>ワンポイント:</strong> {currentAudio.tip}
                   </p>
                 </div>
               </div>
               
-              <div className="text-center text-sm text-gray-500">
+              <div className="text-center text-sm text-[var(--text-secondary)]">
                 シナリオ {currentScenarioIndex + 1} / {repeatAudioData.length}
               </div>
             </div>
 
             {/* 女性の発言表示 */}
             <div className="mb-6">
-              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-white/40">
-                <h3 className="font-semibold text-gray-800 mb-3">①女性の発言</h3>
-                <p className="text-gray-700 mb-3">{currentAudio.text}</p>
+              <div className="neo-card p-4">
+                <h3 className="font-semibold text-[var(--text-primary)] mb-3">①女性の発言</h3>
+                <p className="text-[var(--text-primary)] mb-3">{currentAudio.text}</p>
                 
                 <AudioPlayer
                   audioSrc={currentAudio.audioSrc}
@@ -120,7 +120,7 @@ export default function RepeatPracticeNew() {
               <div className="mb-6">
                 <button
                   onClick={handleShowCorrectAnswer}
-                  className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl px-6 py-3 hover:opacity-90 transition-all"
+                  className="w-full bg-gradient-to-r from-[var(--primary-orange)] to-[var(--primary-orange)] text-white rounded-xl px-6 py-3 hover:opacity-90 transition-all neo-card"
                 >
                   正解を聞く
                 </button>
@@ -130,9 +130,9 @@ export default function RepeatPracticeNew() {
             {/* 男性の返し（正解）表示 */}
             {showCorrectAnswer && (
               <div className="mb-6">
-                <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-white/40">
-                  <h3 className="font-semibold text-gray-800 mb-3">②男性の返し（正解）</h3>
-                  <p className="text-gray-700 mb-3">{currentAudio.correctResponse}</p>
+                <div className="neo-card p-4">
+                  <h3 className="font-semibold text-[var(--text-primary)] mb-3">②男性の返し（正解）</h3>
+                  <p className="text-[var(--text-primary)] mb-3">{currentAudio.correctResponse}</p>
                   
                   <audio
                     ref={correctAudioRef}
@@ -155,7 +155,7 @@ export default function RepeatPracticeNew() {
                   
                   <button
                     onClick={handleNextScenario}
-                    className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl px-6 py-2 hover:opacity-90"
+                    className="flex-1 bg-gradient-to-r from-[var(--primary-orange)] to-[var(--primary-orange)] text-white rounded-xl px-6 py-2 hover:opacity-90 neo-card"
                   >
                     {currentScenarioIndex < repeatAudioData.length - 1 ? '次に進む' : '練習終了'}
                   </button>

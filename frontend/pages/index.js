@@ -151,10 +151,10 @@ export default function MainPage() {
             </div> 
 
         {/* プロフィールセクション */}
-        <div className="card mb-8">
+        <div className="neo-card mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 bg-white" style={{borderColor: 'var(--color-gray-200)'}}>
+              <div className="relative w-14 h-14 rounded-full overflow-hidden neo-avatar">
                 <Image
                   src="/images/demo.png"
                   alt={user.username}
@@ -164,12 +164,12 @@ export default function MainPage() {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-medium" style={{color: 'var(--color-gray-800)'}}>{user.username}</span>
-                <span className="text-sm" style={{color: 'var(--color-gray-500)'}}>ようこそ！</span>
+                <span className="font-medium text-[var(--text-primary)]">{user.username}</span>
+                <span className="text-sm text-[var(--text-secondary)]">ようこそ！</span>
               </div>
             </div>
             
-            <button className="btn btn-outline btn-sm">
+            <button className="neo-btn px-4 py-2 text-sm">
               編集する
             </button>
           </div>
@@ -182,33 +182,33 @@ export default function MainPage() {
         <nav className="flex flex-col space-y-4">
           {/* AIカウンセラー */}
           <Link href="/counselor">
-            <div className="btn btn-primary btn-lg w-full">
+            <div className="neo-btn neo-btn-primary w-full flex items-center justify-center gap-3 py-4">
               <User className="w-5 h-5" />
-              <span>AIカウンセラー</span>
+              <span className="font-medium">AIカウンセラー</span>
             </div>
           </Link>
 
           {/* 会話練習機能 */}
           <Link href="/conversation/modes">
-            <div className="btn btn-accent btn-lg w-full">
-              <MessageSquare className="w-5 h-5" />
-              <span>会話練習</span>
+            <div className="neo-btn w-full flex items-center justify-center gap-3 py-4" style={{background: 'linear-gradient(135deg, var(--light-orange), var(--primary-orange))'}}>
+              <MessageSquare className="w-5 h-5 text-white" />
+              <span className="font-medium text-white">会話練習</span>
             </div>
           </Link>
 
           {/* MBTI Marriage診断機能 */}
           <Link href="/marriage-mbti-test">
-            <div className="btn btn-secondary btn-lg w-full">
-              <Heart className="w-5 h-5" />
-              <span>MBTI Marriage</span>
+            <div className="neo-btn w-full flex items-center justify-center gap-3 py-4">
+              <Heart className="w-5 h-5" style={{color: 'var(--primary-orange)'}} />
+              <span className="font-medium">MBTI Marriage</span>
             </div>
           </Link>
 
           {/* スタイリング提案機能 */}
           <Link href="/styling">
-            <div className="btn btn-mixed btn-lg w-full">
+            <div className="neo-btn neo-btn-secondary w-full flex items-center justify-center gap-3 py-4">
               <Palette className="w-5 h-5" />
-              <span>スタイリング提案</span>
+              <span className="font-medium">スタイリング提案</span>
             </div>
           </Link>
         </nav>

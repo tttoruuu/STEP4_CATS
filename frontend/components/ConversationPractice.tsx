@@ -341,20 +341,20 @@ const ConversationPractice: React.FC = () => {
 
   if (currentView === 'levelSelect') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-6">
+      <div className="min-h-screen bg-[var(--bg-color)] p-6">
         <div className="max-w-6xl mx-auto">
           {/* ヘッダー */}
           <button 
             onClick={() => router.push('/conversation/modes')}
-            className="text-blue-600 flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
+            className="text-[var(--primary-orange)] flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
           >
             <ArrowLeft size={18} />
             <span>会話練習モード選択に戻る</span>
           </button>
           
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">聞く力トレーニング</h1>
-            <p className="text-gray-600">会話を引き出す・深掘りするためのプログラム</p>
+            <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-2">聞く力トレーニング</h1>
+            <p className="text-[var(--text-secondary)]">会話を引き出す・深掘りするためのプログラム</p>
             
           </div>
 
@@ -370,23 +370,23 @@ const ConversationPractice: React.FC = () => {
                 <div key={level}>
                   <button
                     onClick={() => handleLevelSelect(level)}
-                    className={`w-full p-6 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 cursor-pointer ${levelInfo.bgColor} border-2 ${levelInfo.borderColor}`}
+                    className="w-full p-6 neo-card transition-all duration-200 hover:shadow-xl hover:scale-105 cursor-pointer"
                   >
                     <div className="text-4xl mb-2">{levelInfo.icon}</div>
-                    <h3 className={`text-xl font-bold mb-2 bg-gradient-to-r ${levelInfo.color} bg-clip-text text-transparent`}>
+                    <h3 className="text-xl font-bold mb-2 text-[var(--primary-orange)]">
                       {levelInfo.title}
                     </h3>
-                    <p className="text-gray-700 mb-4">{levelInfo.description}</p>
+                    <p className="text-[var(--text-primary)] mb-4">{levelInfo.description}</p>
                     
                     {/* 進捗バー */}
                     <div className="mb-4">
-                      <div className="flex justify-between text-sm text-gray-600 mb-1">
+                      <div className="flex justify-between text-sm text-[var(--text-secondary)] mb-1">
                         <span>進捗</span>
                         <span>{progress.completed}/{progress.total}</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
-                          className={`h-2 rounded-full bg-gradient-to-r ${levelInfo.color}`}
+                          className="h-2 rounded-full bg-[var(--primary-orange)]"
                           style={{ width: `${(progress.completed / progress.total) * 100}%` }}
                         />
                       </div>
@@ -402,26 +402,26 @@ const ConversationPractice: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+    <div className="min-h-screen bg-[var(--bg-color)]">
       {/* ヘッダー */}
       <div className="w-full max-w-6xl mx-auto pt-8 px-6">
         <button 
           onClick={handleBackToLevelSelect}
-          className="text-blue-600 flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
+          className="text-[var(--primary-orange)] flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
         >
           <ArrowLeft size={18} />
           <span>レベル選択に戻る</span>
         </button>
         
         <div className="flex items-center gap-3 mb-6">
-          <div className={`p-2 rounded-lg bg-gradient-to-r ${getLevelInfo(selectedLevel!).color}`}>
+          <div className="p-2 rounded-lg bg-[var(--primary-orange)]">
             <TrendingUp className="text-white" size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">
               {getLevelInfo(selectedLevel!).title}レベル - 聞く力トレーニング
             </h1>
-            <p className="text-gray-600">{getLevelInfo(selectedLevel!).description}</p>
+            <p className="text-[var(--text-secondary)]">{getLevelInfo(selectedLevel!).description}</p>
           </div>
         </div>
       </div>
@@ -445,8 +445,8 @@ const ConversationPractice: React.FC = () => {
       </div>
 
       {/* 進捗表示 */}
-      <div className="fixed bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border border-white/40">
-        <div className="text-sm text-gray-600">
+      <div className="fixed bottom-4 right-4 neo-card px-4 py-2">
+        <div className="text-sm text-[var(--text-secondary)]">
           {selectedLevel && (
             <>
               {getLevelInfo(selectedLevel).title}: {userProgress.levelProgress[selectedLevel].completed}/{userProgress.levelProgress[selectedLevel].total}問完了
@@ -458,14 +458,14 @@ const ConversationPractice: React.FC = () => {
       {/* レベル完了ダイアログ */}
       {showCompletionDialog.show && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md mx-4 shadow-2xl">
+          <div className="neo-card p-8 max-w-md mx-4">
             <div className="text-center">
               <div className="text-6xl mb-4">🎉</div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
                 {showCompletionDialog.type === 'beginner' ? '初級' : '上級'}レベルを完了しました！
               </h2>
-              <p className="text-lg text-gray-600 mb-6">おめでとうございます。</p>
-              <p className="text-gray-700 mb-8">
+              <p className="text-lg text-[var(--text-secondary)] mb-6">おめでとうございます。</p>
+              <p className="text-[var(--text-primary)] mb-8">
                 {showCompletionDialog.type === 'beginner' 
                   ? '上級レベルに進みますか？' 
                   : 'もう1回初級レベルに取り組みますか？'
@@ -474,13 +474,13 @@ const ConversationPractice: React.FC = () => {
               <div className="flex gap-4 justify-center">
                 <button
                   onClick={handleCompletionDialogYes}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  className="px-6 py-3 bg-[var(--primary-orange)] text-white rounded-lg hover:opacity-80 transition-colors font-medium neo-card"
                 >
                   はい
                 </button>
                 <button
                   onClick={handleCompletionDialogNo}
-                  className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors font-medium"
+                  className="px-6 py-3 bg-gray-300 text-[var(--text-primary)] rounded-lg hover:bg-gray-400 transition-colors font-medium neo-card"
                 >
                   いいえ
                 </button>

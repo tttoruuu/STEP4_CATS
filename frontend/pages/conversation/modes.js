@@ -59,12 +59,11 @@ export default function ConversationModes() {
 
   return (
     <Layout title="会話練習モード選択">
-      <div className="flex flex-col items-center min-h-screen px-6 py-4" style={{background: 'var(--bg-gradient-main)', color: 'var(--color-gray-800)'}}>
+      <div className="flex flex-col items-center min-h-screen px-6 py-4 bg-[var(--bg-color)]">
         <div className="w-full max-w-md mt-8 relative">
           <button 
             onClick={() => router.push('/')}
-            className="flex items-center gap-1 transition-opacity absolute left-0"
-            style={{color: 'var(--color-primary-500)'}}
+            className="flex items-center gap-1 transition-opacity absolute left-0 text-[var(--primary-orange)]"
             onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
             onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
           >
@@ -73,21 +72,21 @@ export default function ConversationModes() {
           </button>
         </div>
         
-        <h1 className="text-2xl font-bold mt-16 mb-8 text-center" style={{color: 'var(--color-primary-500)'}}>
+        <h1 className="text-2xl font-bold mt-16 mb-8 text-center text-[var(--primary-orange)]">
           会話練習モードを選択
         </h1>
         
         {/* ステップバイステップガイド */}
-        <div className="card mb-6 max-w-md">
-          <h3 className="font-semibold mb-4 text-center" style={{color: 'var(--color-primary-600)'}}>📈 おすすめ学習フロー</h3>
+        <div className="neo-card mb-6 max-w-md">
+          <h3 className="font-semibold mb-4 text-center text-[var(--primary-orange)]">📈 おすすめ学習フロー</h3>
           <div className="flex items-center justify-between mb-2">
             {[1, 2, 3, 4, 5].map((step, index) => (
               <div key={step} className="flex items-center">
                 <div 
                   className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold"
                   style={{
-                    backgroundColor: step <= 1 ? 'var(--color-primary-500)' : 'var(--color-gray-300)',
-                    color: step <= 1 ? 'white' : 'var(--color-gray-600)'
+                    backgroundColor: step <= 1 ? 'var(--primary-orange)' : 'var(--pale-orange)',
+                    color: step <= 1 ? 'white' : 'var(--text-secondary)'
                   }}
                 >
                   {step}
@@ -95,13 +94,13 @@ export default function ConversationModes() {
                 {index < 4 && (
                   <div 
                     className="w-8 h-0.5 mx-1"
-                    style={{backgroundColor: step < 1 ? 'var(--color-primary-500)' : 'var(--color-gray-300)'}}
+                    style={{backgroundColor: step < 1 ? 'var(--primary-orange)' : 'var(--pale-orange)'}}
                   />
                 )}
               </div>
             ))}
           </div>
-          <p className="text-xs text-center" style={{color: 'var(--color-gray-600)'}}>
+          <p className="text-xs text-center text-[var(--text-secondary)]">
             基本から始めて、ステップアップしていきましょう
           </p>
         </div>
@@ -111,10 +110,10 @@ export default function ConversationModes() {
             <div key={categoryKey}>
               {/* カテゴリータイトル */}
               <div className="mb-4">
-                <h2 className="text-lg font-semibold mb-1" style={{color: 'var(--color-primary-600)'}}>
+                <h2 className="text-lg font-semibold mb-1 text-[var(--primary-orange)]">
                   {category.title}
                 </h2>
-                <p className="text-sm" style={{color: 'var(--color-gray-500)'}}>
+                <p className="text-sm text-[var(--text-secondary)]">
                   {category.description}
                 </p>
               </div>
@@ -126,26 +125,24 @@ export default function ConversationModes() {
                   return (
                     <Link key={mode.id} href={mode.path}>
                       <div 
-                        className="card text-white relative transition-all duration-200 transform hover:scale-105 cursor-pointer"
+                        className="neo-btn relative transition-all duration-200 transform hover:scale-102 cursor-pointer flex items-center"
                         style={{
-                          background: 'var(--bg-gradient-primary)',
                           minHeight: '70px'
                         }}
                       >
                         {/* ステップ番号 */}
                         <div 
-                          className="absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-                          style={{backgroundColor: 'rgba(255, 255, 255, 0.2)'}}
+                          className="absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-[var(--primary-orange)] text-white"
                         >
                           {mode.step}
                         </div>
                         
                         <div className="flex items-center gap-4 h-full pl-10">
                           <div className="flex-shrink-0">
-                            <IconComponent size={24} className="text-white" />
+                            <IconComponent size={24} className="text-[var(--primary-orange)]" />
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-semibold text-base">{mode.title}</h3>
+                            <h3 className="font-semibold text-base text-[var(--text-primary)]">{mode.title}</h3>
                           </div>
                         </div>
                       </div>
@@ -160,8 +157,7 @@ export default function ConversationModes() {
         <div className="mt-8 text-center">
           <Link href="/conversation/tips-selection">
             <span 
-              className="transition-opacity cursor-pointer"
-              style={{color: 'var(--color-primary-500)'}}
+              className="transition-opacity cursor-pointer text-[var(--primary-orange)]"
               onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
               onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
