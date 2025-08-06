@@ -16,7 +16,7 @@ export default function ConversationModes() {
           id: 'greeting',
           title: '挨拶・アイスブレイク',
           icon: MessageCircle,
-          path: '/conversation/greeting',
+          path: '/conversation/greeting-new',
           step: 1
         },
         {

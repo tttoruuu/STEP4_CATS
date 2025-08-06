@@ -1,30 +1,64 @@
 // 音声練習用データ管理
 
+// 挨拶・アイスブレイク練習用音声データ
+export const greetingAudioData = [
+  {
+    id: 1,
+    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/greeting1.mp3',
+    text: 'こんにちは。○○さんでいらっしゃいますよね？お待たせしてしまって申し訳ございません。',
+    scenario: 'シナリオ1',
+    correctResponse: 'こんにちは。○○さんですよね。お会いするのを楽しみにしていました。私もちょうど今到着したところです。',
+    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/greeting1-2.mp3',
+    tip: '笑顔で挨拶し、相手の名前を確認しながら自己紹介しましょう'
+  },
+  {
+    id: 2,
+    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/greeting2.mp3',
+    text: 'こんばんは。このパーティー、参加されて初めてですか？',
+    scenario: 'シナリオ2',
+    correctResponse: 'はい、初めてです。何度か参加されているのですか？色々と教えて頂けると嬉しいです',
+    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/greeting2-2.mp3',
+    tip: '軽い話題から始めて、相手の緊張もほぐす雰囲気作りを心がけましょう'
+  },
+  {
+    id: 3,
+    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/greeting3.mp3',
+    text: 'はじめまして。○○さんから紹介していただいた□□と申します',
+    scenario: 'シナリオ3',
+    correctResponse: 'はじめまして。○○さんからお聞きしております。お会いできるのを楽しみにしておりました。',
+    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/greeting3-2.mp3',
+    tip: '紹介者への感謝を示し、お互いの緊張を和らげる配慮をしましょう'
+  }
+];
+
 // 相槌練習用音声データ
 export const empathyAudioData = [
   {
     id: 1,
-    audioSrc: '/audio/empathy/work-stress-1.mp3',
-    text: '最近、仕事が本当に忙しくて、毎日残業続きなんです。体も疲れているし、心も少し疲れてしまって...',
-    scenario: '仕事の悩み',
-    correctResponses: ['大変ですね', 'お疲れ様です', 'それは辛いですね'],
-    tip: '相手の感情に寄り添う相槌を心がけましょう'
+    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/aizuti1.mp3',
+    text: '初対面ってやっぱり緊張しますね',
+    scenario: 'シナリオ1',
+    correctResponse: 'そうですね！でもお会いできてうれしいです！',
+    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/aizuti1-2.mp3',
+    tip: '相手の緊張をほぐすような明るい返答を心がけましょう'
   },
   {
     id: 2,
-    audioSrc: '/audio/empathy/hobby-photography.mp3',
-    text: '週末に写真を撮りに行ったんですが、すごく綺麗な夕日が撮れたんです！久しぶりに心が癒されました。',
-    scenario: '趣味の話',
-    correctResponses: ['素敵ですね', 'いいですね', '良かったですね'],
-    tip: '相手の喜びに共感する明るい相槌を使いましょう'
+    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/aizuti2.mp3',
+    text: 'カフェ巡りが好きなんです。',
+    scenario: 'シナリオ2',
+    correctResponse: 'へぇ〜！カフェって落ち着きますよね☕おすすめのカフェありますか？',
+    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/aizuti2-2.mp3',
+    tip: '相手の趣味に興味を示し、話を広げる質問を加えましょう'
   },
   {
     id: 3,
-    audioSrc: '/audio/empathy/family-concern.mp3',
-    text: '実は、両親の体調が心配で...高齢になってきて、遠くに住んでいるので、なかなか様子を見に行けないんです。',
-    scenario: '家族の心配',
-    correctResponses: ['心配ですね', 'そうですか', 'ご心配でしょうね'],
-    tip: '心配事には共感を込めた相槌で応えましょう'
+    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/aizuti3.mp3',
+    text: 'このお店、おしゃれですね',
+    scenario: 'シナリオ3',
+    correctResponse: 'ほんとですね！雰囲気もよくて落ち着きます。',
+    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/aizuti3-2.mp3',
+    tip: '相手の感想に共感し、さらに自分の感想も添えましょう'
   }
 ];
 
@@ -32,73 +66,35 @@ export const empathyAudioData = [
 export const repeatAudioData = [
   {
     id: 1,
-    audioSrc: '/audio/repeat/project-success.mp3',
-    text: '3ヶ月間準備してきたプロジェクトが、ついに成功したんです。チーム全員で協力して、本当に良い結果を出せました。',
-    scenario: '仕事の成功体験',
-    keyWords: ['3ヶ月間', 'プロジェクト', '成功', 'チーム全員', '協力', '良い結果'],
-    correctRepeat: '3ヶ月間準備してきたプロジェクトが成功して、チーム全員で協力して良い結果を出せたということですね',
-    tip: '時間や具体的な内容も含めて繰り返しましょう'
+    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/oumu1.mp3',
+    text: '最近テニス始めたんです',
+    scenario: 'シナリオ1',
+    correctResponse: '最近テニス始めたんですね！始めたきっかけはあるんですか？',
+    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/oumu1-2.mp3',
+    tip: '相手の話をそのまま繰り返してから、関連する質問を加えましょう'
   },
   {
     id: 2,
-    audioSrc: '/audio/repeat/travel-experience.mp3',
-    text: '先月、友人と京都旅行に行きました。清水寺で美しい景色を見て、とても感動しました。',
-    scenario: '旅行体験',
-    keyWords: ['先月', '友人', '京都旅行', '清水寺', '美しい景色', '感動'],
-    correctRepeat: '先月、友人と京都旅行に行って、清水寺で美しい景色を見て感動されたということですね',
-    tip: '場所や感情も含めて正確に繰り返しましょう'
+    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/oumu2.mp3',
+    text: '料理が趣味なんです',
+    scenario: 'シナリオ2',
+    correctResponse: '料理が趣味なんですね！どんな料理が得意なんですか？',
+    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/oumu2-2.mp3',
+    tip: '「オウム返し」で相手の言葉を受け止めてから、興味を示す質問をしましょう'
+  },
+  {
+    id: 3,
+    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/oumu3.mp3',
+    text: '実家は九州なんですよ',
+    scenario: 'シナリオ3',
+    correctResponse: '実家が九州なんですね！たまに帰られたりするんですか？',
+    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/oumu3-2.mp3',
+    tip: '繰り返しによって相手の話をしっかり聞いていることを示しましょう'
   }
 ];
 
-// NG/OK例のデータ
-export const examplesData = {
-  empathy: {
-    work: {
-      situation: '「仕事が忙しくて疲れている」という相手の話',
-      ngExample: {
-        audioSrc: '/audio/examples/empathy-work-ng.mp3',
-        text: 'あ、そう。',
-        reason: '相手の感情に寄り添えていません。素っ気なく聞こえます。'
-      },
-      okExample: {
-        audioSrc: '/audio/examples/empathy-work-ok.mp3',
-        text: 'それは大変ですね。お疲れ様です。',
-        reason: '相手の大変さを理解し、労いの気持ちが伝わります。'
-      },
-      advice: '相手の感情を理解し、共感を込めた相槌を心がけましょう。「大変ですね」「お疲れ様です」など、相手を気遣う言葉が効果的です。'
-    },
-    hobby: {
-      situation: '「趣味の写真で良い作品が撮れた」という相手の話',
-      ngExample: {
-        audioSrc: '/audio/examples/empathy-hobby-ng.mp3',
-        text: 'ふーん。',
-        reason: '相手の喜びに興味を示せていません。'
-      },
-      okExample: {
-        audioSrc: '/audio/examples/empathy-hobby-ok.mp3',
-        text: 'それは素敵ですね！良かったですね。',
-        reason: '相手の喜びに共感し、明るい反応ができています。'
-      },
-      advice: '相手の嬉しい気持ちには、明るく前向きな相槌で応えましょう。「素敵ですね」「良かったですね」など、相手の気持ちを盛り上げる言葉を使いましょう。'
-    }
-  },
-  repeat: {
-    project: {
-      situation: 'プロジェクト成功の体験談',
-      ngExample: {
-        audioSrc: '/audio/examples/repeat-project-ng.mp3',
-        text: '仕事がうまくいったんですね。',
-        reason: '要約してしまい、相手の具体的な話を正確に受け取れていません。'
-      },
-      okExample: {
-        audioSrc: '/audio/examples/repeat-project-ok.mp3',
-        text: '3ヶ月間準備してきたプロジェクトが成功して、チーム全員で協力して良い結果を出せたということですね。',
-        reason: '相手の言葉を具体的に、そのまま繰り返せています。'
-      },
-      advice: '相手の話を要約せず、重要なキーワードや数字も含めて、できるだけそのまま繰り返しましょう。「〜ということですね」で確認すると自然です。'
-    }
-  }
-};
+// NG/OK例のデータ（現在は使用していません）
+export const examplesData = {};
 
 // ランダムに音声を選択する関数
 export const getRandomAudio = (audioArray) => {
