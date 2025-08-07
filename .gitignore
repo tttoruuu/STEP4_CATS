@@ -5,8 +5,10 @@ __pycache__/
 
 # 環境変数系（機密情報保護）
 .env
-.env.production
-.env.local
+.env.*
+!.env.example
+backend/.env
+frontend/.env.local
 config/.env.production
 config/.env.development
 

@@ -210,6 +210,7 @@ font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
 - `/frontend/styles/globals.css` - グローバルスタイル
 - `/frontend/components/ui/` - UIコンポーネント群
 
+
 ## 📝 更新履歴
 
 - 2025-01-08: 初版作成、ネオモーフィズムスタイル採用

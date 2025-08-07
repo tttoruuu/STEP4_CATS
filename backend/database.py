@@ -5,15 +5,7 @@ from sqlalchemy.orm import sessionmaker
 import os
 import sys
 import tempfile
-from dotenv import load_dotenv
-from pathlib import Path
-
-# .envファイルの絶対パスを取得
-current_dir = Path(__file__).resolve().parent
-env_path = current_dir / ".env"
-
-# .envファイルを読み込み
-load_dotenv(dotenv_path=env_path)
+from config import DATABASE_URL, MYSQL_SSL_ENABLED, IS_PRODUCTION
 
 # SSL証明書の処理
 def create_ssl_cert_file():
@@ -28,20 +20,24 @@ def create_ssl_cert_file():
     return None
 
 # データベース接続設定
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:password@localhost:3307/testdb?charset=utf8mb4")
+SQLALCHEMY_DATABASE_URL = DATABASE_URL
 
 # SSL設定の準備
-ssl_cert_path = create_ssl_cert_file()
 connect_args = {"charset": "utf8mb4"}
 
-# SSL証明書が利用可能な場合はSSL接続を設定
-if ssl_cert_path:
-    connect_args.update({
-        "ssl_ca": ssl_cert_path,
-        "ssl_disabled": False
-    })
+# 本番環境でのSSL設定
+if IS_PRODUCTION and MYSQL_SSL_ENABLED:
+    ssl_cert_path = create_ssl_cert_file()
+    if ssl_cert_path:
+        connect_args.update({
+            "ssl_ca": ssl_cert_path,
+            "ssl_disabled": False
+        })
+    else:
+        # Azure MySQLの場合、証明書がなくてもSSLを有効にする
+        connect_args["ssl_disabled"] = False
 else:
-    # SSL証明書がない場合はSSLを無効化
+    # 開発環境ではSSLを無効化
     connect_args["ssl_disabled"] = True
 
 # エンジン作成とセッションの設定

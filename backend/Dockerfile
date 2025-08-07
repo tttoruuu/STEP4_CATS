@@ -21,8 +21,12 @@ COPY ./routers ./routers
 COPY ./schemas ./schemas
 COPY ./services ./services
 COPY ./auth ./auth
+COPY ./middleware ./middleware
+COPY ./config ./config
+COPY ./utils ./utils
 COPY ./main.py ./
 COPY ./database.py ./
+COPY ./database_async.py ./
 # COPY ./initial_data.py ./
 
 # アプリ起動コマンド (プロキシヘッダー対応、本番環境ログレベル設定)

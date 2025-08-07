@@ -78,7 +78,7 @@ export default function LoginPage() {
         <div className="card">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="px-4 py-3 rounded-lg text-sm" style={{backgroundColor: 'var(--color-error)', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: 'var(--color-error)'}}>
+              <div className="px-4 py-3 rounded-lg text-sm" style={{background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: 'var(--color-error)'}}>
                 {error}
               </div>
             )}
@@ -89,8 +89,8 @@ export default function LoginPage() {
                 メールアドレス
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5" style={{color: 'var(--color-gray-400)'}} />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <Mail className="h-5 w-5" style={{color: 'var(--text-light)'}} />
                 </div>
                 <input
                   type="email"
@@ -111,8 +111,8 @@ export default function LoginPage() {
                 パスワード
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5" style={{color: 'var(--color-gray-400)'}} />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <Lock className="h-5 w-5" style={{color: 'var(--text-light)'}} />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -127,10 +127,10 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center transition-colors"
-                  style={{color: 'var(--color-gray-400)'}}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-gray-600)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-gray-400)'}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center transition-colors z-10"
+                  style={{color: 'var(--text-light)'}}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-medium)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-light)'}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -149,15 +149,15 @@ export default function LoginPage() {
 
           {/* Register Link */}
           <div className="mt-6 text-center">
-            <p className="text-sm" style={{color: 'var(--color-gray-600)'}}>
+            <p className="text-sm" style={{color: 'var(--text-medium)'}}>
               アカウントをお持ちでない方は
             </p>
             <Link 
               href="/auth/register" 
-              className="font-medium transition-colors"
-              style={{color: 'var(--color-primary-600)'}}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-primary-700)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-primary-600)'}
+              className="font-medium transition-colors inline-block mt-1"
+              style={{color: 'var(--primary-orange)'}}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
               新規登録はこちら
             </Link>

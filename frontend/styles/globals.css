@@ -524,3 +524,151 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== 旧クラス名との互換性（Neomorphismスタイル適用） ===== */
+
+/* 旧cardクラス */
+.card {
+  background: var(--bg-color);
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: 8px 8px 16px rgba(209, 186, 172, 0.5),
+              -8px -8px 16px rgba(255, 255, 255, 0.8);
+  transition: all 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 12px 12px 24px rgba(209, 186, 172, 0.5),
+             -12px -12px 24px rgba(255, 255, 255, 0.8);
+}
+
+/* 旧inputクラス */
+.input {
+  width: 100%;
+  padding: 15px 20px;
+  background: var(--bg-color);
+  border: none;
+  border-radius: 15px;
+  box-shadow: inset 4px 4px 8px rgba(209, 186, 172, 0.3),
+              inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+  color: var(--text-dark);
+  transition: all 0.3s;
+  outline: none;
+}
+
+.input:focus {
+  box-shadow: inset 6px 6px 12px rgba(209, 186, 172, 0.4),
+              inset -6px -6px 12px rgba(255, 255, 255, 0.9);
+}
+
+.input::placeholder {
+  color: var(--text-light);
+}
+
+/* 旧btnクラス */
+.btn {
+  padding: 12px 24px;
+  background: var(--bg-color);
+  border: none;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 6px 6px 12px rgba(209, 186, 172, 0.5),
+              -6px -6px 12px rgba(255, 255, 255, 0.8);
+  transition: all 0.3s;
+  color: var(--text-dark);
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 8px 8px 16px rgba(209, 186, 172, 0.5),
+             -8px -8px 16px rgba(255, 255, 255, 0.8);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: inset 4px 4px 8px rgba(209, 186, 172, 0.3),
+              inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* btn-primary */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-orange), var(--light-orange));
+  color: white;
+  box-shadow: 6px 6px 12px rgba(209, 186, 172, 0.5),
+              -6px -6px 12px rgba(255, 255, 255, 0.8);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 8px 8px 16px rgba(209, 186, 172, 0.5),
+             -8px -8px 16px rgba(255, 255, 255, 0.8);
+}
+
+/* ロゴスタイル */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-orange);
+}
+
+/* CSS変数の追加 */
+:root {
+  --bg-gradient-main: linear-gradient(135deg, var(--bg-color) 0%, #FFF5F0 100%);
+  --color-primary-500: var(--primary-orange);
+  --color-primary-600: #E85D2B;
+  --color-primary-700: #D04E20;
+  --color-gray-200: #E5E7EB;
+  --color-gray-300: #D1D5DB;
+  --color-gray-400: var(--text-light);
+  --color-gray-500: #6B7280;
+  --color-gray-600: var(--text-medium);
+  --color-gray-700: #4A5568;
+  --color-gray-800: var(--text-dark);
+  --color-error: #DC2626;
+  --text-primary: var(--text-dark);
+  --text-secondary: var(--text-medium);
+}
+
+/* プログレスバー */
+.progress {
+  height: 12px;
+  background: var(--bg-color);
+  border-radius: 6px;
+  box-shadow: var(--shadow-inset-light), var(--shadow-inset-dark);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-orange), var(--light-orange));
+  border-radius: 6px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}

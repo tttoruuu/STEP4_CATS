@@ -28,6 +28,10 @@ async def create_tables_with_retry(max_retries=5, delay=5):
         try:
             Base.metadata.create_all(bind=engine)
             print(f"データベーステーブル作成成功 (試行 {attempt + 1}/{max_retries})")
+            
+            # 不足しているカラムを追加
+            await add_missing_columns_if_needed()
+            
             return True
         except Exception as e:
             print(f"データベース接続失敗 (試行 {attempt + 1}/{max_retries}): {e}")
@@ -38,6 +42,63 @@ async def create_tables_with_retry(max_retries=5, delay=5):
                 print("データベース接続に失敗しました。コンテナを確認してください。")
                 return False
     return False
+
+async def add_missing_columns_if_needed():
+    """不足しているカラムを追加（本番環境対応）"""
+    import pymysql
+    from config import MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD
+    
+    # データベース接続情報
+    host = MYSQL_HOST
+    port = MYSQL_PORT
+    database = MYSQL_DATABASE
+    user = MYSQL_USER
+    password = MYSQL_PASSWORD
+    
+    try:
+        # データベースに接続
+        connection = pymysql.connect(
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            database=database,
+            charset='utf8mb4'
+        )
+        
+        cursor = connection.cursor()
+        
+        # 追加するカラムのリスト
+        columns_to_add = [
+            ("konkatsu_status", "VARCHAR(50)"),
+            ("occupation", "VARCHAR(255)"),
+            ("birthplace", "VARCHAR(255)"),
+            ("current_location", "VARCHAR(255)"),
+            ("holiday_style", "TEXT")
+        ]
+        
+        # 既存のカラムを取得
+        cursor.execute("SHOW COLUMNS FROM users")
+        existing_columns = [row[0] for row in cursor.fetchall()]
+        
+        # 不足しているカラムを追加
+        for column_name, column_type in columns_to_add:
+            if column_name not in existing_columns:
+                try:
+                    alter_query = f"ALTER TABLE users ADD COLUMN {column_name} {column_type}"
+                    cursor.execute(alter_query)
+                    connection.commit()
+                    logger.info(f"カラム '{column_name}' を追加しました")
+                except Exception as e:
+                    logger.warning(f"カラム '{column_name}' の追加中にエラー: {e}")
+                    connection.rollback()
+        
+        connection.close()
+        logger.info("データベースカラムの確認と更新が完了しました")
+        
+    except Exception as e:
+        logger.error(f"カラム追加処理でエラー: {e}")
+        # エラーが発生してもアプリケーションは続行
 
 # 非同期スタートアップイベント用のライフサイクル管理
 @asynccontextmanager
@@ -129,7 +190,9 @@ register_exception_handlers(app)
 app.middleware("http")(error_handler_middleware)
 
 # ルーター追加（順序重要）
+# 常に実際のデータベース認証を使用
 app.include_router(auth.router)
+    
 app.include_router(conversation_partners.router)
 app.include_router(personality.router, prefix="/api/personality", tags=["personality"])
 app.include_router(marriage_mbti.router, prefix="/api/marriage-mbti", tags=["marriage-mbti"])
@@ -206,6 +269,96 @@ async def health():
             "marriage_mbti": "active"
         }
     }
+
+@app.post("/admin/update-database-schema")
+async def update_database_schema():
+    """データベーススキーマを更新する管理者用エンドポイント"""
+    import pymysql
+    
+    # データベース接続情報
+    host = os.getenv('MYSQL_HOST', 'eastasiafor9th.mysql.database.azure.com')
+    port = int(os.getenv('MYSQL_PORT', 3306))
+    database = os.getenv('MYSQL_DATABASE', 'testdb')
+    user = os.getenv('MYSQL_USER', 'students')
+    password = os.getenv('MYSQL_PASSWORD', '9th-tech0')
+    
+    results = []
+    
+    try:
+        # データベースに接続
+        # Azure MySQLの場合、SSL設定を追加
+        ssl_config = {'ssl_disabled': True} if 'azure' in host.lower() else {}
+        
+        connection = pymysql.connect(
+            host=host,
+            port=port,
+            user=user if '@' in user else f"{user}@{host.split('.')[0]}",  # Azure MySQL形式
+            password=password,
+            database=database,
+            charset='utf8mb4',
+            connect_timeout=30,
+            **ssl_config
+        )
+        
+        cursor = connection.cursor()
+        
+        # 追加するカラムのリスト
+        columns_to_add = [
+            ("konkatsu_status", "VARCHAR(50)"),
+            ("occupation", "VARCHAR(255)"),
+            ("birthplace", "VARCHAR(255)"),
+            ("current_location", "VARCHAR(255)"),
+            ("holiday_style", "TEXT")
+        ]
+        
+        # 既存のカラムを取得
+        cursor.execute("SHOW COLUMNS FROM users")
+        existing_columns = [row[0] for row in cursor.fetchall()]
+        results.append(f"既存のカラム: {existing_columns}")
+        
+        # 不足しているカラムを追加
+        added_columns = []
+        for column_name, column_type in columns_to_add:
+            if column_name not in existing_columns:
+                try:
+                    alter_query = f"ALTER TABLE users ADD COLUMN {column_name} {column_type}"
+                    cursor.execute(alter_query)
+                    connection.commit()
+                    added_columns.append(column_name)
+                    results.append(f"✅ カラム '{column_name}' を追加しました")
+                except Exception as e:
+                    results.append(f"⚠️ カラム '{column_name}' の追加中にエラー: {e}")
+                    connection.rollback()
+            else:
+                results.append(f"ℹ️ カラム '{column_name}' は既に存在します")
+        
+        # 最終的なテーブル構造を確認
+        cursor.execute("DESCRIBE users")
+        table_structure = []
+        for row in cursor.fetchall():
+            table_structure.append({
+                "field": row[0],
+                "type": str(row[1]),
+                "null": row[2],
+                "key": row[3]
+            })
+        
+        connection.close()
+        
+        return {
+            "success": True,
+            "message": "データベーススキーマの更新が完了しました",
+            "results": results,
+            "added_columns": added_columns,
+            "table_structure": table_structure
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "results": results
+        }
 
 @app.get("/test-profile")
 async def test_profile():

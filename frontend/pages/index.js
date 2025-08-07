@@ -182,34 +182,34 @@ export default function MainPage() {
         <nav className="flex flex-col space-y-4">
           {/* AIカウンセラー */}
           <Link href="/counselor">
-            <div className="neo-btn neo-btn-primary w-full flex items-center justify-center gap-3 py-4">
+            <button className="neo-btn neo-btn-primary w-full flex items-center justify-center gap-3 py-4">
               <User className="w-5 h-5" />
               <span className="font-medium">AIカウンセラー</span>
-            </div>
+            </button>
           </Link>
 
           {/* 会話練習機能 */}
           <Link href="/conversation/modes">
-            <div className="neo-btn w-full flex items-center justify-center gap-3 py-4" style={{background: 'linear-gradient(135deg, var(--light-orange), var(--primary-orange))'}}>
+            <button className="neo-btn w-full flex items-center justify-center gap-3 py-4" style={{background: 'linear-gradient(135deg, var(--light-orange), var(--primary-orange))'}}>
               <MessageSquare className="w-5 h-5 text-white" />
               <span className="font-medium text-white">会話練習</span>
-            </div>
+            </button>
           </Link>
 
           {/* MBTI Marriage診断機能 */}
           <Link href="/marriage-mbti-test">
-            <div className="neo-btn w-full flex items-center justify-center gap-3 py-4">
+            <button className="neo-btn w-full flex items-center justify-center gap-3 py-4">
               <Heart className="w-5 h-5" style={{color: 'var(--primary-orange)'}} />
               <span className="font-medium">MBTI Marriage</span>
-            </div>
+            </button>
           </Link>
 
           {/* スタイリング提案機能 */}
           <Link href="/styling">
-            <div className="neo-btn neo-btn-secondary w-full flex items-center justify-center gap-3 py-4">
+            <button className="neo-btn neo-btn-secondary w-full flex items-center justify-center gap-3 py-4">
               <Palette className="w-5 h-5" />
               <span className="font-medium">スタイリング提案</span>
-            </div>
+            </button>
           </Link>
         </nav>
 
