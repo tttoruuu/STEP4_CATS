@@ -1,3 +1,5 @@
+import { getApiEndpoint } from '../services/env-config';
+
 export default async function register(userData){
     const payload = {
         username:         userData.email,           // emailをusernameとして使用
@@ -13,11 +15,15 @@ export default async function register(userData){
         weekend_activity: userData.holidayStyle ?? "",
     };
     console.log(`try to register with ${JSON.stringify(payload)}`);
-    const res = await fetch(process.env.NEXT_PUBLIC_API_URL+'/register', 
+    const apiUrl = getApiEndpoint();
+    console.log(`API URL: ${apiUrl}`);
+    const fullUrl = `${apiUrl}/register`;
+    console.log(`Full registration URL: ${fullUrl}`);
+    
+    const res = await fetch(fullUrl, 
         {
             method: 'POST',
-            credentials: 'include',
-            headers: {'Content-Type': 'application/json',},
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(payload),
         }
     );
@@ -26,10 +32,22 @@ export default async function register(userData){
         const data = await res.json();
         return { success: true, data };
     } else {
-        const errorData = await res.json();
-        return { 
-            success: false, 
-            error: errorData.detail || '登録に失敗しました'
-        };
+        console.error(`Registration failed with status: ${res.status}`);
+        try {
+            const errorData = await res.json();
+            console.error('Error response:', errorData);
+            // エラーレスポンスの形式に対応
+            const errorMessage = errorData.error?.message || errorData.detail || '登録に失敗しました';
+            return { 
+                success: false, 
+                error: errorMessage
+            };
+        } catch (e) {
+            console.error('Failed to parse error response:', e);
+            return { 
+                success: false, 
+                error: '登録に失敗しました'
+            };
+        }
     }
 }

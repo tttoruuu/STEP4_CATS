@@ -20,9 +20,9 @@ class User(Base):
     # 追加フィールド（login-chatで収集）
     konkatsu_status = Column(String(50))  # 婚活経験 (beginner, experienced, returning)
     occupation = Column(String(255))      # 職業
-    birthplace = Column(String(255))      # 出身地
-    current_location = Column(String(255)) # 現在の居住地
-    holiday_style = Column(Text)          # 休日の過ごし方
+    birth_place = Column(String(255))     # 出身地
+    location = Column(String(255))        # 現在の居住地
+    weekend_activity = Column(Text)       # 休日の過ごし方
     
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

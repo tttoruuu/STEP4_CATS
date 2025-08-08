@@ -30,8 +30,13 @@ if IS_PRODUCTION:
     DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}@{MYSQL_HOST.split('.')[0]}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}?charset=utf8mb4"
 else:
     # ローカルMySQL（開発環境）
-    MYSQL_HOST = os.getenv("LOCAL_MYSQL_HOST", "localhost")
-    MYSQL_PORT = int(os.getenv("LOCAL_MYSQL_PORT", "3307"))
+    # Docker環境での接続判定
+    is_docker = os.path.exists('/.dockerenv') or os.getenv("DOCKER_CONTAINER", False)
+    default_host = "db" if is_docker else "localhost"
+    default_port = "3306" if is_docker else "3307"
+    
+    MYSQL_HOST = os.getenv("LOCAL_MYSQL_HOST", default_host)
+    MYSQL_PORT = int(os.getenv("LOCAL_MYSQL_PORT", default_port))
     MYSQL_DATABASE = os.getenv("LOCAL_MYSQL_DATABASE", "testdb")
     MYSQL_USER = os.getenv("LOCAL_MYSQL_USER", "root")
     MYSQL_PASSWORD = os.getenv("LOCAL_MYSQL_PASSWORD", "password")

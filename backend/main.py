@@ -72,9 +72,9 @@ async def add_missing_columns_if_needed():
         columns_to_add = [
             ("konkatsu_status", "VARCHAR(50)"),
             ("occupation", "VARCHAR(255)"),
-            ("birthplace", "VARCHAR(255)"),
-            ("current_location", "VARCHAR(255)"),
-            ("holiday_style", "TEXT")
+            ("birth_place", "VARCHAR(255)"),
+            ("location", "VARCHAR(255)"),
+            ("weekend_activity", "TEXT")
         ]
         
         # 既存のカラムを取得
@@ -306,9 +306,9 @@ async def update_database_schema():
         columns_to_add = [
             ("konkatsu_status", "VARCHAR(50)"),
             ("occupation", "VARCHAR(255)"),
-            ("birthplace", "VARCHAR(255)"),
-            ("current_location", "VARCHAR(255)"),
-            ("holiday_style", "TEXT")
+            ("birth_place", "VARCHAR(255)"),
+            ("location", "VARCHAR(255)"),
+            ("weekend_activity", "TEXT")
         ]
         
         # 既存のカラムを取得
@@ -393,6 +393,8 @@ async def test_profile():
 @app.post("/register")
 async def register(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
     """ユーザー登録エンドポイント"""
+    logger.info(f"Registration attempt for email: {user_data.email}")
+    
     # ユーザーが既に存在するかチェック
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
@@ -409,16 +411,28 @@ async def register(user_data: schemas.UserCreate, db: Session = Depends(get_db))
         password_hash=hashed_password,
         full_name=user_data.full_name,
         birth_date=user_data.birth_date,
-        hometown=user_data.hometown,
+        konkatsu_status=user_data.konkatsu_status,
+        occupation=user_data.occupation,
+        birth_place=user_data.birth_place,
+        location=user_data.location,
         hobbies=user_data.hobbies,
-        matchmaking_agency=user_data.matchmaking_agency
+        weekend_activity=user_data.weekend_activity
     )
     
     db.add(user)
     db.commit()
     db.refresh(user)
     
-    return {"message": "ユーザー登録が完了しました"}
+    # トークンを生成して返す
+    access_token = create_access_token(data={"sub": user.email})
+    
+    logger.info(f"User successfully registered: {user.email}")
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {"email": user.email, "name": user.full_name}
+    }
 
 @app.post("/login")
 async def login(user_data: schemas.UserLogin, db: Session = Depends(get_db)):

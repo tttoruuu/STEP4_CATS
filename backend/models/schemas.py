@@ -7,9 +7,12 @@ class UserBase(BaseModel):
     email: EmailStr
     full_name: str
     birth_date: date
-    hometown: Optional[str] = None
+    konkatsu_status: Optional[str] = None
+    occupation: Optional[str] = None
+    birth_place: Optional[str] = None
+    location: Optional[str] = None
     hobbies: Optional[str] = None
-    matchmaking_agency: Optional[str] = None
+    weekend_activity: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str
