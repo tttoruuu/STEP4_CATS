@@ -195,17 +195,7 @@ app = FastAPI(
 )
 
 # 開発環境向け具体的なCORS設定
-origins = [
-    "http://localhost:3008",   # 現在のフロントポート
-    "http://localhost:3007",   # 予備のポート
-    "http://localhost:3006",   # 予備のポート
-    "http://localhost:3005",   # 予備のポート
-    "http://localhost:3004",   # 予備のポート
-    "http://localhost:3000",   # 予備のポート
-    "http://localhost:3001",   # 予備のポート
-    "http://localhost:3002",   # 予備のポート  
-    "http://localhost:3003",   # 予備のポート
-]
+origins = ["http://localhost:3000", "http://127.0.0.1:3000"]  # メインフロントポート（localhost + 127.0.0.1）
 
 app.add_middleware(
     CORSMiddleware,
