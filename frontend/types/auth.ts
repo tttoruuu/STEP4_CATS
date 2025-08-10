@@ -27,8 +27,15 @@ export interface UserData {
   occupation?: string;
   birthplace?: string;
   location?: string;
-  hobbies?: string;
+  hobbies?: string | string[];  // 文字列または配列に対応
   holidayStyle?: string;
+}
+
+// プロフィール専用型定義
+export interface ProfileData {
+  hometown?: string;
+  hobbies?: string[];
+  age?: number;  // 自動算出（読み取り専用）
 }
 
 export interface Message {

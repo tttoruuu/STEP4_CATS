@@ -12,81 +12,53 @@ export default function MainPage() {
   const [user, setUser] = useState({
     firstName: '',
     lastName: '',
-    username: ''
+    username: 'テストユーザー' // 🚨 EMERGENCY: 固定値で簡素化
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // 🐛 デバッグ: 初期状態をfalseに変更してローディング画面をスキップ
   const [error, setError] = useState('');
+  
+  // デバッグ用ログ（簡素化）
+  console.log('[Index] ホームページがレンダリングされました');
 
   useEffect(() => {
-    const fetchUser = async () => {
-      setLoading(true);
-      setError('');
-      
-      // ブラウザ環境でない場合は処理を停止
-      if (typeof window === 'undefined') {
-        console.log('DEBUG: サーバーサイドレンダリング中のため処理を停止');
-        setLoading(false);
-        return;
-      }
-      
-      // 🔥 URGENT FIX v20250803 🔥
-      console.log('🚨 URGENT FIX VERSION LOADED 🚨');
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
-      // トークンの存在確認
-      const storedToken = localStorage.getItem('token');
-      console.log('🔍 Token check v2:', !!storedToken);
-      
-      if (!storedToken) {
-        console.log('❌ No token v2 - redirect to login');
-        setLoading(false);
-        router.replace('/auth/login-chat');
-        return;
-      }
-      
-      // トークンが存在する場合はユーザー情報を取得
-      console.log('✅ Token found v2 - fetching user info');
+    const initializeApp = async () => {
       try {
-        // まずローカルストレージからユーザー情報を取得
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
-          console.log('User data from localStorage:', userData);
-          
-          const finalUser = {
-            id: userData.id || 1,
-            username: userData.name || userData.username || 'ユーザー',
-            email: userData.email || 'user@example.com'
-          };
-          console.log('🔥 Setting user from localStorage:', finalUser);
-          setUser(finalUser);
+        // 🚨 緊急処置: 無限リダイレクト問題の解決のため、認証チェックを一時的に無効化
+        console.log('[Index] 緊急処置: 認証チェックを一時的に無効化');
+        
+        // SSR安全なlocalStorageアクセス
+        if (typeof window !== 'undefined') {
+          // クライアントサイドでのみlocalStorageにアクセス
+          const storedUser = localStorage.getItem('user');
+          if (storedUser) {
+            try {
+              const userData = JSON.parse(storedUser);
+              setUser(userData);
+              console.log('[Index] ストレージからユーザー情報を復元:', userData);
+            } catch (e) {
+              console.error('[Index] ユーザー情報の解析エラー:', e);
+              setUser({ username: 'ユーザー' });
+            }
+          } else {
+            setUser({ username: 'ユーザー' });
+          }
         } else {
-          // フォールバック: JWTトークンをデコードしてユーザー情報を取得
-          const encodedPayload = storedToken.split('.')[1];
-          const decodedPayload = decodeURIComponent(escape(atob(encodedPayload)));
-          const payload = JSON.parse(decodedPayload);
-          console.log('Token payload (fallback):', payload);
-          
-          setUser({
-            id: payload.sub || payload.user_id || 1,
-            username: payload.name || payload.username || 'ユーザー',
-            email: payload.email || payload.sub || 'user@example.com'
-          });
+          // サーバーサイドではデフォルトユーザーを設定
+          setUser({ username: 'ユーザー' });
         }
+        
+        // 強制的にローディングを解除
+        console.log('[Index] ローディング状態を解除');
+        setLoading(false);
+        
       } catch (error) {
-        console.error('User info fetch error:', error);
-        // 最終フォールバック: デフォルト情報を使用
-        setUser({
-          id: 1,
-          username: 'ユーザー',
-          email: 'user@example.com'
-        });
+        console.error('[Index] 初期化エラー:', error);
+        setLoading(false); // エラーが発生してもローディングは解除
       }
-      setLoading(false);
     };
 
-    fetchUser();
-  }, [router]);
+    initializeApp();
+  }, []);
 
   const handleLogout = () => {
     // ローカルストレージをクリア
@@ -95,6 +67,14 @@ export default function MainPage() {
     
     authAPI.logout(); // APIの関数を使用
     router.push('/auth/login');
+  };
+
+  // 🚨 EMERGENCY RESET FUNCTION
+  const handleEmergencyReset = () => {
+    console.log('🚨 EMERGENCY RESET - Clearing all localStorage');
+    localStorage.clear();
+    // リロードではなく、ログイン画面に直接移動
+    window.location.href = '/auth/register';
   };
 
   if (loading) {
@@ -115,6 +95,34 @@ export default function MainPage() {
               <div className="w-3 h-3 rounded-full animate-bounce" style={{backgroundColor: 'var(--color-primary-400)', animationDelay: '0.2s'}}></div>
             </div>
             <p className="font-medium" style={{color: 'var(--color-primary-600)'}}>ホーム画面を準備中...</p>
+            
+            {/* 🚨 EMERGENCY RESET BUTTON */}
+            <button 
+              onClick={handleEmergencyReset}
+              className="px-4 py-2 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
+            >
+              🚨 緊急リセット（無限ループ解消）
+            </button>
+            
+            {/* 🧪 TEST LINKS */}
+            <div className="mt-4 space-y-2">
+              <div>
+                <a 
+                  href="/auth/register" 
+                  className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors inline-block"
+                >
+                  📝 新規登録ページ (直接リンク)
+                </a>
+              </div>
+              <div>
+                <a 
+                  href="/auth/login" 
+                  className="px-4 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition-colors inline-block"
+                >
+                  🔑 ログインページ (直接リンク)
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>

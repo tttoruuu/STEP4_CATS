@@ -41,14 +41,14 @@ async def register_user(
             email=user_data.get("email"),
             password_hash=hashed_password,
             full_name=user_data.get("name", user_data.get("full_name", "")),
-            birth_date=datetime.strptime(user_data.get("birthdate"), "%Y-%m-%d").date() if user_data.get("birthdate") else None,
-            hometown=user_data.get("birthplace", ""),
+            birth_date=datetime.strptime(user_data.get("birth_date"), "%Y-%m-%d").date() if user_data.get("birth_date") else None,
+            hometown=user_data.get("birth_place", ""),
             hobbies=user_data.get("hobbies", ""),
-            konkatsu_status=user_data.get("konkatsuStatus", ""),
+            konkatsu_status=user_data.get("konkatsu_status", ""),
             occupation=user_data.get("occupation", ""),
-            birthplace=user_data.get("birthplace", ""),
-            current_location=user_data.get("location", ""),
-            holiday_style=user_data.get("holidayStyle", "")
+            birth_place=user_data.get("birth_place", ""),
+            location=user_data.get("location", ""),
+            weekend_activity=user_data.get("weekend_activity", "")
         )
         
         db.add(new_user)

@@ -123,17 +123,34 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # CORS設定: 具体的なオリジンのリストを指定する
-origins = [
-    "http://localhost:3000",  # ローカル開発環境
-    "http://frontend:3000",   # Docker Compose環境
-    "https://miraim-frontend.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # 現在のフロントエンド
-    "https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io",   # 現在のバックエンド（self）
-    "https://frontend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",  # 旧本番環境のフロントエンド（HTTPS）
-    "https://aca-wild-australiaeast.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # 旧本番環境フロントエンド
-    # ユーザーがアクセスする可能性のあるカスタムドメイン
-    "https://*.azurecontainerapps.io",
-    "https://*.azurewebsites.net",
-]
+# 開発環境では柔軟に、本番環境では厳密にCORS設定
+if ENV == "development":
+    # 開発環境: localhostのすべてのポートを許可
+    origins = [
+        "http://localhost:3000",
+        "http://localhost:3001", 
+        "http://localhost:3002",
+        "http://localhost:3003",
+        "http://localhost:3004",
+        "http://localhost:3005",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://127.0.0.1:3002", 
+        "http://127.0.0.1:3003",
+        "http://frontend:3000",   # Docker Compose環境
+    ]
+    print(f"[CORS] 開発環境: {len(origins)}個のオリジンを許可 - {origins}")
+else:
+    # 本番環境: 具体的なオリジンのみ許可
+    origins = [
+        "https://miraim-frontend.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # 現在のフロントエンド
+        "https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io",   # 現在のバックエンド（self）
+        "https://frontend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",  # 旧本番環境のフロントエンド（HTTPS）
+        "https://aca-wild-australiaeast.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # 旧本番環境フロントエンド
+        "https://*.azurecontainerapps.io",
+        "https://*.azurewebsites.net",
+    ]
+    print(f"[CORS] 本番環境: {len(origins)}個のオリジンを許可")
 
 # 本番環境フロントエンドのオリジンが環境変数から指定されている場合は追加
 if ENV == "production" and FRONTEND_ORIGIN:
@@ -177,13 +194,31 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# 開発環境向け具体的なCORS設定
+origins = [
+    "http://localhost:3008",   # 現在のフロントポート
+    "http://localhost:3007",   # 予備のポート
+    "http://localhost:3006",   # 予備のポート
+    "http://localhost:3005",   # 予備のポート
+    "http://localhost:3004",   # 予備のポート
+    "http://localhost:3000",   # 予備のポート
+    "http://localhost:3001",   # 予備のポート
+    "http://localhost:3002",   # 予備のポート  
+    "http://localhost:3003",   # 予備のポート
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=origins,         # 具体的なオリジンを指定
+    allow_credentials=True,        # Cookie や認証ヘッダを使う場合
+    allow_methods=["*"],           # POST/GET/OPTIONS 等
+    allow_headers=["*"],           # Content-Type, Authorization 等
 )
+
+print(f"[CORS] 設定完了 - ENV: {ENV}")
+print(f"[CORS] 使用するオリジン: {origins}")
+print(f"[CORS] allow_credentials: True")
+print("[CORS] 具体的なオリジン指定CORS設定が適用されました（強制リロード）")
 
 # エラーハンドリングの登録
 register_exception_handlers(app)
@@ -391,7 +426,7 @@ async def test_profile():
 
 # ユーザー認証エンドポイント
 @app.post("/register")
-async def register(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
+async def register(user_data: schemas.UserRegister, db: Session = Depends(get_db)):
     """ユーザー登録エンドポイント"""
     logger.info(f"Registration attempt for email: {user_data.email}")
     
@@ -405,12 +440,17 @@ async def register(user_data: schemas.UserCreate, db: Session = Depends(get_db))
     
     # パスワードをハッシュ化してユーザーを作成
     hashed_password = get_password_hash(user_data.password)
+    
+    # birth_dateがNoneの場合のデフォルト値設定
+    from datetime import datetime, date
+    birth_date_value = user_data.birth_date if user_data.birth_date else date(1990, 1, 1)
+    
     user = User(
         username=user_data.username,
         email=user_data.email,
         password_hash=hashed_password,
         full_name=user_data.full_name,
-        birth_date=user_data.birth_date,
+        birth_date=birth_date_value,
         konkatsu_status=user_data.konkatsu_status,
         occupation=user_data.occupation,
         birth_place=user_data.birth_place,

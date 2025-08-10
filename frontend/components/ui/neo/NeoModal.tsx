@@ -21,6 +21,9 @@ const NeoModal = React.forwardRef<HTMLDivElement, NeoModalProps>(
     ...props 
   }, ref) => {
     React.useEffect(() => {
+      // SSR対応
+      if (typeof document === 'undefined') return;
+      
       if (isOpen) {
         document.body.style.overflow = 'hidden';
       } else {
@@ -31,6 +34,15 @@ const NeoModal = React.forwardRef<HTMLDivElement, NeoModalProps>(
         document.body.style.overflow = 'unset';
       };
     }, [isOpen]);
+
+    // コンポーネントアンマウント時の強制クリーンアップ
+    React.useEffect(() => {
+      return () => {
+        if (typeof document !== 'undefined') {
+          document.body.style.overflow = 'unset';
+        }
+      };
+    }, []);
 
     if (!isOpen) return null;
 
