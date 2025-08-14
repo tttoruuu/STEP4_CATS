@@ -143,10 +143,10 @@ const ProfileEdit: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
+      <div className="min-h-screen flex items-center justify-center" style={{background: '#FAF5F2'}}>
         <div className="text-center">
-          <div className="w-8 h-8 rounded-full animate-spin mx-auto mb-4" style={{border: '2px solid var(--color-primary-300)', borderTop: '2px solid var(--color-primary-500)'}}></div>
-          <p style={{color: 'var(--color-gray-600)'}}>プロフィールを読み込み中...</p>
+          <div className="w-8 h-8 rounded-full animate-spin mx-auto mb-4" style={{border: '2px solid #FFB08A', borderTop: '2px solid #FF6B35'}}></div>
+          <p style={{color: '#636E72'}}>プロフィールを読み込み中...</p>
         </div>
       </div>
     );
@@ -154,12 +154,17 @@ const ProfileEdit: React.FC = () => {
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
+      <div className="min-h-screen flex items-center justify-center" style={{background: '#FAF5F2'}}>
         <div className="text-center">
-          <p className="mb-4" style={{color: 'var(--color-error)'}}>{error || 'プロフィール情報の取得に失敗しました'}</p>
+          <p className="mb-4" style={{color: '#E17055'}}>{error || 'プロフィール情報の取得に失敗しました'}</p>
           <button 
             onClick={() => router.push('/profile/comprehensive')}
-            className="btn btn-primary"
+            className="px-6 py-3 rounded-full font-semibold transition-all"
+            style={{
+              backgroundColor: '#FF6B35',
+              color: '#FFFFFF',
+              boxShadow: '8px 8px 16px rgba(209, 186, 172, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8)'
+            }}
           >
             プロフィールページに戻る
           </button>
@@ -170,23 +175,36 @@ const ProfileEdit: React.FC = () => {
 
   return (
     <Layout title="プロフィール編集" hideHeader={true}>
-      <div className="min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
+      <div className="min-h-screen" style={{background: '#FAF5F2'}}>
       {/* Header */}
-      <div className="pt-8 pb-6 px-4 rounded-b-3xl" style={{background: 'var(--bg-gradient-primary)'}}>
+      <div className="pt-8 pb-6 px-4 rounded-b-3xl" style={{
+        background: 'linear-gradient(145deg, #FFF5F0, #FAF5F2)',
+        boxShadow: '0 10px 30px rgba(209, 186, 172, 0.3)'
+      }}>
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center mb-4">
             <button 
               onClick={() => router.push('/profile/comprehensive')}
-              className="text-white flex items-center gap-2 rounded-lg px-3 py-2 transition-colors"
-              style={{backgroundColor: 'rgba(255, 255, 255, 0.2)'}}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
+              className="flex items-center gap-2 rounded-lg px-3 py-2 transition-colors"
+              style={{
+                backgroundColor: '#FFFFFF',
+                color: '#FF6B35',
+                boxShadow: '4px 4px 8px rgba(209, 186, 172, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.8)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#FFF5F0';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#FFFFFF';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
             >
               <ArrowLeft className="w-5 h-5" />
               <span>戻る</span>
             </button>
           </div>
-          <h1 className="text-2xl font-bold text-white">プロフィール編集</h1>
+          <h1 className="text-2xl font-bold" style={{color: '#2D3436'}}>プロフィール編集</h1>
         </div>
       </div>
 
@@ -365,14 +383,44 @@ const ProfileEdit: React.FC = () => {
         <div className="flex gap-4">
           <button
             onClick={() => router.push('/profile/comprehensive')}
-            className="flex-1 px-6 py-3 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
+            className="flex-1 px-6 py-3 rounded-lg font-medium transition-all"
+            style={{
+              backgroundColor: '#FAF5F2',
+              color: '#636E72',
+              boxShadow: '8px 8px 16px rgba(209, 186, 172, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#F1ECE9';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#FAF5F2';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
           >
             キャンセル
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              backgroundColor: '#FF6B35',
+              color: '#FFFFFF',
+              boxShadow: saving ? 'inset 4px 4px 8px rgba(209, 186, 172, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.8)' : '8px 8px 16px rgba(209, 186, 172, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8)'
+            }}
+            onMouseEnter={(e) => {
+              if (!saving) {
+                e.currentTarget.style.backgroundColor = '#E55A2B';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!saving) {
+                e.currentTarget.style.backgroundColor = '#FF6B35';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }
+            }}
           >
             <Save className="w-4 h-4" />
             {saving ? '保存中...' : '保存する'}

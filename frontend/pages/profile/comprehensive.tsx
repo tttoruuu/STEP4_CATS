@@ -84,10 +84,10 @@ const ComprehensiveProfilePage: React.FC = () => {
   if (loading) {
     return (
       <Layout title="プロフィール" hideHeader={true}>
-        <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
+        <div className="min-h-screen flex items-center justify-center" style={{background: '#FAF5F2'}}>
           <div className="text-center">
-            <div className="w-8 h-8 rounded-full animate-spin mx-auto mb-4" style={{border: '2px solid var(--color-primary-300)', borderTop: '2px solid var(--color-primary-500)'}}></div>
-            <p style={{color: 'var(--color-gray-600)'}}>プロフィールを読み込んでいます...</p>
+            <div className="w-8 h-8 rounded-full animate-spin mx-auto mb-4" style={{border: '2px solid #FFB08A', borderTop: '2px solid #FF6B35'}}></div>
+            <p style={{color: '#636E72'}}>プロフィールを読み込んでいます...</p>
           </div>
         </div>
       </Layout>
@@ -98,10 +98,26 @@ const ComprehensiveProfilePage: React.FC = () => {
   if (error) {
     return (
       <Layout title="プロフィール" hideHeader={true}>
-        <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
+        <div className="min-h-screen flex items-center justify-center" style={{background: '#FAF5F2'}}>
           <div className="text-center">
-            <p className="mb-4" style={{color: 'var(--color-error)'}}>{error}</p>
-            <button onClick={handleRetry} className="btn btn-primary">
+            <p className="mb-4" style={{color: '#E17055'}}>{error}</p>
+            <button 
+              onClick={handleRetry} 
+              className="px-6 py-3 rounded-full font-semibold transition-all"
+              style={{
+                backgroundColor: '#FF6B35',
+                color: '#FFFFFF',
+                boxShadow: '8px 8px 16px rgba(209, 186, 172, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '12px 12px 24px rgba(209, 186, 172, 0.5), -12px -12px 24px rgba(255, 255, 255, 0.8)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '8px 8px 16px rgba(209, 186, 172, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8)';
+              }}
+            >
               再試行
             </button>
           </div>
@@ -114,9 +130,9 @@ const ComprehensiveProfilePage: React.FC = () => {
   if (!profile) {
     return (
       <Layout title="プロフィール" hideHeader={true}>
-        <div className="min-h-screen flex items-center justify-center" style={{background: 'var(--bg-gradient-main)'}}>
+        <div className="min-h-screen flex items-center justify-center" style={{background: '#FAF5F2'}}>
           <div className="text-center">
-            <p style={{color: 'var(--color-gray-600)'}}>プロフィールデータが見つかりません。</p>
+            <p style={{color: '#636E72'}}>プロフィールデータが見つかりません。</p>
           </div>
         </div>
       </Layout>
@@ -125,24 +141,50 @@ const ComprehensiveProfilePage: React.FC = () => {
   
   return (
     <Layout title="プロフィール" hideHeader={true}>
-      <div className="min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
+      <div className="min-h-screen" style={{background: '#FAF5F2'}}>
       {/* Header Section */}
-      <div className="pt-8 pb-8 px-4 rounded-b-3xl" style={{background: 'var(--bg-gradient-primary)'}}>
+      <div className="pt-8 pb-8 px-4 rounded-b-3xl" style={{
+        background: 'linear-gradient(145deg, #FFF5F0, #FAF5F2)',
+        boxShadow: '0 10px 30px rgba(209, 186, 172, 0.3)'
+      }}>
         <div className="max-w-4xl mx-auto text-center">
           <div className="relative inline-block mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center">
-              <User className="w-12 h-12 text-gray-400" />
+            <div 
+              className="w-24 h-24 rounded-full bg-white flex items-center justify-center"
+              style={{
+                boxShadow: '8px 8px 16px rgba(209, 186, 172, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8)'
+              }}
+            >
+              <User className="w-12 h-12" style={{color: '#636E72'}} />
             </div>
-            <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 rounded-full border-3 border-white"></div>
+            <div 
+              className="absolute bottom-1 right-1 w-6 h-6 rounded-full"
+              style={{
+                backgroundColor: '#10B981',
+                border: '2px solid #FFFFFF',
+                boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+              }}
+            ></div>
           </div>
-          <h1 className="text-2xl font-bold mb-2" style={{color: 'var(--color-gray-800)'}}>{profile.name || 'テストさん'}</h1>
-          <p className="text-white/90 text-lg mb-4">{profile.age ? `${profile.age}歳` : '年齢未設定'}</p>
+          <h1 className="text-2xl font-bold mb-2" style={{color: '#2D3436'}}>{profile.name || 'テストさん'}</h1>
+          <p className="text-lg mb-4" style={{color: '#2D3436'}}>{profile.age ? `${profile.age}歳` : '年齢未設定'}</p>
           <button
             onClick={handleEdit}
-            className="inline-flex items-center gap-2 backdrop-blur-sm text-white px-4 py-2 rounded-full border transition-colors"
-            style={{backgroundColor: 'rgba(255, 255, 255, 0.2)', borderColor: 'rgba(255, 255, 255, 0.3)'}}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border transition-colors"
+            style={{
+              backgroundColor: '#FFFFFF', 
+              borderColor: '#FF6B35',
+              color: '#FF6B35',
+              boxShadow: '8px 8px 16px rgba(209, 186, 172, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#FFF5F0';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#FFFFFF';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
           >
             <Edit3 className="w-4 h-4" />
             編集

@@ -82,7 +82,8 @@
       "Bash(NODE_ENV=production NEXT_PUBLIC_API_URL=https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io npm run build)",
       "mcp__serena__list_dir",
       "mcp__serena__write_memory",
-      "Bash(NEXT_PUBLIC_API_URL=https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io NODE_ENV=production npm run build)"
+      "Bash(NEXT_PUBLIC_API_URL=https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io NODE_ENV=production npm run build)",
+      "Bash(export NEXT_PUBLIC_API_URL=http://localhost:8000)"
     ],
     "deny": []
   }
