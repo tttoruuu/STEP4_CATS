@@ -90,14 +90,14 @@ export const conversationQuizData = {
         {
           id: "B",
           text: "私も事務をやったことがあります。",
-          feedback: "⭐ 素晴らしい対応！共感を示すことで相手が話しやすい環境を作り、自己開示により信頼関係の基礎を築いています。",
-          score: 3
+          feedback: "△ 共感は良いですが、相手についてより詳しく知る機会を逃しています。",
+          score: 1
         },
         {
           id: "C",
           text: "どんな会社で働かれているんですか？",
-          feedback: "❌ プライベートな情報を急に聞きすぎです。デートの序盤では相手が答えにくい質問は避けましょう。",
-          score: 0
+          feedback: "⭐ 良い深掘りです！具体的な情報を聞くことで、相手の仕事環境や会社について詳しく知ることができます。",
+          score: 3
         },
         {
           id: "D",
@@ -106,10 +106,10 @@ export const conversationQuizData = {
           score: 1
         }
       ],
-      correctAnswer: "B",
-      explanation: "相手が簡潔に答えた時は、まず共感を示すことが大切。自分の経験を共有することで相手が話しやすい雰囲気を作り、その後の会話が自然に発展します。",
+      correctAnswer: "C",
+      explanation: "「事務」という一般的な回答に対して、「どんな会社で」「どんな業務を」など具体的に深掘りすることで、相手の詳しい状況を知ることができます。",
       shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e2-a.mp3",
-      shadowingText: "私も事務をやったことがあります。",
+      shadowingText: "どんな会社で働かれているんですか？",
       tip: "職業名だけでなく、「やりがい」「楽しい瞬間」「大変なこと」など、感情に関わる質問をすると相手の人柄が見えてきます。",
       createdAt: "2025-01-21",
       updatedAt: "2025-01-21"
