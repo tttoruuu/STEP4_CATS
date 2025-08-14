@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev",
+        "dev": "next dev -p 3000",
         "build": "npm run validate-env && next build",
         "build:unsafe": "next build",
         "start": "next start",
@@ -11,8 +11,10 @@
         "type-check": "tsc --noEmit",
         "validate-env": "node lib/env-validator.js",
         "validate-env:production": "NODE_ENV=production node lib/env-validator.js",
-        "test": "echo \"No tests specified\" && exit 0",
-        "test:watch": "echo \"No tests specified\" && exit 0"
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
+        "test:profile-utils": "jest tests/profileUtils.test.js"
     },
     "dependencies": {
         "@emotion/react": "^11.11.3",

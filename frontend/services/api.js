@@ -953,15 +953,20 @@ export const conversationAPI = {
     try {
       
       const client = getAuthenticatedClient();
-      const response = await client.post('/conversation', {
-        partnerId,
-        meetingCount,
-        level,
-        message,
-        chatHistory
+      // /api/conversation/practice エンドポイントを使用
+      const response = await client.post('/api/conversation/practice', {
+        message: message,
+        partner_id: parseInt(partnerId),
+        mode: 'free',  // フリートークモード
+        conversation_history: chatHistory  // 会話履歴を送信
       });
       
-      return response.data;
+      // レスポンス形式を調整
+      return {
+        response: response.data.reply,
+        suggestions: response.data.suggestions,
+        feedback: response.data.feedback
+      };
     } catch (error) {
       console.error('会話シミュレーションエラー:', error);
       if (error.response) {

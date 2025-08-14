@@ -5,8 +5,8 @@ import { Send, Mic, MicOff, ArrowLeft, CheckCircle } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import ProgressIndicator from './ProgressIndicator';
 import InputField from './InputField';
-import { AuthStep, AuthMode, UserData, Message } from '@/types/auth';
-import { validateInput, getNextStep, getStepProgress } from '@/utils/authFlow';
+import { AuthStep, AuthMode, UserData, Message } from '../types/auth';
+import { validateInput, getNextStep, getStepProgress } from '../utils/authFlow';
 import login from './login';
 import register from './register';
 import { useRouter } from 'next/router';
@@ -36,11 +36,13 @@ export default function AuthChat() {
   const router = useRouter();
 
   useEffect(() => {
-    // 初期メッセージ表示時にもスクロール
-    setTimeout(() => {
-      scrollToBottom();
-    }, 100);
-  }, [messages]);
+    // メッセージが追加された時のみスクロール（初回レンダー後は実行しない）
+    if (messages.length > INITIAL_MESSAGES.length) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [messages.length]); // 長さのみを監視し、内容変更では発火させない
 
   useEffect(() => {
     if (currentStep === 'start' && mode === 'register') {
@@ -49,7 +51,7 @@ export default function AuthChat() {
         addBotMessage('まずはお名前を教えてください。\n（例：山田太郎）');
       }, 1000);
     }
-  }, [currentStep]);
+  }, [currentStep, mode]); // modeも依存配列に追加（但しこれは安全）
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -391,9 +393,9 @@ export default function AuthChat() {
           addBotMessage('登録が完了しました！🎊\n\nMiraimへようこそ！\n素敵な出会いが待っていますよ ✨\n\nホーム画面に移動します...');
         }, 500);
         
-        // 登録成功後もホーム画面に遷移
+        // 登録成功後はプロフィール画面に遷移
         setTimeout(() => {
-          window.location.href = "/";
+          router.push("/profile/comprehensive");
         }, 2500);
         
       } else {

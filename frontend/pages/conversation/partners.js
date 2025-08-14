@@ -54,7 +54,7 @@ export default function PartnersList() {
     };
 
     fetchPartners();
-  }, [router]);
+  }, [router.asPath]); // ルートパスの変更時のみ
 
   const openConfirmModal = (id, name) => {
     setConfirmModal({

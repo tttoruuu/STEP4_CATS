@@ -72,9 +72,9 @@ async def add_missing_columns_if_needed():
         columns_to_add = [
             ("konkatsu_status", "VARCHAR(50)"),
             ("occupation", "VARCHAR(255)"),
-            ("birthplace", "VARCHAR(255)"),
-            ("current_location", "VARCHAR(255)"),
-            ("holiday_style", "TEXT")
+            ("birth_place", "VARCHAR(255)"),
+            ("location", "VARCHAR(255)"),
+            ("weekend_activity", "TEXT")
         ]
         
         # 既存のカラムを取得
@@ -123,17 +123,34 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # CORS設定: 具体的なオリジンのリストを指定する
-origins = [
-    "http://localhost:3000",  # ローカル開発環境
-    "http://frontend:3000",   # Docker Compose環境
-    "https://miraim-frontend.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # 現在のフロントエンド
-    "https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io",   # 現在のバックエンド（self）
-    "https://frontend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",  # 旧本番環境のフロントエンド（HTTPS）
-    "https://aca-wild-australiaeast.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # 旧本番環境フロントエンド
-    # ユーザーがアクセスする可能性のあるカスタムドメイン
-    "https://*.azurecontainerapps.io",
-    "https://*.azurewebsites.net",
-]
+# 開発環境では柔軟に、本番環境では厳密にCORS設定
+if ENV == "development":
+    # 開発環境: localhostのすべてのポートを許可
+    origins = [
+        "http://localhost:3000",
+        "http://localhost:3001", 
+        "http://localhost:3002",
+        "http://localhost:3003",
+        "http://localhost:3004",
+        "http://localhost:3005",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://127.0.0.1:3002", 
+        "http://127.0.0.1:3003",
+        "http://frontend:3000",   # Docker Compose環境
+    ]
+    print(f"[CORS] 開発環境: {len(origins)}個のオリジンを許可 - {origins}")
+else:
+    # 本番環境: 具体的なオリジンのみ許可
+    origins = [
+        "https://miraim-frontend.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # 現在のフロントエンド
+        "https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io",   # 現在のバックエンド（self）
+        "https://frontend-container.wonderfulbeach-7a1caae1.japaneast.azurecontainerapps.io",  # 旧本番環境のフロントエンド（HTTPS）
+        "https://aca-wild-australiaeast.icymoss-273d47c5.australiaeast.azurecontainerapps.io",  # 旧本番環境フロントエンド
+        "https://*.azurecontainerapps.io",
+        "https://*.azurewebsites.net",
+    ]
+    print(f"[CORS] 本番環境: {len(origins)}個のオリジンを許可")
 
 # 本番環境フロントエンドのオリジンが環境変数から指定されている場合は追加
 if ENV == "production" and FRONTEND_ORIGIN:
@@ -177,13 +194,21 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# 開発環境向け具体的なCORS設定
+origins = ["http://localhost:3000", "http://127.0.0.1:3000"]  # メインフロントポート（localhost + 127.0.0.1）
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=origins,         # 具体的なオリジンを指定
+    allow_credentials=True,        # Cookie や認証ヘッダを使う場合
+    allow_methods=["*"],           # POST/GET/OPTIONS 等
+    allow_headers=["*"],           # Content-Type, Authorization 等
 )
+
+print(f"[CORS] 設定完了 - ENV: {ENV}")
+print(f"[CORS] 使用するオリジン: {origins}")
+print(f"[CORS] allow_credentials: True")
+print("[CORS] 具体的なオリジン指定CORS設定が適用されました（強制リロード）")
 
 # エラーハンドリングの登録
 register_exception_handlers(app)
@@ -306,9 +331,9 @@ async def update_database_schema():
         columns_to_add = [
             ("konkatsu_status", "VARCHAR(50)"),
             ("occupation", "VARCHAR(255)"),
-            ("birthplace", "VARCHAR(255)"),
-            ("current_location", "VARCHAR(255)"),
-            ("holiday_style", "TEXT")
+            ("birth_place", "VARCHAR(255)"),
+            ("location", "VARCHAR(255)"),
+            ("weekend_activity", "TEXT")
         ]
         
         # 既存のカラムを取得
@@ -391,8 +416,10 @@ async def test_profile():
 
 # ユーザー認証エンドポイント
 @app.post("/register")
-async def register(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
+async def register(user_data: schemas.UserRegister, db: Session = Depends(get_db)):
     """ユーザー登録エンドポイント"""
+    logger.info(f"Registration attempt for email: {user_data.email}")
+    
     # ユーザーが既に存在するかチェック
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
@@ -403,22 +430,39 @@ async def register(user_data: schemas.UserCreate, db: Session = Depends(get_db))
     
     # パスワードをハッシュ化してユーザーを作成
     hashed_password = get_password_hash(user_data.password)
+    
+    # birth_dateがNoneの場合のデフォルト値設定
+    from datetime import datetime, date
+    birth_date_value = user_data.birth_date if user_data.birth_date else date(1990, 1, 1)
+    
     user = User(
         username=user_data.username,
         email=user_data.email,
         password_hash=hashed_password,
         full_name=user_data.full_name,
-        birth_date=user_data.birth_date,
-        hometown=user_data.hometown,
+        birth_date=birth_date_value,
+        konkatsu_status=user_data.konkatsu_status,
+        occupation=user_data.occupation,
+        birth_place=user_data.birth_place,
+        location=user_data.location,
         hobbies=user_data.hobbies,
-        matchmaking_agency=user_data.matchmaking_agency
+        weekend_activity=user_data.weekend_activity
     )
     
     db.add(user)
     db.commit()
     db.refresh(user)
     
-    return {"message": "ユーザー登録が完了しました"}
+    # トークンを生成して返す
+    access_token = create_access_token(data={"sub": user.email})
+    
+    logger.info(f"User successfully registered: {user.email}")
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {"email": user.email, "name": user.full_name}
+    }
 
 @app.post("/login")
 async def login(user_data: schemas.UserLogin, db: Session = Depends(get_db)):

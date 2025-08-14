@@ -1,7 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
-import { AuthStep } from '@/types/auth';
+import { AuthStep } from '../types/auth';
 
 interface InputFieldProps {
   value: string;

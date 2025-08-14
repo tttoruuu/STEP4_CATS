@@ -67,6 +67,9 @@ logs/
 *.db
 *.sqlite3
 
-nul
+# 環境変数（追加保護）
+.env
+.env.local
 
-echo nul >> .gitignore
+# Claude設定ファイル
+.claude/

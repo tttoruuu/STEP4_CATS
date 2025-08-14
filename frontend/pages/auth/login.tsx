@@ -47,7 +47,10 @@ export default function LoginPage() {
             localStorage.setItem('user', JSON.stringify(res.data.user));
           }
         }
-        window.location.href = "/";
+        // リダイレクトパラメータがあるかチェック
+        const redirectTo = router.query.redirect as string;
+        const targetPath = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/';
+        router.push(targetPath);
       } else {
         setError(res.error || 'メールアドレスまたはパスワードが間違っています');
       }

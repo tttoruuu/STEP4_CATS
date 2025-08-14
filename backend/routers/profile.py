@@ -7,6 +7,7 @@ import json
 from database import get_db
 from models.user import User
 from models.conversation import Conversation
+from models.schemas import ProfileBase, ProfileCreate, ProfileUpdate, ProfileRead
 from auth.jwt import get_current_user
 
 router = APIRouter(prefix="/api/profile", tags=["profile"])
@@ -25,7 +26,7 @@ def get_mbti_result(db: Session, user_id: int):
         # Marriage MBTI結果を取得（最新のもの）
         mbti_conversation = db.query(Conversation).filter(
             Conversation.user_id == user_id,
-            Conversation.session_type == 'marriage_mbti'
+            Conversation.role == 'marriage_mbti'
         ).order_by(Conversation.created_at.desc()).first()
         
         if mbti_conversation and mbti_conversation.response:
@@ -148,10 +149,10 @@ async def get_comprehensive_profile(
                 "birth_date": birth_date_formatted or "未設定",
                 "konkatsu_experience": konkatsu_experience,
                 "occupation": user.occupation or "未設定",
-                "birthplace": user.birthplace or "未設定",
-                "residence": user.current_location or "未設定",
+                "birthplace": user.birth_place or "未設定",
+                "residence": user.location or "未設定",
                 "hobbies": hobbies_array if hobbies_array else ["未設定"],
-                "weekend_activities": user.holiday_style or "未設定",
+                "weekend_activities": user.weekend_activity or "未設定",
                 "mbti": mbti_result,  # None if not taken
                 "profile_image_url": user.profile_image_url,
                 "email": user.email,
@@ -178,7 +179,7 @@ async def get_mbti_history(
     try:
         mbti_conversations = db.query(Conversation).filter(
             Conversation.user_id == current_user.id,
-            Conversation.session_type == 'marriage_mbti'
+            Conversation.role == 'marriage_mbti'
         ).order_by(Conversation.created_at.desc()).limit(10).all()
         
         history = []
@@ -214,13 +215,61 @@ async def get_mbti_history(
             detail="MBTI診断履歴の取得に失敗しました"
         )
 
+@router.post("/")
+async def create_or_update_profile(
+    profile_data: ProfileCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """プロフィール情報を新規作成または更新（Upsert）"""
+    try:
+        user = current_user
+        
+        # hometown, hobbies を直接更新
+        if profile_data.hometown is not None:
+            user.hometown = profile_data.hometown  # User modelのhometownフィールドへ
+        if profile_data.hobbies is not None:
+            user.hobbies = ", ".join(profile_data.hobbies)  # 配列→文字列変換
+        
+        # 年齢は birth_date から自動計算（保存不要）
+        user.updated_at = datetime.now()
+        db.commit()
+        
+        # 年齢計算してレスポンス
+        age = calculate_age(user.birth_date) if user.birth_date else None
+        return {
+            "success": True,
+            "message": "プロフィールが更新されました",
+            "profile": {
+                "user_id": user.id,
+                "hometown": user.hometown,
+                "hobbies": parse_hobbies(user.hobbies),
+                "age": age
+            }
+        }
+        
+    except Exception as e:
+        print(f"プロフィール作成/更新エラー: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="プロフィールの作成/更新に失敗しました"
+        )
+
+@router.get("/me")
+async def get_my_profile(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """現在のユーザーのプロフィール情報を取得"""
+    return await get_comprehensive_profile(current_user, db)
+
 @router.put("/update")
 async def update_profile(
     profile_data: dict,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """プロフィール情報を更新"""
+    """プロフィール情報を更新（従来版との互換性維持）"""
     try:
         user = current_user
         
@@ -237,9 +286,9 @@ async def update_profile(
         if "occupation" in profile_data:
             user.occupation = profile_data["occupation"]
         if "birthplace" in profile_data:
-            user.birthplace = profile_data["birthplace"]
+            user.birth_place = profile_data["birthplace"]
         if "current_location" in profile_data:
-            user.current_location = profile_data["current_location"]
+            user.location = profile_data["current_location"]
         if "hobbies" in profile_data:
             # 配列の場合は文字列に変換
             if isinstance(profile_data["hobbies"], list):
@@ -247,7 +296,7 @@ async def update_profile(
             else:
                 user.hobbies = profile_data["hobbies"]
         if "holiday_style" in profile_data:
-            user.holiday_style = profile_data["holiday_style"]
+            user.weekend_activity = profile_data["holiday_style"]
         
         # 更新日時を現在時刻に設定
         user.updated_at = datetime.now()

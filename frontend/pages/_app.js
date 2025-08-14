@@ -6,65 +6,94 @@ import { useRouter } from 'next/router';
 export default function App({ Component, pageProps }) {
   const router = useRouter();
   
-  // 🚨 LOGIN FIX v2 🚨
+  // 認証ガード（改善版）
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    // 初回マウント時のみ実行（認証チェック）
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      console.log('API URL configured:', apiUrl);
+      
       const token = localStorage.getItem('token');
       const currentPath = window.location.pathname;
       
-      console.log('🚨 LOGIN FIX v2: Token check', { token: !!token, path: currentPath });
+      console.log('初回認証チェック:', { token: !!token, path: currentPath });
       
-      // ホーム画面でトークンがない場合のみリダイレクト
-      if (currentPath === '/' && !token) {
-        console.log('🚨 LOGIN FIX v2: No token on home, redirecting...');
+      const protectedPaths = ['/profile', '/conversation', '/counselor', '/compatibility', '/mypage'];
+      const publicPaths = ['/', '/auth/login', '/auth/register', '/auth/login-chat'];
+      
+      const isProtectedPath = protectedPaths.some(path => 
+        currentPath === path || currentPath.startsWith(path)
+      );
+      const isPublicPath = publicPaths.some(path => 
+        currentPath === path || currentPath.startsWith(path)
+      );
+      
+      const hasValidToken = token && token.length > 10;
+      
+      if (isProtectedPath && !hasValidToken) {
+        console.log('初回認証エラー: ログイン画面にリダイレクト');
         router.replace('/auth/login');
-      }
-      // ログインページでトークンがある場合はホームに遷移
-      else if ((currentPath === '/auth/login' || currentPath === '/auth/login-chat') && token) {
-        console.log('🚨 LOGIN FIX v2: Token found on login page, redirecting to home...');
+      } else if (isPublicPath && hasValidToken) {
+        console.log('初回：既にログイン済み - ホーム画面にリダイレクト');
         router.replace('/');
       }
+    } catch (error) {
+      console.error('初回認証チェックエラー:', error);
     }
-  }, [router]);
-  // 環境変数をクライアントサイドで利用できるようにする
+  }, []); // 初回マウント時のみ
+  // 環境変数設定（防御的）
   const { publicRuntimeConfig } = getConfig() || {};
   
-  // API URLをpropsに追加 (環境に応じて適切に設定)
+  // API URLを安全に設定
   const apiUrl = (() => {
-    // 環境変数の取得ロジックをより明確に
-    const envApiUrl = typeof process !== 'undefined' 
-                      ? process.env.NEXT_PUBLIC_API_URL 
-                      : null;
-    const configApiUrl = publicRuntimeConfig?.apiUrl;
-    
-    console.log('環境情報:', {
-      NODE_ENV: process.env.NODE_ENV,
-      envApiUrl,
-      configApiUrl
-    });
-    
-    // 1. 開発環境設定
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('開発環境を使用します');
-      return configApiUrl || envApiUrl || 'http://localhost:8000';
+    try {
+      // 環境変数の安全な取得
+      const envApiUrl = typeof process !== 'undefined' && process.env
+                        ? process.env.NEXT_PUBLIC_API_URL 
+                        : null;
+      const configApiUrl = publicRuntimeConfig?.apiUrl;
+      const nodeEnv = typeof process !== 'undefined' && process.env
+                      ? process.env.NODE_ENV 
+                      : 'development';
+      
+      console.log('環境情報:', {
+        NODE_ENV: nodeEnv,
+        envApiUrl: envApiUrl ? 'set' : 'not set',
+        configApiUrl: configApiUrl ? 'set' : 'not set'
+      });
+      
+      // 1. 開発環境設定
+      if (nodeEnv !== 'production') {
+        return configApiUrl || envApiUrl || 'http://localhost:8000';
+      }
+      
+      // 2. 本番環境設定
+      const productionUrl = configApiUrl || 
+                           envApiUrl || 
+                           'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io';
+      
+      console.log('本番APIのURL設定済み');
+      return productionUrl;
+    } catch (error) {
+      console.error('API URL設定中にエラー:', error);
+      // フォールバック
+      return 'http://localhost:8000';
     }
-    
-    // 2. 本番環境設定
-    console.log('本番環境を使用します');
-    const productionUrl = configApiUrl || 
-                         envApiUrl || 
-                         'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io';
-    
-    console.log('本番APIのURL:', productionUrl);
-    return productionUrl;
   })();
   
-  pageProps.apiUrl = apiUrl;
-  
-  // 開発用ログ
-  if (typeof window !== 'undefined') {
-    console.log('API URL from _app.js:', pageProps.apiUrl);
+  // propsに安全に追加
+  if (pageProps) {
+    pageProps.apiUrl = apiUrl;
   }
+  
+  // 開発用ログ（ブラウザ環境でのみ）
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log('API URL from _app.js:', apiUrl);
+    }
+  }, [apiUrl]);
   
   return <Component {...pageProps} />;
 }

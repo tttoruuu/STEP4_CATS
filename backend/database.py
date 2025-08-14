@@ -22,23 +22,31 @@ def create_ssl_cert_file():
 # データベース接続設定
 SQLALCHEMY_DATABASE_URL = DATABASE_URL
 
-# SSL設定の準備
-connect_args = {"charset": "utf8mb4"}
+# 接続引数の設定
+connect_args = {}
 
-# 本番環境でのSSL設定
-if IS_PRODUCTION and MYSQL_SSL_ENABLED:
-    ssl_cert_path = create_ssl_cert_file()
-    if ssl_cert_path:
-        connect_args.update({
-            "ssl_ca": ssl_cert_path,
-            "ssl_disabled": False
-        })
-    else:
-        # Azure MySQLの場合、証明書がなくてもSSLを有効にする
-        connect_args["ssl_disabled"] = False
+# SQLiteかMySQLかを判定
+if DATABASE_URL.startswith("sqlite"):
+    # SQLiteの場合は追加設定不要
+    connect_args = {"check_same_thread": False}
 else:
-    # 開発環境ではSSLを無効化
-    connect_args["ssl_disabled"] = True
+    # MySQLの場合
+    connect_args = {"charset": "utf8mb4"}
+    
+    # 本番環境でのSSL設定
+    if IS_PRODUCTION and MYSQL_SSL_ENABLED:
+        ssl_cert_path = create_ssl_cert_file()
+        if ssl_cert_path:
+            connect_args.update({
+                "ssl_ca": ssl_cert_path,
+                "ssl_disabled": False
+            })
+        else:
+            # Azure MySQLの場合、証明書がなくてもSSLを有効にする
+            connect_args["ssl_disabled"] = False
+    else:
+        # 開発環境ではSSLを無効化
+        connect_args["ssl_disabled"] = True
 
 # エンジン作成とセッションの設定
 engine = create_engine(

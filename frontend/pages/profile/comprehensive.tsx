@@ -44,9 +44,10 @@ const ComprehensiveProfilePage: React.FC = () => {
         console.error('プロフィール取得でエラーが発生:', err);
         setError(err instanceof Error ? err.message : 'プロフィールの取得に失敗しました');
         
-        // 認証エラーの場合はログインページにリダイレクト
+        // 認証エラーの場合はログインページにリダイレクト（無限ループ対策で一時的に無効化）
         if (err instanceof Error && err.message.includes('認証が必要')) {
-          router.replace('/auth/login');
+          console.log('認証エラーが発生しましたが、リダイレクトは無効化されています');
+          // router.replace('/auth/login');
         }
       } finally {
         setLoading(false);
@@ -54,7 +55,7 @@ const ComprehensiveProfilePage: React.FC = () => {
     };
 
     fetchProfile();
-  }, [router]);
+  }, []); // 依存配列からrouterを削除して無限ループを防止
 
   const handleEdit = () => {
     router.push('/profile/edit');

@@ -1,4 +1,4 @@
-import { AuthStep, AuthMode, ValidationResult, StepProgress } from '@/types/auth';
+import { AuthStep, AuthMode, ValidationResult, StepProgress } from '../types/auth';
 
 export function validateInput(step: AuthStep, input: string): ValidationResult {
   const trimmedInput = input.trim();

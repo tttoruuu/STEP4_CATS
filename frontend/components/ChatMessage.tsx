@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { CheckCircle } from 'lucide-react';
-import { Message } from '@/types/auth';
+import { Message } from '../types/auth';
 
 interface ChatMessageProps {
   message: Message;

@@ -1,11 +1,11 @@
 import axios from 'axios';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+import { getApiEndpoint } from '../services/env-config';
 
 export default async function login(email, password){
     console.log(`try to login with ${email} and ${password}`);
     
     try {
+        const API_BASE_URL = getApiEndpoint();
         const response = await axios.post(`${API_BASE_URL}/login`, 
             { username: email, password },
             {
@@ -33,6 +33,12 @@ export default async function login(email, password){
         console.error('Login API error:', error);
         
         if (axios.isAxiosError(error)) {
+            if (error.response?.data?.error?.message) {
+                return { 
+                    success: false, 
+                    error: error.response.data.error.message 
+                };
+            }
             if (error.response?.data?.detail) {
                 return { 
                     success: false, 

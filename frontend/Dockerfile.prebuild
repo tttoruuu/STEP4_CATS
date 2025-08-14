@@ -1,0 +1,21 @@
+# Pre-built用Dockerfile（ビルド済みの.nextディレクトリを使用）
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 依存関係のコピー
+COPY package*.json ./
+RUN npm ci --only=production
+
+# ビルド済みファイルのコピー
+COPY .next ./.next
+COPY public ./public
+COPY node_modules ./node_modules
+
+# 環境変数
+ENV NODE_ENV=production
+ENV NEXT_PUBLIC_API_URL=https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

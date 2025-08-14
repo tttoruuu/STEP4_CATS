@@ -63,21 +63,21 @@ export default function ConversationPractice() {
 
     const fetchPartner = async () => {
       try {
-        // 一時的にハードコードされたパートナー情報を使用
-        const partner = {
-          id: 1,
-          name: "さくら",
-          age: 28,
-          gender: "female",
-          occupation: "システムエンジニア",
-          hometown: "東京都",
-          hobbies: "読書、映画鑑賞",
-          daily_routine: "カフェでのコーディング"
-        };
-        setPartner(partner);
+        // APIから実際のパートナー情報を取得
+        const partners = await apiService.partners.getPartners();
+        const partner = partners.find(p => p.id === parseInt(partnerId));
+        
+        if (partner) {
+          setPartner(partner);
+        } else {
+          // パートナーが見つからない場合はエラー
+          console.error('指定されたパートナーが見つかりません:', partnerId);
+          setError('会話相手の情報が見つかりません');
+          setPartner(null);
+        }
         
         // 会話履歴がURLから復元されていない場合のみ初期メッセージを設定
-        if (messages.length === 0) {
+        if (messages.length === 0 && partner) {
           // 話題のリストを定義
           const level1Topics = [
             '趣味や休日の過ごし方について教えていただけますか？',
