@@ -293,40 +293,81 @@ const ComprehensiveProfilePage: React.FC = () => {
 
         {/* MBTI Card */}
         {profile.mbti ? (
-          <div className="card" style={{background: 'var(--bg-gradient-primary)', border: 'none'}}>
-            <div className="text-white">
+          <div className="card" style={{
+            background: 'linear-gradient(135deg, #FFF5F0 0%, #FFE6DC 100%)',
+            border: '2px solid #FF6B35',
+            boxShadow: '8px 8px 16px rgba(209, 186, 172, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8)'
+          }}>
+            <div>
               <div className="flex items-center gap-3 mb-4">
-                <Brain className="w-8 h-8 text-white" />
+                <div style={{
+                  padding: '12px',
+                  borderRadius: '12px',
+                  background: '#FFFFFF',
+                  boxShadow: 'inset 2px 2px 4px rgba(209, 186, 172, 0.3), inset -2px -2px 4px rgba(255, 255, 255, 0.8)'
+                }}>
+                  <Brain className="w-8 h-8" style={{color: '#FF6B35'}} />
+                </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-1">{profile.mbti.mbti_type}</h3>
-                  <p className="text-white/90 font-medium">{getMBTITypeName(profile.mbti.mbti_type)}</p>
+                  <h3 className="text-xl font-bold mb-1" style={{color: '#2D3436'}}>{profile.mbti.mbti_type}</h3>
+                  <p className="font-medium" style={{color: '#FF6B35'}}>{getMBTITypeName(profile.mbti.mbti_type)}</p>
                 </div>
               </div>
               {profile.mbti.description && (
-                <p className="text-white/90 leading-relaxed mb-4">
+                <p className="leading-relaxed mb-4" style={{color: '#636E72'}}>
                   {profile.mbti.description}
                 </p>
               )}
               <button
                 onClick={handleMBTITest}
-                className="btn btn-ghost text-white px-4 py-2"
-                style={{backgroundColor: 'rgba(255, 255, 255, 0.2)', border: '1px solid rgba(255, 255, 255, 0.3)'}}
+                className="px-4 py-2 rounded-lg font-medium transition-all"
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  color: '#FF6B35',
+                  border: '1px solid #FFD4C1',
+                  boxShadow: '4px 4px 8px rgba(209, 186, 172, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.8)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '6px 6px 12px rgba(209, 186, 172, 0.3), -6px -6px 12px rgba(255, 255, 255, 0.8)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '4px 4px 8px rgba(209, 186, 172, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.8)';
+                }}
               >
                 再診断する
               </button>
             </div>
           </div>
         ) : (
-          <div className="card" style={{background: 'linear-gradient(to right, var(--color-secondary-50), var(--color-accent-50))', border: '1px solid var(--color-secondary-200)'}}>
+          <div className="card" style={{
+            background: 'linear-gradient(135deg, #FFF5F0 0%, #FFE6DC 100%)',
+            border: '1px solid #FFD4C1',
+            boxShadow: '8px 8px 16px rgba(209, 186, 172, 0.3), -8px -8px 16px rgba(255, 255, 255, 0.8)'
+          }}>
             <div className="text-center">
-              <Brain className="w-12 h-12 mx-auto mb-4" style={{color: 'var(--color-secondary-500)'}} />
-              <h3 className="text-lg font-bold mb-2" style={{color: 'var(--color-gray-800)'}}>Marriage MBTI+を受けてみませんか？</h3>
-              <p className="mb-4" style={{color: 'var(--color-gray-600)'}}>
+              <Brain className="w-12 h-12 mx-auto mb-4" style={{color: '#FF6B35'}} />
+              <h3 className="text-lg font-bold mb-2" style={{color: '#2D3436'}}>Marriage MBTI+を受けてみませんか？</h3>
+              <p className="mb-4" style={{color: '#636E72'}}>
                 あなたの性格タイプを知ることで、より自分を客観的に見られるようになります。
               </p>
               <button
                 onClick={handleMBTITest}
-                className="btn btn-secondary px-6 py-3"
+                className="px-6 py-3 rounded-lg font-medium transition-all"
+                style={{
+                  background: 'linear-gradient(135deg, #FF6B35 0%, #FF8E53 100%)',
+                  color: '#FFFFFF',
+                  boxShadow: '0 4px 6px rgba(255, 107, 53, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 12px rgba(255, 107, 53, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 6px rgba(255, 107, 53, 0.3)';
+                }}
               >
                 Marriage MBTI+を受ける
               </button>
