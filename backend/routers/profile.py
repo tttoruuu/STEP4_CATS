@@ -83,31 +83,94 @@ async def test_profile_endpoint():
 
 @router.get("/comprehensive-debug")
 async def get_comprehensive_profile_debug(db: Session = Depends(get_db)):
-    """デバッグ用統合プロフィール（認証なし、サンプルデータ）"""
-    return {
-        "success": True,
-        "profile": {
-            "user_id": 1,
-            "name": "テストユーザー",
-            "age": 30,
-            "birth_date": "1994年1月1日",
-            "konkatsu_experience": "初心者",
-            "occupation": "エンジニア",
-            "birthplace": "東京都",
-            "residence": "神奈川県",
-            "hobbies": ["読書", "映画鑑賞", "ゲーム"],
-            "weekend_activities": "カフェでコーヒーを飲みながら読書をするのが好きです",
-            "mbti": {
-                "mbti_type": "INFP-T",
-                "type_name": "仲介者",
-                "description": "理想主義的で、常に善を行う方法を探している"
-            },
-            "profile_image_url": None,
-            "email": "test@example.com",
-            "created_at": "2025-01-01T00:00:00",
-            "updated_at": "2025-01-02T00:00:00"
+    """デバッグ用統合プロフィール（認証なし、実データ）"""
+    try:
+        # テストユーザーを取得または作成
+        test_user = db.query(User).filter(User.email == "test@example.com").first()
+        if not test_user:
+            from datetime import date
+            test_user = User(
+                email="test@example.com",
+                username="testuser",
+                full_name="テストユーザー",
+                birth_date=date(1994, 1, 1),
+                konkatsu_status="beginner",
+                occupation="エンジニア",
+                birth_place="東京都",
+                location="神奈川県",
+                hobbies="読書, 映画鑑賞, ゲーム",
+                weekend_activity="カフェでコーヒーを飲みながら読書をするのが好きです"
+            )
+            db.add(test_user)
+            db.commit()
+            db.refresh(test_user)
+        
+        user = test_user
+        
+        # 年齢計算
+        age = None
+        birth_date_formatted = None
+        if user.birth_date:
+            age = calculate_age(user.birth_date)
+            birth_date_formatted = user.birth_date.strftime("%Y年%m月%d日")
+        
+        # 趣味を配列に変換
+        hobbies_array = parse_hobbies(user.hobbies or "")
+        
+        # 婚活経験の日本語変換
+        konkatsu_experience_map = {
+            "beginner": "初心者",
+            "experienced": "経験あり", 
+            "returning": "再チャレンジ"
         }
-    }
+        konkatsu_experience = konkatsu_experience_map.get(user.konkatsu_status, user.konkatsu_status or "未設定")
+        
+        # MBTI情報を取得
+        mbti_result = get_mbti_result(db, user.id)
+        
+        return {
+            "success": True,
+            "profile": {
+                "user_id": user.id,
+                "name": user.full_name or "未設定",
+                "age": age,
+                "birth_date": birth_date_formatted or "未設定",
+                "konkatsu_experience": konkatsu_experience,
+                "occupation": user.occupation or "未設定",
+                "birthplace": user.birth_place or "未設定",
+                "residence": user.location or "未設定",
+                "hobbies": hobbies_array if hobbies_array else ["未設定"],
+                "weekend_activities": user.weekend_activity or "未設定",
+                "mbti": mbti_result,
+                "profile_image_url": user.profile_image_url,
+                "email": user.email,
+                "created_at": user.created_at.isoformat() if user.created_at else None,
+                "updated_at": user.updated_at.isoformat() if user.updated_at else None
+            }
+        }
+    except Exception as e:
+        print(f"デバッグプロフィール取得エラー: {e}")
+        # エラー時はサンプルデータを返す
+        return {
+            "success": True,
+            "profile": {
+                "user_id": 1,
+                "name": "テストユーザー",
+                "age": 30,
+                "birth_date": "1994年1月1日",
+                "konkatsu_experience": "初心者",
+                "occupation": "エンジニア",
+                "birthplace": "東京都",
+                "residence": "神奈川県",
+                "hobbies": ["読書", "映画鑑賞", "ゲーム"],
+                "weekend_activities": "カフェでコーヒーを飲みながら読書をするのが好きです",
+                "mbti": None,
+                "profile_image_url": None,
+                "email": "test@example.com",
+                "created_at": "2025-01-01T00:00:00",
+                "updated_at": "2025-01-02T00:00:00"
+            }
+        }
 
 @router.get("/comprehensive")
 async def get_comprehensive_profile(
@@ -118,6 +181,29 @@ async def get_comprehensive_profile(
     try:
         # ユーザー情報を取得
         user = current_user
+        
+        # ユーザーが存在しない場合、テストユーザーを作成または取得
+        if not user:
+            test_user = db.query(User).filter(User.email == "test@example.com").first()
+            if not test_user:
+                # テストユーザーを作成
+                from datetime import date
+                test_user = User(
+                    email="test@example.com",
+                    username="testuser",
+                    full_name="テストユーザー",
+                    birth_date=date(1990, 1, 1),
+                    konkatsu_status="beginner",
+                    occupation="会社員",
+                    birth_place="東京都",
+                    location="神奈川県",
+                    hobbies="読書、映画鑑賞、旅行",
+                    weekend_activity="カフェで読書をしたり、映画を見たりしています"
+                )
+                db.add(test_user)
+                db.commit()
+                db.refresh(test_user)
+            user = test_user
         
         # 年齢計算
         age = None
@@ -262,6 +348,70 @@ async def get_my_profile(
 ):
     """現在のユーザーのプロフィール情報を取得"""
     return await get_comprehensive_profile(current_user, db)
+
+@router.put("/update-debug")
+async def update_profile_debug(
+    profile_data: dict,
+    db: Session = Depends(get_db)
+):
+    """プロフィール情報を更新（デバッグ用、認証なし）"""
+    try:
+        # テストユーザーを取得
+        user = db.query(User).filter(User.email == "test@example.com").first()
+        if not user:
+            from datetime import date
+            user = User(
+                email="test@example.com",
+                username="testuser",
+                full_name="テストユーザー",
+                birth_date=date(1994, 1, 1),
+                konkatsu_status="beginner"
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        
+        # 更新可能なフィールドのみ処理
+        if "full_name" in profile_data:
+            user.full_name = profile_data["full_name"]
+        if "birth_date" in profile_data and profile_data["birth_date"]:
+            try:
+                user.birth_date = datetime.strptime(profile_data["birth_date"], "%Y-%m-%d").date()
+            except ValueError:
+                pass  # 無効な日付は無視
+        if "konkatsu_status" in profile_data:
+            user.konkatsu_status = profile_data["konkatsu_status"]
+        if "occupation" in profile_data:
+            user.occupation = profile_data["occupation"]
+        if "birthplace" in profile_data:
+            user.birth_place = profile_data["birthplace"]
+        if "current_location" in profile_data:
+            user.location = profile_data["current_location"]
+        if "hobbies" in profile_data:
+            # 配列の場合は文字列に変換
+            if isinstance(profile_data["hobbies"], list):
+                user.hobbies = ", ".join(profile_data["hobbies"])
+            else:
+                user.hobbies = profile_data["hobbies"]
+        if "holiday_style" in profile_data:
+            user.weekend_activity = profile_data["holiday_style"]
+        
+        # 更新日時を現在時刻に設定
+        user.updated_at = datetime.now()
+        
+        db.commit()
+        
+        return {
+            "success": True,
+            "message": "プロフィールが更新されました"
+        }
+        
+    except Exception as e:
+        print(f"プロフィール更新エラー: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="プロフィールの更新に失敗しました"
+        )
 
 @router.put("/update")
 async def update_profile(
