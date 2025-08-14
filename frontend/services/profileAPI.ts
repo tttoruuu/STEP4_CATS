@@ -90,26 +90,14 @@ export const getComprehensiveProfile = async (): Promise<ComprehensiveProfile> =
       token: getAuthToken()
     });
 
-    // 一時的にデバッグエンドポイントを使用（認証問題回避）
-    let response;
-    try {
-      // まずデバッグエンドポイント（認証なし）を試行
-      response = await axios.get<ProfileAPIResponse>(
-        `${API_BASE_URL}/api/profile/comprehensive-debug`,
-        { timeout: 10000 }
-      );
-      console.log('デバッグエンドポイントでプロフィール取得成功');
-    } catch (debugError) {
-      console.warn('デバッグエンドポイント失敗、メインエンドポイントを試行:', debugError);
-      // メインエンドポイント（認証あり）にフォールバック
-      response = await axios.get<ProfileAPIResponse>(
-        `${API_BASE_URL}/api/profile/comprehensive`,
-        {
-          headers: getAuthHeaders(),
-          timeout: 10000
-        }
-      );
-    }
+    // メインエンドポイント（認証あり）を使用
+    const response = await axios.get<ProfileAPIResponse>(
+      `${API_BASE_URL}/api/profile/comprehensive`,
+      {
+        headers: getAuthHeaders(),
+        timeout: 10000
+      }
+    );
 
     if (response.data && response.data.success && response.data.profile) {
       console.log('API からプロフィール取得成功:', response.data.profile);
@@ -126,7 +114,10 @@ export const getComprehensiveProfile = async (): Promise<ComprehensiveProfile> =
       console.log('認証エラーが発生しました。ログインページにリダイレクトします。');
       if (typeof window !== 'undefined') {
         localStorage.removeItem('token');
-        window.location.href = '/auth/login';
+        localStorage.removeItem('user');
+        // 現在のURLを保存してログイン後に戻れるようにする
+        const currentPath = window.location.pathname;
+        window.location.href = `/auth/login?redirect=${encodeURIComponent(currentPath)}`;
       }
       throw new Error('認証が必要です。再度ログインしてください。');
     }
@@ -144,7 +135,7 @@ export const getComprehensiveProfile = async (): Promise<ComprehensiveProfile> =
       }
     }
     
-    throw error;
+    throw new Error('プロフィールの取得に失敗しました。');
   }
 };
 
@@ -219,34 +210,18 @@ export const updateProfile = async (updates: {
   try {
     console.log('プロフィール更新開始:', updates);
     
-    // 一時的にデバッグエンドポイントを使用
-    let response;
-    try {
-      response = await axios.put(
-        `${API_BASE_URL}/api/profile/update-debug`,
-        updates,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          timeout: 10000,
-        }
-      );
-      console.log('デバッグエンドポイントで更新成功');
-    } catch (debugError) {
-      console.warn('デバッグエンドポイント失敗、メインエンドポイントを試行');
-      response = await axios.put(
-        `${API_BASE_URL}/api/profile/update`,
-        updates,
-        {
-          headers: {
-            ...getAuthHeaders(),
-            'Content-Type': 'application/json',
-          },
-          timeout: 10000,
-        }
-      );
-    }
+    // メインエンドポイント（認証あり）を使用
+    const response = await axios.put(
+      `${API_BASE_URL}/api/profile/update`,
+      updates,
+      {
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        timeout: 10000,
+      }
+    );
 
     if (response.data && response.data.success) {
       console.log('プロフィール更新成功:', response.data);

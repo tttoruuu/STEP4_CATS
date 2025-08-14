@@ -182,29 +182,6 @@ async def get_comprehensive_profile(
         # ユーザー情報を取得
         user = current_user
         
-        # ユーザーが存在しない場合、テストユーザーを作成または取得
-        if not user:
-            test_user = db.query(User).filter(User.email == "test@example.com").first()
-            if not test_user:
-                # テストユーザーを作成
-                from datetime import date
-                test_user = User(
-                    email="test@example.com",
-                    username="testuser",
-                    full_name="テストユーザー",
-                    birth_date=date(1990, 1, 1),
-                    konkatsu_status="beginner",
-                    occupation="会社員",
-                    birth_place="東京都",
-                    location="神奈川県",
-                    hobbies="読書、映画鑑賞、旅行",
-                    weekend_activity="カフェで読書をしたり、映画を見たりしています"
-                )
-                db.add(test_user)
-                db.commit()
-                db.refresh(test_user)
-            user = test_user
-        
         # 年齢計算
         age = None
         birth_date_formatted = None
