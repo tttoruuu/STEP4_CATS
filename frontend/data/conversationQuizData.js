@@ -101,9 +101,9 @@ export const conversationQuizData = {
         },
         {
           id: "D",
-          text: "事務のお仕事で一番やりがいを感じるのはどんな時ですか？",
-          feedback: "⭐ 素晴らしい深掘りです！相手の価値観や感情に踏み込んだ質問で、より深い理解につながります。",
-          score: 3
+          text: "事務は安定していていいですね。",
+          feedback: "△ 悪くありませんが、もっと相手の体験や感想を聞く方が会話が発展します。",
+          score: 1
         }
       ],
       correctAnswer: "C",
@@ -148,7 +148,7 @@ export const conversationQuizData = {
           score: 2
         }
       ],
-      correctAnswer: "C",
+      correctAnswer: "B",
       explanation: "旅行の話では、期間や場所よりも「印象に残ったこと」「感動したこと」を聞くことで、相手の価値観や感性を知ることができます。",
       shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e3-a.mp3",
       shadowingText: "沖縄のどこが一番印象に残りましたか？",
