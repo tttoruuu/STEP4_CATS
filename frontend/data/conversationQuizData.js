@@ -90,26 +90,26 @@ export const conversationQuizData = {
         {
           id: "B",
           text: "私も事務をやったことがあります。",
-          feedback: "△ 共感は良いですが、相手についてより詳しく知る機会を逃しています。",
-          score: 1
+          feedback: "⭐ 素晴らしい対応！共感を示すことで相手が話しやすい環境を作り、自己開示により信頼関係の基礎を築いています。",
+          score: 3
         },
         {
           id: "C",
           text: "どんな会社で働かれているんですか？",
-          feedback: "⭐ 良い深掘りです！具体的な情報を聞くことで、相手の仕事環境や会社について詳しく知ることができます。",
-          score: 3
+          feedback: "❌ プライベートな情報を急に聞きすぎです。デートの序盤では相手が答えにくい質問は避けましょう。",
+          score: 0
         },
         {
           id: "D",
-          text: "事務のお仕事で一番やりがいを感じるのはどんな時ですか？",
-          feedback: "⭐ 素晴らしい深掘りです！相手の価値観や感情に踏み込んだ質問で、より深い理解につながります。",
-          score: 3
+          text: "事務は安定していていいですね。",
+          feedback: "△ 悪くありませんが、もっと相手の体験や感想を聞く方が会話が発展します。",
+          score: 1
         }
       ],
-      correctAnswer: "C",
-      explanation: "「事務」という一般的な回答に対して、「どんな会社で」「どんな業務を」など具体的に深掘りすることで、相手の詳しい状況を知ることができます。",
+      correctAnswer: "B",
+      explanation: "相手が簡潔に答えた時は、まず共感を示すことが大切。自分の経験を共有することで相手が話しやすい雰囲気を作り、その後の会話が自然に発展します。",
       shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e2-a.mp3",
-      shadowingText: "どんな会社で働かれているんですか？",
+      shadowingText: "私も事務をやったことがあります。",
       tip: "職業名だけでなく、「やりがい」「楽しい瞬間」「大変なこと」など、感情に関わる質問をすると相手の人柄が見えてきます。",
       createdAt: "2025-01-21",
       updatedAt: "2025-01-21"
@@ -148,7 +148,7 @@ export const conversationQuizData = {
           score: 2
         }
       ],
-      correctAnswer: "C",
+      correctAnswer: "B",
       explanation: "旅行の話では、期間や場所よりも「印象に残ったこと」「感動したこと」を聞くことで、相手の価値観や感性を知ることができます。",
       shadowingAudio: "https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/e3-a.mp3",
       shadowingText: "沖縄のどこが一番印象に残りましたか？",
