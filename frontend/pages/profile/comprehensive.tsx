@@ -135,7 +135,7 @@ const ComprehensiveProfilePage: React.FC = () => {
             </div>
             <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 rounded-full border-3 border-white"></div>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">{profile.name}</h1>
+          <h1 className="text-2xl font-bold mb-2" style={{color: 'var(--color-gray-800)'}}>{profile.name || 'テストさん'}</h1>
           <p className="text-white/90 text-lg mb-4">{profile.age ? `${profile.age}歳` : '年齢未設定'}</p>
           <button
             onClick={handleEdit}

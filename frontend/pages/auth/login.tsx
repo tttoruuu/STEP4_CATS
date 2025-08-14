@@ -101,8 +101,9 @@ export default function LoginPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="input pl-10"
-                  placeholder="例：example@email.com"
+                  className="input"
+                  style={{paddingLeft: '2.5rem'}}
+                  placeholder="example@email.com"
                   required
                 />
               </div>
@@ -123,7 +124,8 @@ export default function LoginPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="input pl-10 pr-12"
+                  className="input"
+                  style={{paddingLeft: '2.5rem', paddingRight: '3rem'}}
                   placeholder="パスワードを入力"
                   required
                 />
