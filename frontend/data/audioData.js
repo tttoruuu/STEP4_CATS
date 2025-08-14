@@ -4,29 +4,29 @@
 export const greetingAudioData = [
   {
     id: 1,
-    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/greeting1.mp3',
-    text: 'こんにちは。○○さんでいらっしゃいますよね？お待たせしてしまって申し訳ございません。',
+    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/hello-1.mp3',
+    text: 'こんにちは。加藤さんですか？お待たせしました。',
     scenario: 'シナリオ1',
-    correctResponse: 'こんにちは。○○さんですよね。お会いするのを楽しみにしていました。私もちょうど今到着したところです。',
-    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/greeting1-2.mp3',
+    correctResponse: 'そうです。私もちょうど着いたところです。',
+    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/hello-1-A.mp3',
     tip: '笑顔で挨拶し、相手の名前を確認しながら自己紹介しましょう'
   },
   {
     id: 2,
-    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/greeting2.mp3',
-    text: 'こんばんは。このパーティー、参加されて初めてですか？',
+    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/hello-2.mp3',
+    text: 'こんばんは。遅れちゃってすみません。',
     scenario: 'シナリオ2',
-    correctResponse: 'はい、初めてです。何度か参加されているのですか？色々と教えて頂けると嬉しいです',
-    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/greeting2-2.mp3',
+    correctResponse: 'いえ、私もちょうど着いたところです。では、行きましょう。',
+    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/hello-2-A.mp3',
     tip: '軽い話題から始めて、相手の緊張もほぐす雰囲気作りを心がけましょう'
   },
   {
     id: 3,
-    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/greeting3.mp3',
-    text: 'はじめまして。○○さんから紹介していただいた□□と申します',
+    audioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/hello-3.mp3',
+    text: 'はじめまして佐藤です。宜しくお願いします。',
     scenario: 'シナリオ3',
-    correctResponse: 'はじめまして。○○さんからお聞きしております。お会いできるのを楽しみにしておりました。',
-    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/greeting3-2.mp3',
+    correctResponse: 'はじめまして加藤です。宜しくお願いします。',
+    correctResponseAudioSrc: 'https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/hello-3-A.mp3',
     tip: '紹介者への感謝を示し、お互いの緊張を和らげる配慮をしましょう'
   }
 ];
