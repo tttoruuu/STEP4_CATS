@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from datetime import datetime, timedelta
 from typing import Optional
+import logging
 
 from database import get_db
 from models.user import User
@@ -13,6 +15,9 @@ router = APIRouter(prefix="/api/auth", tags=["authentication"])
 
 # セキュリティスキーム
 security = HTTPBearer()
+
+# ロガー設定
+logger = logging.getLogger(__name__)
 
 @router.post("/register")
 async def register_user(
@@ -129,6 +134,33 @@ async def login_user(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="ログインに失敗しました"
         )
+
+@router.post("/test-db")
+async def test_database_connection(db: Session = Depends(get_db)):
+    """データベース接続とSSL状態をテスト"""
+    try:
+        # SSL状態を確認
+        ssl_result = db.execute(text("SHOW SESSION STATUS LIKE 'Ssl_cipher'")).fetchone()
+        ssl_version = db.execute(text("SHOW SESSION STATUS LIKE 'Ssl_version'")).fetchone()
+        
+        # テストデータベースクエリ
+        test_result = db.execute(text("SELECT 1 as test")).fetchone()
+        
+        return {
+            "success": True,
+            "database_connected": True,
+            "ssl_enabled": bool(ssl_result and ssl_result[1]),
+            "ssl_cipher": ssl_result[1] if ssl_result else None,
+            "ssl_version": ssl_version[1] if ssl_version else None,
+            "test_query_result": test_result[0] if test_result else None
+        }
+    except Exception as e:
+        logger.error(f"Database connection test failed: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "database_connected": False
+        }
 
 @router.get("/me")
 async def get_current_user_info(
