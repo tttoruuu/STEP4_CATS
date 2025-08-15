@@ -1,118 +1,212 @@
-from sqlalchemy import create_engine, text
+"""
+データベース接続管理モジュール（SSL対応版）
+Azure MySQL用のSSL接続を確実に管理
+"""
+from sqlalchemy import create_engine, text, event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-
+from sqlalchemy.pool import NullPool
 import os
-import sys
+import logging
+from pathlib import Path
 from config import DATABASE_URL, MYSQL_SSL_ENABLED, IS_PRODUCTION
 
-# SSL証明書のパスを取得
+# ロガー設定
+logger = logging.getLogger("db.ssl")
+logger.setLevel(logging.INFO)
+
+# SSL証明書のパスを取得（単一の真実の源）
 def get_ssl_cert_path():
     """SSL証明書のパスを返す"""
-    # Dockerコンテナ内での証明書パス
-    cert_paths = [
-        "/app/BaltimoreCyberTrustRoot.crt.pem",  # アプリディレクトリ
+    cert_candidates = [
+        os.getenv("MYSQL_SSL_CA"),  # 環境変数から
+        "/app/BaltimoreCyberTrustRoot.crt.pem",  # Dockerコンテナ内
         "/etc/ssl/certs/ca-certificates.crt",    # システム証明書
         "./BaltimoreCyberTrustRoot.crt.pem"       # ローカル開発
     ]
     
-    for path in cert_paths:
-        if os.path.exists(path):
-            print(f"SSL証明書を発見: {path}")
+    for path in cert_candidates:
+        if path and Path(path).exists():
+            logger.info(f"SSL証明書を発見: {path}")
             return path
     
-    print("警告: SSL証明書が見つかりません - 証明書なしでSSL接続を試みます")
+    logger.warning("SSL証明書が見つかりません - 証明書なしでSSL接続を試みます")
     return None
 
-# データベース接続設定
-SQLALCHEMY_DATABASE_URL = DATABASE_URL
-
-# 接続引数の設定
+# ====== SSL設定構築（常にconnect_argsに集約）======
+ssl_args = {}
 connect_args = {}
 
-# SQLiteかMySQLかを判定
-if DATABASE_URL and DATABASE_URL.startswith("sqlite"):
-    # SQLiteの場合は追加設定不要
-    connect_args = {"check_same_thread": False}
-    print("SQLite接続モード")
-else:
-    # MySQLの場合（PyMySQL使用）
-    # 基本設定
+if DATABASE_URL and not DATABASE_URL.startswith("sqlite"):
+    # MySQLの場合
     connect_args = {"charset": "utf8mb4"}
     
-    # 本番環境でのSSL設定
     if IS_PRODUCTION and MYSQL_SSL_ENABLED:
-        print("本番環境: Azure MySQL SSL接続を設定中...")
         cert_path = get_ssl_cert_path()
         
         # PyMySQL用のSSL設定（Azure MySQL対応）
-        # 証明書の有無に関わらずSSLを有効化
+        ssl_config = {}
+        
         if cert_path:
             # 証明書がある場合は明示的に指定
             ssl_config = {
                 "ca": cert_path,
-                "check_hostname": False,
-                "verify_identity": False,
-                "verify_mode": 0  # ssl.CERT_NONE相当
+                "check_hostname": False,  # Azure MySQLではFalseが安全
+                "verify_identity": False
             }
-            print(f"SSL設定: 証明書を使用 ({cert_path})")
+            logger.info(f"SSL設定: 証明書を使用 ({cert_path})")
         else:
             # 証明書がない場合でもSSLを強制的に有効化
-            # Azure MySQLはSSLが必須なので、最小限のSSL設定で接続
+            # PyMySQLの慣用句：fake_flag_to_enable_tlsでTLSハンドシェイクを強制
             ssl_config = {
                 "fake_flag_to_enable_tls": True,
                 "check_hostname": False,
                 "verify_identity": False
             }
-            print("SSL設定: 証明書なしでSSL接続（Azure MySQL要求対応）")
+            logger.info("SSL設定: 証明書なしでSSL接続（Azure MySQL要求対応）")
         
         connect_args["ssl"] = ssl_config
-        
-        # デバッグ用: 接続設定を表示
-        print(f"接続設定: ssl={ssl_config}")
-    else:
-        # 開発環境ではSSLを無効化
-        connect_args["ssl_disabled"] = True
-        print("開発環境: SSL無効")
+        logger.info(f"最終SSL設定: {ssl_config}")
+elif DATABASE_URL and DATABASE_URL.startswith("sqlite"):
+    # SQLiteの場合
+    connect_args = {"check_same_thread": False}
+    logger.info("SQLite接続モード")
 
-# エンジン作成とセッションの設定
+# ====== Engineの作成（単一のEngine）======
+ENGINE_CONFIG = {
+    "pool_pre_ping": True,           # 接続前にpingで生存確認
+    "pool_recycle": 1800,            # 30分ごとに接続をリサイクル
+    "pool_reset_on_return": "rollback",  # 返却時に状態をクリア
+    "connect_args": connect_args,    # SSL設定を含む接続引数
+    "echo": False                    # SQLログは無効化
+}
+
+# 本番環境での追加設定
+if IS_PRODUCTION:
+    # デバッグ時のみ：プールを無効化して毎回新規接続（問題切り分け用）
+    # ENGINE_CONFIG["poolclass"] = NullPool
+    pass
+
+# エンジン作成（アプリケーション全体で唯一のEngine）
 try:
-    engine = create_engine(
-        SQLALCHEMY_DATABASE_URL,
-        connect_args=connect_args,
-        pool_pre_ping=True,  # 接続プールの事前チェック
-        pool_recycle=3600,   # 1時間ごとに接続をリサイクル
-        echo=False           # SQLログは無効化（本番環境）
-    )
-    
-    # 接続テスト（本番環境のみ）
-    if IS_PRODUCTION:
-        with engine.connect() as conn:
-            result = conn.execute(text("SELECT 1"))
-            print("データベース接続成功")
-            
-            # SSL状態の確認
-            ssl_status = conn.execute(text("SHOW STATUS LIKE 'Ssl_cipher'")).fetchone()
-            if ssl_status and ssl_status[1]:
-                print(f"SSL暗号化: {ssl_status[1]}")
-            else:
-                print("警告: SSL暗号化が有効になっていません")
-                
+    engine = create_engine(DATABASE_URL, **ENGINE_CONFIG)
+    logger.info("データベースエンジン作成成功")
 except Exception as e:
-    print(f"データベース接続エラー: {e}")
-    if IS_PRODUCTION:
-        print("Azure MySQL接続に失敗しました。SSL設定を確認してください。")
+    logger.error(f"データベースエンジン作成エラー: {e}")
     raise
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# ====== イベントリスナー：SSL検証 ======
+@event.listens_for(engine, "connect")
+def verify_ssl_on_connect(dbapi_conn, connection_record):
+    """接続時にSSL状態を検証"""
+    if IS_PRODUCTION and MYSQL_SSL_ENABLED:
+        with dbapi_conn.cursor() as cur:
+            try:
+                cur.execute("SHOW STATUS LIKE 'Ssl_version'")
+                ssl_version = cur.fetchone()
+                cur.execute("SHOW STATUS LIKE 'Ssl_cipher'")
+                ssl_cipher = cur.fetchone()
+                
+                version = ssl_version[1] if ssl_version else "None"
+                cipher = ssl_cipher[1] if ssl_cipher else "None"
+                
+                logger.info(f"接続時SSL状態 - Version: {version}, Cipher: {cipher}")
+                
+                if not cipher or cipher == "None":
+                    logger.error("警告: SSL暗号化が有効になっていません！")
+            except Exception as e:
+                logger.error(f"SSL状態確認エラー: {e}")
+
+@event.listens_for(engine, "checkout")
+def verify_ssl_on_checkout(dbapi_conn, connection_record, connection_proxy):
+    """プールから接続を取得時にSSL状態を検証（最重要）"""
+    if IS_PRODUCTION and MYSQL_SSL_ENABLED:
+        cur = dbapi_conn.cursor()
+        try:
+            cur.execute("SHOW SESSION STATUS LIKE 'Ssl_cipher'")
+            row = cur.fetchone()
+            ssl_cipher = row[1] if row else ""
+            
+            if not ssl_cipher:
+                # SSL接続でない場合は例外を投げて再接続を強制
+                logger.error("エラー: プールから取得した接続がSSLではありません！再接続を強制します。")
+                raise RuntimeError("SSL is NOT active on checked-out connection - forcing reconnection")
+            else:
+                logger.debug(f"プール取得時SSL暗号: {ssl_cipher}")
+        except RuntimeError:
+            # 再接続を強制
+            raise
+        except Exception as e:
+            logger.error(f"SSL検証エラー: {e}")
+        finally:
+            cur.close()
+
+# ====== SessionMaker（必ずbind=engine）======
+SessionLocal = sessionmaker(
+    bind=engine,            # 必ずengineをバインド
+    autoflush=False,
+    autocommit=False,
+    expire_on_commit=False  # コミット後もオブジェクトを使用可能に
+)
+
+# セッション開始時のSSL検証（開発/デバッグ用）
+if IS_PRODUCTION and MYSQL_SSL_ENABLED:
+    @event.listens_for(SessionLocal, "after_begin")
+    def assert_ssl_on_session_begin(session, transaction, connection):
+        """セッション開始時にSSLを確認"""
+        try:
+            result = session.execute(text("SHOW SESSION STATUS LIKE 'Ssl_cipher'")).fetchone()
+            if not result or not result[1]:
+                logger.error("エラー: セッション開始時にSSLが無効です！")
+                raise RuntimeError("SSL missing at session begin")
+            else:
+                logger.debug(f"セッション開始時SSL暗号: {result[1]}")
+        except RuntimeError:
+            raise
+        except Exception as e:
+            logger.error(f"セッションSSL検証エラー: {e}")
 
 # モデル定義用のベースクラス
 Base = declarative_base()
 
-# データベースセッションの依存関係
+# ====== 依存関数（FastAPI用）======
 def get_db():
+    """データベースセッションを取得する依存関数"""
     db = SessionLocal()
     try:
+        # 本番環境では接続確認
+        if IS_PRODUCTION:
+            db.execute(text("SELECT 1"))
         yield db
+    except Exception as e:
+        logger.error(f"データベースセッションエラー: {e}")
+        db.rollback()
+        raise
     finally:
         db.close()
+
+# ====== 初期接続テスト ======
+def test_connection():
+    """データベース接続をテスト"""
+    try:
+        with engine.connect() as conn:
+            # 基本的な接続テスト
+            result = conn.execute(text("SELECT 1")).scalar()
+            logger.info(f"接続テスト成功: SELECT 1 = {result}")
+            
+            # SSL状態の確認
+            if IS_PRODUCTION and MYSQL_SSL_ENABLED:
+                ssl_status = conn.execute(text("SHOW STATUS LIKE 'Ssl_cipher'")).fetchone()
+                if ssl_status and ssl_status[1]:
+                    logger.info(f"SSL暗号化確認: {ssl_status[1]}")
+                else:
+                    logger.error("警告: SSL暗号化が有効になっていません！")
+                    
+        return True
+    except Exception as e:
+        logger.error(f"データベース接続テスト失敗: {e}")
+        return False
+
+# アプリケーション起動時に接続テスト
+if IS_PRODUCTION:
+    test_connection()
