@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
+import { getComprehensiveProfile, ComprehensiveProfile } from '../services/profileAPI';
 
 export default function MyPage() {
   const [userData, setUserData] = useState(null);
+  const [profile, setProfile] = useState<ComprehensiveProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -17,14 +19,26 @@ export default function MyPage() {
           return;
         }
 
-        // ユーザーデータを取得（今後バックエンドAPIに接続）
-        // 現在はダミーデータ
-        setUserData({
-          name: '山田太郎',
-          email: 'example@example.com',
-          age: 30,
-          registrationDate: '2024-01-15'
-        });
+        // プロフィールデータを取得
+        try {
+          const profileData = await getComprehensiveProfile();
+          setProfile(profileData);
+          setUserData({
+            name: profileData.name,
+            email: profileData.email,
+            age: profileData.age,
+            registrationDate: profileData.created_at ? new Date(profileData.created_at).toLocaleDateString('ja-JP') : '2024-01-15'
+          });
+        } catch (error) {
+          console.error('プロフィール取得エラー:', error);
+          // エラー時はダミーデータを使用
+          setUserData({
+            name: 'ゲストユーザー',
+            email: 'example@example.com',
+            age: 30,
+            registrationDate: '2024-01-15'
+          });
+        }
 
         setLoading(false);
       } catch (error) {
@@ -60,8 +74,11 @@ export default function MyPage() {
         <div className="max-w-4xl mx-auto px-4">
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">マイページ</h1>
-              <p className="text-gray-600">Miraimへようこそ！</p>
+              <h2 className="text-lg font-medium text-gray-600 mb-1">
+                {profile?.name && profile.name !== '未入力' ? `${profile.name}さん、` : ''}
+              </h2>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">ようこそ！</h1>
+              <p className="text-gray-600">Miraimへようこそ！あなたの婚活を全力でサポートします</p>
             </div>
 
             {userData && (

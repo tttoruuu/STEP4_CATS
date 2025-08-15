@@ -48,10 +48,42 @@ const ProfileEdit: React.FC = () => {
         setProfile(profileData);
         
         // フォームデータを初期化
+        // birth_dateをYYYY-MM-DD形式に変換
+        let birthDateValue = '';
+        if (profileData.birth_date && profileData.birth_date !== '未入力') {
+          // "YYYY年MM月DD日" 形式から "YYYY-MM-DD" に変換
+          const dateMatch = profileData.birth_date.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+          if (dateMatch) {
+            const [_, year, month, day] = dateMatch;
+            birthDateValue = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+          } else if (profileData.birth_date.includes('-')) {
+            birthDateValue = profileData.birth_date;
+          }
+        }
+        
+        // konkatsu_experienceを正しい値に変換
+        let konkatsuValue = '';
+        if (profileData.konkatsu_experience && profileData.konkatsu_experience !== '未入力') {
+          // 日本語から英語値に変換
+          switch (profileData.konkatsu_experience) {
+            case '初心者':
+              konkatsuValue = 'beginner';
+              break;
+            case '経験あり':
+              konkatsuValue = 'experienced';
+              break;
+            case '再チャレンジ':
+              konkatsuValue = 'returning';
+              break;
+            default:
+              konkatsuValue = profileData.konkatsu_experience;
+          }
+        }
+        
         setFormData({
           name: profileData.name === '未入力' ? '' : profileData.name,
-          birth_date: profileData.birth_date === '未入力' ? '' : (profileData.birth_date || ''),
-          konkatsu_experience: profileData.konkatsu_experience === '未入力' ? '' : profileData.konkatsu_experience,
+          birth_date: birthDateValue,
+          konkatsu_experience: konkatsuValue,
           occupation: profileData.occupation === '未入力' ? '' : (profileData.occupation || ''),
           birthplace: profileData.birthplace === '未入力' ? '' : (profileData.birthplace || ''),
           residence: profileData.residence === '未入力' ? '' : (profileData.residence || ''),
@@ -101,16 +133,19 @@ const ProfileEdit: React.FC = () => {
       setSuccess('');
       
       // APIに送信するデータを準備
-      const updateData = {
-        full_name: formData.name || undefined,
-        birth_date: formData.birth_date || undefined,
-        konkatsu_status: formData.konkatsu_experience || undefined,
-        occupation: formData.occupation || undefined,
-        birthplace: formData.birthplace || undefined,
-        current_location: formData.residence || undefined,
-        hobbies: formData.hobbies.length > 0 ? formData.hobbies : undefined,
-        holiday_style: formData.weekend_activities || undefined
-      };
+      const updateData: any = {};
+      
+      // 空文字列でない値のみ送信
+      if (formData.name) updateData.full_name = formData.name;
+      if (formData.birth_date) updateData.birth_date = formData.birth_date;
+      if (formData.konkatsu_experience) updateData.konkatsu_status = formData.konkatsu_experience;
+      if (formData.occupation) updateData.occupation = formData.occupation;
+      if (formData.birthplace) updateData.birthplace = formData.birthplace;
+      if (formData.residence) updateData.current_location = formData.residence;
+      if (formData.hobbies.length > 0) updateData.hobbies = formData.hobbies;
+      if (formData.weekend_activities) updateData.holiday_style = formData.weekend_activities;
+      
+      console.log('送信データ:', updateData);
 
       await updateProfile(updateData);
       setSuccess('プロフィールが更新されました！');
@@ -265,9 +300,9 @@ const ProfileEdit: React.FC = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               >
                 <option value="">選択してください</option>
-                <option value="初心者">初心者</option>
-                <option value="経験あり">経験あり</option>
-                <option value="再チャレンジ">再チャレンジ</option>
+                <option value="beginner">初心者</option>
+                <option value="experienced">経験あり</option>
+                <option value="returning">再チャレンジ</option>
               </select>
             </div>
 
