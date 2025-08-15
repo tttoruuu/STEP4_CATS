@@ -40,21 +40,22 @@ elif "mysqlconnector" in DATABASE_URL:
     if IS_PRODUCTION and MYSQL_SSL_ENABLED:
         cert_path = get_ssl_cert_path()
         # mysql-connector-python用のSSL設定
-        # 最小限のSSL設定で証明書検証はスキップ
-        connect_args = {
-            "use_ssl": True,
-            "ssl_verify_cert": False,
-            "ssl_verify_identity": False,
-            "use_pure": True,  # Pure Pythonバージョンを使用
-            "raise_on_warnings": False
+        # SSLを有効化して証明書検証をスキップ
+        ssl_config = {
+            "verify_cert": False,
+            "verify_identity": False
         }
         
         # 証明書がある場合は追加
         if cert_path:
-            connect_args["ssl_ca"] = cert_path
-            print(f"SSL設定: 有効 (mysql-connector-python, 証明書: {cert_path})")
-        else:
-            print("SSL設定: 有効 (mysql-connector-python, 証明書検証なし)")
+            ssl_config["ca"] = cert_path
+        
+        connect_args = {
+            "ssl": ssl_config,
+            "use_pure": True,  # Pure Pythonバージョンを使用
+            "raise_on_warnings": False
+        }
+        print(f"SSL設定: 有効 (mysql-connector-python, 証明書: {cert_path if cert_path else '検証なし'})")
     else:
         # 開発環境ではSSLを無効化
         connect_args = {"ssl_disabled": True}
