@@ -81,8 +81,8 @@ async def test_profile_endpoint():
         "timestamp": "2025-08-02T00:00:00"
     }
 
-@router.get("/comprehensive-debug")
-async def get_comprehensive_profile_debug(db: Session = Depends(get_db)):
+@router.get("/comprehensive-debug-disabled")
+async def get_comprehensive_profile_debug_disabled(db: Session = Depends(get_db)):
     """デバッグ用統合プロフィール（認証なし、実データ）"""
     try:
         # テストユーザーを取得または作成
@@ -326,8 +326,8 @@ async def get_my_profile(
     """現在のユーザーのプロフィール情報を取得"""
     return await get_comprehensive_profile(current_user, db)
 
-@router.put("/update-debug")
-async def update_profile_debug(
+@router.put("/update-debug-disabled")
+async def update_profile_debug_disabled(
     profile_data: dict,
     db: Session = Depends(get_db)
 ):

@@ -56,7 +56,7 @@ async def register_user(
         db.refresh(new_user)
         
         # アクセストークン生成
-        access_token = create_access_token(data={"sub": str(new_user.id)})
+        access_token = create_access_token(data={"sub": new_user.email})
         
         return {
             "success": True,
@@ -106,7 +106,7 @@ async def login_user(
             )
         
         # アクセストークン生成
-        access_token = create_access_token(data={"sub": str(user.id)})
+        access_token = create_access_token(data={"sub": user.email})
         
         return {
             "success": True,

@@ -90,26 +90,14 @@ export const getComprehensiveProfile = async (): Promise<ComprehensiveProfile> =
       token: getAuthToken()
     });
 
-    // 一時的にデバッグエンドポイントを優先（認証問題を回避）
-    let response;
-    try {
-      // まずデバッグエンドポイント（認証なし）を試行
-      response = await axios.get<ProfileAPIResponse>(
-        `${API_BASE_URL}/api/profile/comprehensive-debug`,
-        { timeout: 10000 }
-      );
-      console.log('デバッグエンドポイントでプロフィール取得成功');
-    } catch (debugError) {
-      console.warn('デバッグエンドポイント失敗、メインエンドポイントを試行:', debugError);
-      // メインエンドポイント（認証あり）にフォールバック
-      response = await axios.get<ProfileAPIResponse>(
-        `${API_BASE_URL}/api/profile/comprehensive`,
-        {
-          headers: getAuthHeaders(),
-          timeout: 10000
-        }
-      );
-    }
+    // メインエンドポイント（認証あり）を使用
+    const response = await axios.get<ProfileAPIResponse>(
+      `${API_BASE_URL}/api/profile/comprehensive`,
+      {
+        headers: getAuthHeaders(),
+        timeout: 10000
+      }
+    );
 
     if (response.data && response.data.success && response.data.profile) {
       console.log('API からプロフィール取得成功:', response.data.profile);
@@ -222,34 +210,18 @@ export const updateProfile = async (updates: {
   try {
     console.log('プロフィール更新開始:', updates);
     
-    // 一時的にデバッグエンドポイントを優先
-    let response;
-    try {
-      response = await axios.put(
-        `${API_BASE_URL}/api/profile/update-debug`,
-        updates,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          timeout: 10000,
-        }
-      );
-      console.log('デバッグエンドポイントで更新成功');
-    } catch (debugError) {
-      console.warn('デバッグエンドポイント失敗、メインエンドポイントを試行');
-      response = await axios.put(
-        `${API_BASE_URL}/api/profile/update`,
-        updates,
-        {
-          headers: {
-            ...getAuthHeaders(),
-            'Content-Type': 'application/json',
-          },
-          timeout: 10000,
-        }
-      );
-    }
+    // メインエンドポイント（認証あり）を使用
+    const response = await axios.put(
+      `${API_BASE_URL}/api/profile/update`,
+      updates,
+      {
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        timeout: 10000,
+      }
+    );
 
     if (response.data && response.data.success) {
       console.log('プロフィール更新成功:', response.data);
