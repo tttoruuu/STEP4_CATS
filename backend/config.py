@@ -40,7 +40,8 @@ if not DATABASE_URL:
         
         # Azure MySQL用のSSL設定
         MYSQL_SSL_ENABLED = True
-        DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}@{MYSQL_HOST.split('.')[0]}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}?charset=utf8mb4"
+        # mysql-connector-pythonを使用し、SSL設定を明示的に追加
+        DATABASE_URL = f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}?charset=utf8mb4&ssl_disabled=False&ssl_verify_cert=False"
     else:
         # ローカルMySQL（開発環境）
         # Docker環境での接続判定

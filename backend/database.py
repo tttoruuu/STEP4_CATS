@@ -4,19 +4,25 @@ from sqlalchemy.orm import sessionmaker
 
 import os
 import sys
-import tempfile
+import ssl
 from config import DATABASE_URL, MYSQL_SSL_ENABLED, IS_PRODUCTION
 
-# SSL証明書の処理
-def create_ssl_cert_file():
-    """環境変数からSSL証明書を取得し、一時ファイルとして作成"""
-    ssl_cert_content = os.getenv("MYSQL_SSL_CERT")
-    if ssl_cert_content:
-        # 一時ファイルを作成してSSL証明書を保存
-        cert_file = tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.pem')
-        cert_file.write(ssl_cert_content)
-        cert_file.close()
-        return cert_file.name
+# SSL証明書のパスを取得
+def get_ssl_cert_path():
+    """SSL証明書のパスを返す"""
+    # Dockerコンテナ内での証明書パス
+    cert_paths = [
+        "/app/BaltimoreCyberTrustRoot.crt.pem",  # アプリディレクトリ
+        "/etc/ssl/certs/ca-certificates.crt",    # システム証明書
+        "./BaltimoreCyberTrustRoot.crt.pem"       # ローカル開発
+    ]
+    
+    for path in cert_paths:
+        if os.path.exists(path):
+            print(f"SSL証明書を発見: {path}")
+            return path
+    
+    print("警告: SSL証明書が見つかりません")
     return None
 
 # データベース接続設定
@@ -29,33 +35,52 @@ connect_args = {}
 if DATABASE_URL.startswith("sqlite"):
     # SQLiteの場合は追加設定不要
     connect_args = {"check_same_thread": False}
+elif "mysqlconnector" in DATABASE_URL:
+    # mysql-connector-pythonの場合
+    if IS_PRODUCTION and MYSQL_SSL_ENABLED:
+        cert_path = get_ssl_cert_path()
+        if cert_path:
+            # 証明書がある場合は使用
+            connect_args = {
+                "ssl_ca": cert_path,
+                "ssl_verify_cert": False,
+                "ssl_verify_identity": False,
+                "use_pure": True  # Pure Pythonバージョンを使用
+            }
+            print(f"SSL設定: 有効 (mysql-connector-python, 証明書: {cert_path})")
+        else:
+            # 証明書がない場合でもSSLを有効化
+            connect_args = {
+                "ssl_verify_cert": False,
+                "ssl_verify_identity": False,
+                "use_pure": True
+            }
+            print("SSL設定: 有効 (mysql-connector-python, 証明書検証なし)")
+    else:
+        # 開発環境ではSSLを無効化
+        connect_args = {"ssl_disabled": True}
+        print("SSL設定: 無効")
 else:
-    # MySQLの場合
+    # PyMySQLの場合（フォールバック）
     connect_args = {"charset": "utf8mb4"}
     
     # 本番環境でのSSL設定
     if IS_PRODUCTION and MYSQL_SSL_ENABLED:
-        ssl_cert_path = create_ssl_cert_file()
-        if ssl_cert_path:
-            connect_args.update({
-                "ssl": {
-                    "ca": ssl_cert_path,
-                    "check_hostname": False,
-                    "verify_identity": False
-                }
-            })
-        else:
-            # Azure MySQLの場合、証明書がなくてもSSLを有効にする（最小限のSSL設定）
-            connect_args.update({
-                "ssl": {
-                    "check_hostname": False,
-                    "verify_identity": False,
-                    "ssl_mode": "REQUIRED"
-                }
-            })
+        cert_path = get_ssl_cert_path()
+        # PyMySQL用のSSL設定
+        ssl_context = {
+            "check_hostname": False,
+            "verify_mode": ssl.CERT_NONE  # 証明書検証を無効化
+        }
+        if cert_path:
+            ssl_context["ca"] = cert_path
+        
+        connect_args["ssl"] = ssl_context
+        print(f"SSL設定: 有効 (PyMySQL, 証明書: {cert_path if cert_path else '検証なし'})")
     else:
         # 開発環境ではSSLを無効化
         connect_args["ssl_disabled"] = True
+        print("SSL設定: 無効")
 
 # エンジン作成とセッションの設定
 engine = create_engine(
