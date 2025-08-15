@@ -35,47 +35,31 @@ connect_args = {}
 if DATABASE_URL.startswith("sqlite"):
     # SQLiteの場合は追加設定不要
     connect_args = {"check_same_thread": False}
-elif "mysqlconnector" in DATABASE_URL:
-    # mysql-connector-pythonの場合
-    if IS_PRODUCTION and MYSQL_SSL_ENABLED:
-        cert_path = get_ssl_cert_path()
-        # mysql-connector-python用のSSL設定
-        # SSLを有効化して証明書検証をスキップ
-        connect_args = {
-            "ssl_disabled": False,  # SSLを有効化
-            "ssl_verify_cert": False,  # 証明書検証を無効化
-            "ssl_verify_identity": False,  # ホスト名検証を無効化
-            "use_pure": True,  # Pure Pythonバージョンを使用
-            "raise_on_warnings": False
-        }
-        
-        # 証明書がある場合は追加
-        if cert_path:
-            connect_args["ssl_ca"] = cert_path
-            print(f"SSL設定: 有効 (mysql-connector-python, 証明書: {cert_path})")
-        else:
-            print("SSL設定: 有効 (mysql-connector-python, 証明書検証なし)")
-    else:
-        # 開発環境ではSSLを無効化
-        connect_args = {"ssl_disabled": True}
-        print("SSL設定: 無効")
 else:
-    # PyMySQLの場合（フォールバック）
+    # MySQLの場合（PyMySQL使用）
     connect_args = {"charset": "utf8mb4"}
     
     # 本番環境でのSSL設定
     if IS_PRODUCTION and MYSQL_SSL_ENABLED:
         cert_path = get_ssl_cert_path()
-        # PyMySQL用のSSL設定
-        ssl_context = {
-            "check_hostname": False,
-            "verify_mode": ssl.CERT_NONE  # 証明書検証を無効化
-        }
+        # PyMySQL用のSSL設定（Azure MySQL対応）
         if cert_path:
-            ssl_context["ca"] = cert_path
+            # 証明書がある場合は使用
+            ssl_context = {
+                "ca": cert_path,
+                "check_hostname": False,
+                "verify_identity": False
+            }
+        else:
+            # 証明書がない場合でもSSLを有効化（Azure MySQLの要求に対応）
+            ssl_context = {
+                "fake_flag_to_enable_tls": True,
+                "check_hostname": False,
+                "verify_identity": False
+            }
         
         connect_args["ssl"] = ssl_context
-        print(f"SSL設定: 有効 (PyMySQL, 証明書: {cert_path if cert_path else '検証なし'})")
+        print(f"SSL設定: 有効 (PyMySQL, 証明書: {cert_path if cert_path else '最小SSL設定'})")
     else:
         # 開発環境ではSSLを無効化
         connect_args["ssl_disabled"] = True
