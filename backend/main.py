@@ -46,7 +46,8 @@ async def create_tables_with_retry(max_retries=5, delay=5):
 async def add_missing_columns_if_needed():
     """不足しているカラムを追加（本番環境対応）"""
     import pymysql
-    from config import MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD
+    from config import MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD, IS_PRODUCTION, MYSQL_SSL_ENABLED
+    from database import get_ssl_cert_path
     
     # データベース接続情報
     host = MYSQL_HOST
@@ -55,16 +56,37 @@ async def add_missing_columns_if_needed():
     user = MYSQL_USER
     password = MYSQL_PASSWORD
     
+    # SSL設定
+    connect_kwargs = {
+        'host': host,
+        'port': port,
+        'user': user,
+        'password': password,
+        'database': database,
+        'charset': 'utf8mb4'
+    }
+    
+    # 本番環境でSSLが有効な場合
+    if IS_PRODUCTION and MYSQL_SSL_ENABLED:
+        cert_path = get_ssl_cert_path()
+        if cert_path:
+            connect_kwargs['ssl'] = {
+                'ca': cert_path,
+                'check_hostname': False,
+                'verify_identity': False
+            }
+        else:
+            # 証明書なしでもSSLを強制
+            connect_kwargs['ssl'] = {
+                'fake_flag_to_enable_tls': True,
+                'check_hostname': False,
+                'verify_identity': False
+            }
+        logger.info(f"add_missing_columns: SSL設定を適用")
+    
     try:
         # データベースに接続
-        connection = pymysql.connect(
-            host=host,
-            port=port,
-            user=user,
-            password=password,
-            database=database,
-            charset='utf8mb4'
-        )
+        connection = pymysql.connect(**connect_kwargs)
         
         cursor = connection.cursor()
         
