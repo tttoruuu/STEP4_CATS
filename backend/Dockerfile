@@ -22,7 +22,7 @@ COPY ./schemas ./schemas
 COPY ./services ./services
 COPY ./auth ./auth
 COPY ./middleware ./middleware
-COPY ./config ./config
+COPY ./config.py ./
 COPY ./utils ./utils
 COPY ./main.py ./
 COPY ./database.py ./

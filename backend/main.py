@@ -194,15 +194,15 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# 開発環境向け具体的なCORS設定
-origins = ["http://localhost:3000", "http://127.0.0.1:3000"]  # メインフロントポート（localhost + 127.0.0.1）
+# 上記で設定したoriginsをそのまま使用（重複設定を削除）
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,         # 具体的なオリジンを指定
+    allow_origins=origins,         # 環境ごとに設定されたオリジンを使用
     allow_credentials=True,        # Cookie や認証ヘッダを使う場合
     allow_methods=["*"],           # POST/GET/OPTIONS 等
     allow_headers=["*"],           # Content-Type, Authorization 等
+    expose_headers=["*"]           # レスポンスヘッダーをクライアントに公開
 )
 
 print(f"[CORS] 設定完了 - ENV: {ENV}")

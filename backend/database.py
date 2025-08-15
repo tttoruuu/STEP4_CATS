@@ -38,12 +38,21 @@ else:
         ssl_cert_path = create_ssl_cert_file()
         if ssl_cert_path:
             connect_args.update({
-                "ssl_ca": ssl_cert_path,
-                "ssl_disabled": False
+                "ssl": {
+                    "ca": ssl_cert_path,
+                    "check_hostname": False,
+                    "verify_identity": False
+                }
             })
         else:
-            # Azure MySQLの場合、証明書がなくてもSSLを有効にする
-            connect_args["ssl_disabled"] = False
+            # Azure MySQLの場合、証明書がなくてもSSLを有効にする（最小限のSSL設定）
+            connect_args.update({
+                "ssl": {
+                    "check_hostname": False,
+                    "verify_identity": False,
+                    "ssl_mode": "REQUIRED"
+                }
+            })
     else:
         # 開発環境ではSSLを無効化
         connect_args["ssl_disabled"] = True
