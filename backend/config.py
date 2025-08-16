@@ -11,10 +11,10 @@ current_dir = Path(__file__).resolve().parent
 env_path = current_dir / ".env"
 load_dotenv(dotenv_path=env_path)
 
-# 環境判定
-ENV = os.getenv("ENV", "development")
-IS_PRODUCTION = ENV == "production"
-IS_DEVELOPMENT = ENV == "development"
+# 環境判定（Container Apps対応）
+ENV = os.getenv("ENV", os.getenv("ENVIRONMENT", "development"))
+IS_PRODUCTION = ENV == "production" or os.getenv("ENVIRONMENT") == "production"
+IS_DEVELOPMENT = ENV == "development" and os.getenv("ENVIRONMENT") != "production"
 
 # データベース設定
 # .envファイルからDATABASE_URLを直接取得
@@ -26,7 +26,7 @@ MYSQL_PORT = 3306
 MYSQL_DATABASE = "testdb"
 MYSQL_USER = "root"
 MYSQL_PASSWORD = "password"
-MYSQL_SSL_ENABLED = False
+MYSQL_SSL_ENABLED = os.getenv("MYSQL_SSL_ENABLED", "false").lower() == "true"
 
 if not DATABASE_URL:
     # DATABASE_URLが設定されていない場合のフォールバック
@@ -38,8 +38,8 @@ if not DATABASE_URL:
         MYSQL_USER = os.getenv("AZURE_MYSQL_USER", "students")
         MYSQL_PASSWORD = os.getenv("AZURE_MYSQL_PASSWORD", "9th-tech0")
         
-        # Azure MySQL用のSSL設定
-        MYSQL_SSL_ENABLED = True
+        # Azure MySQL用のSSL設定（環境変数を優先、なければ本番環境では強制的にTrue）
+        MYSQL_SSL_ENABLED = os.getenv("MYSQL_SSL_ENABLED", "true").lower() == "true"
         # PyMySQLに戻す（SSL接続対応）
         DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}?charset=utf8mb4"
     else:

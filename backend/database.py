@@ -18,6 +18,10 @@ handler = logging.StreamHandler()
 handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 logger.addHandler(handler)
 
+# 環境変数の確認
+logger.info(f"[ENV CHECK] ENV={os.getenv('ENV')} ENVIRONMENT={os.getenv('ENVIRONMENT')}")
+logger.info(f"[CONFIG] IS_PRODUCTION={IS_PRODUCTION} MYSQL_SSL_ENABLED={MYSQL_SSL_ENABLED}")
+
 # SSL証明書のパスを取得（単一の真実の源）
 def get_ssl_cert_path():
     """SSL証明書のパスを返す"""
