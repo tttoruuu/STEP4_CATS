@@ -11,9 +11,12 @@ import logging
 from pathlib import Path
 from config import DATABASE_URL, MYSQL_SSL_ENABLED, IS_PRODUCTION
 
-# ロガー設定
-logger = logging.getLogger("db.ssl")
+# ロガー設定（デバッグ用に詳細ログ追加）
+logger = logging.getLogger("dbdebug")
 logger.setLevel(logging.INFO)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(handler)
 
 # SSL証明書のパスを取得（単一の真実の源）
 def get_ssl_cert_path():
@@ -90,7 +93,10 @@ if IS_PRODUCTION:
 # エンジン作成（アプリケーション全体で唯一のEngine）
 try:
     engine = create_engine(DATABASE_URL, **ENGINE_CONFIG)
-    logger.info("データベースエンジン作成成功")
+    # デバッグ情報を詳細に出力
+    logger.info(f"[ENGINE CREATED] url={engine.url} dbapi={engine.dialect.dbapi.__name__} "
+                f"pool={engine.pool.__class__.__name__} connect_args={connect_args}")
+    logger.info(f"[ENGINE ID] {id(engine)}")
 except Exception as e:
     logger.error(f"データベースエンジン作成エラー: {e}")
     raise
@@ -174,9 +180,20 @@ def get_db():
     """データベースセッションを取得する依存関数"""
     db = SessionLocal()
     try:
-        # 本番環境では接続確認
-        if IS_PRODUCTION:
-            db.execute(text("SELECT 1"))
+        # SSL状態を毎回確認して詳細ログ出力
+        result = db.execute(text("SHOW SESSION STATUS LIKE 'Ssl_cipher'"))
+        row = result.fetchone()
+        ssl_cipher = row[1] if row else None
+        
+        # エンジンIDとSSL状態をログ出力
+        logger.info(f"[SESSION] engine_id={id(db.get_bind())} ssl_cipher={ssl_cipher} "
+                   f"is_ssl={'YES' if ssl_cipher else 'NO'}")
+        
+        # 本番環境でSSLが無効な場合はエラー
+        if IS_PRODUCTION and MYSQL_SSL_ENABLED and not ssl_cipher:
+            logger.error("[ERROR] SSL connection required but not established!")
+            raise RuntimeError("SSL connection required but not established")
+            
         yield db
     except Exception as e:
         logger.error(f"データベースセッションエラー: {e}")
