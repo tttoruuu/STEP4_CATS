@@ -40,8 +40,8 @@ if not DATABASE_URL:
         
         # Azure MySQL用のSSL設定（環境変数を優先、なければ本番環境では強制的にTrue）
         MYSQL_SSL_ENABLED = os.getenv("MYSQL_SSL_ENABLED", "true").lower() == "true"
-        # PyMySQLに戻す（SSL接続対応）
-        DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}?charset=utf8mb4"
+        # PyMySQLに戻す（SSL接続対応） - URLにSSLパラメータを追加
+        DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}?charset=utf8mb4&ssl=true&ssl_verify_cert=false"
     else:
         # ローカルMySQL（開発環境）
         # Docker環境での接続判定

@@ -49,28 +49,14 @@ if DATABASE_URL and not DATABASE_URL.startswith("sqlite"):
     connect_args = {"charset": "utf8mb4"}
     
     if IS_PRODUCTION and MYSQL_SSL_ENABLED:
-        cert_path = get_ssl_cert_path()
-        
-        # PyMySQL用のSSL設定（Azure MySQL対応）
-        ssl_config = {}
-        
-        if cert_path:
-            # 証明書がある場合は明示的に指定
-            ssl_config = {
-                "ca": cert_path,
-                "check_hostname": False,  # Azure MySQLではFalseが安全
-                "verify_identity": False
-            }
-            logger.info(f"SSL設定: 証明書を使用 ({cert_path})")
-        else:
-            # 証明書がない場合でもSSLを強制的に有効化
-            # PyMySQLの慣用句：fake_flag_to_enable_tlsでTLSハンドシェイクを強制
-            ssl_config = {
-                "fake_flag_to_enable_tls": True,
-                "check_hostname": False,
-                "verify_identity": False
-            }
-            logger.info("SSL設定: 証明書なしでSSL接続（Azure MySQL要求対応）")
+        # Azure MySQL用のSSL設定 - 証明書なしでSSLを強制
+        # PyMySQLの仕様：fake_flag_to_enable_tlsでTLSを強制有効化
+        ssl_config = {
+            "fake_flag_to_enable_tls": True,
+            "check_hostname": False,
+            "verify_identity": False
+        }
+        logger.info("SSL設定: 証明書なしでSSL接続を強制（Azure MySQL対応）")
         
         connect_args["ssl"] = ssl_config
         logger.info(f"最終SSL設定: {ssl_config}")
