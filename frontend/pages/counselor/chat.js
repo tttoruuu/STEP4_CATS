@@ -47,20 +47,7 @@ export default function CounselorChat() {
   // サーバーから現在時刻を取得
   const fetchCurrentTime = async () => {
     try {
-      // 環境に応じたAPIURLを取得
-      const getApiUrl = () => {
-        if (typeof window !== 'undefined') {
-          const hostname = window.location.hostname;
-          if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            return 'http://localhost:8000';
-          } else {
-            return process.env.NEXT_PUBLIC_API_URL || 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io';
-          }
-        }
-        return 'https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io';
-      };
-
-      const apiUrl = `${getApiUrl()}/api/counselor/current-time`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/counselor/current-time`;
       console.log('Fetching current time from:', apiUrl);
       const response = await fetch(apiUrl);
       if (response.ok) {
@@ -71,27 +58,13 @@ export default function CounselorChat() {
         console.error('Time fetch failed:', response.status);
         // フォールバック: ローカル時刻を使用
         const now = new Date();
-        const formatted = now.toLocaleString('ja-JP', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-        setCurrentTime(formatted);
+        setCurrentTime(now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }));
       }
     } catch (error) {
       console.error('Failed to fetch current time:', error);
       // フォールバック: ローカル時刻を使用
       const now = new Date();
-      const formatted = now.toLocaleString('ja-JP', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-      setCurrentTime(formatted);
+      setCurrentTime(now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }));
     }
   };
 
@@ -294,22 +267,47 @@ export default function CounselorChat() {
   };
 
   const generateAIResponse = (userInput) => {
-    // 簡単なキーワードベースの応答（実際のAI APIに置き換える）
+    // 専門的な婚活カウンセリング応答（バックエンドAPI失敗時のフォールバック）
+    const userInputLower = userInput.toLowerCase();
+    
+    // より詳細で実践的なキーワードベース応答
     const responses = {
-      '不安': 'その不安な気持ち、とてもよく分かります。婚活では誰でも不安になるものです。具体的にはどのようなことが不安でしょうか？',
-      'プロフィール': 'プロフィール作成は婚活の第一歩ですね。あなたらしさを表現することが大切です。どの部分で困っていますか？',
-      '会話': '会話が続かないのは多くの方が抱える悩みです。相手に興味を持って質問することから始めてみましょう。',
-      'デート': 'デートは緊張しますよね。相手に楽しんでもらうことより、まずはあなた自身がリラックスすることが大切です。',
-      '自信': '自信がないのは自然なことです。小さな成功体験を積み重ねることで、少しずつ自信は育っていきます。'
+      '不安': `不安ですね、よく分かります。
+
+深呼吸して「今日は相手の良いところを一つ見つけよう」と意識してみてください。`,
+
+      'プロフィール': `プロフィールは「具体性」が鍵です。
+
+×「音楽鑑賞が趣味」→○「最近ジャズにハマって新しいお店を開拓中」と書いてみてください。`,
+
+      '会話': `会話のコツは「聞くこと」です。
+
+「それは○○だったんですね、どんな気持ちでしたか？」と要約してから感情を聞いてみてください。`,
+
+      'デート': `デートは「自然体」が一番です。
+
+相手のペースに合わせて「楽しい時間をありがとうございます」と2回以上伝えてみてください。`,
+
+      '自信': `自信がないのは自然なことです。
+
+毎日一つ、自分の良いところを見つけて記録してみましょう。完璧でなくても大丈夫ですよ。`
     };
 
+    // キーワードマッチング（より柔軟に）
     for (const [keyword, response] of Object.entries(responses)) {
-      if (userInput.includes(keyword)) {
+      if (userInputLower.includes(keyword) || 
+          (keyword === '不安' && (userInputLower.includes('心配') || userInputLower.includes('緊張') || userInputLower.includes('怖い'))) ||
+          (keyword === '会話' && (userInputLower.includes('話') || userInputLower.includes('質問') || userInputLower.includes('トーク'))) ||
+          (keyword === 'デート' && (userInputLower.includes('初回') || userInputLower.includes('食事') || userInputLower.includes('会う'))) ||
+          (keyword === '自信' && (userInputLower.includes('自分') || userInputLower.includes('だめ') || userInputLower.includes('できない')))) {
         return response;
       }
     }
 
-    return 'お話しを聞かせていただき、ありがとうございます。あなたの気持ちに寄り添いたいと思います。もう少し詳しく教えていただけますか？';
+    // デフォルト応答（簡潔で読みやすく）
+    return `ありがとうございます。必ず改善の道筋があります。
+
+まず毎日鏡を見て笑顔の練習を1分してみましょう。どの場面でお困りですか？`;
   };
 
   const handleKeyPress = (e) => {
@@ -467,7 +465,7 @@ export default function CounselorChat() {
                       : 'bg-white text-gray-800 shadow-sm'
                   }`}
                 >
-                  <p className="text-sm">{message.content}</p>
+                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                   <p className={`text-xs mt-1 ${
                     message.type === 'user' ? 'text-orange-100' : 'text-gray-400'
                   }`}>
