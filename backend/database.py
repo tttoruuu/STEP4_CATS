@@ -86,16 +86,19 @@ ENGINE_CONFIG = {
 
 # 本番環境での追加設定
 if IS_PRODUCTION:
-    # デバッグ時のみ：プールを無効化して毎回新規接続（問題切り分け用）
-    # ENGINE_CONFIG["poolclass"] = NullPool
-    pass
+    # プールを無効化して毎回新規接続（SSL問題の解決）
+    ENGINE_CONFIG["poolclass"] = NullPool
+    logger.info("NullPool使用: 毎回新規接続でSSLを確実に適用")
 
 # エンジン作成（アプリケーション全体で唯一のEngine）
 try:
     engine = create_engine(DATABASE_URL, **ENGINE_CONFIG)
     # デバッグ情報を詳細に出力
+    actual_connect_args = ENGINE_CONFIG.get("connect_args", {})
     logger.info(f"[ENGINE CREATED] url={engine.url} dbapi={engine.dialect.dbapi.__name__} "
-                f"pool={engine.pool.__class__.__name__} connect_args={connect_args}")
+                f"pool={engine.pool.__class__.__name__}")
+    logger.info(f"[CONNECT_ARGS] {actual_connect_args}")
+    logger.info(f"[SSL CONFIG] {actual_connect_args.get('ssl', 'No SSL config')}")
     logger.info(f"[ENGINE ID] {id(engine)}")
 except Exception as e:
     logger.error(f"データベースエンジン作成エラー: {e}")
