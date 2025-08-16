@@ -87,7 +87,8 @@
       "Bash(az mysql flexible-server firewall-rule list:*)",
       "Bash(az mysql server firewall-rule list:*)",
       "Bash(az containerapp exec:*)",
-      "Bash(az containerapp revision logs show:*)"
+      "Bash(az containerapp revision logs show:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
