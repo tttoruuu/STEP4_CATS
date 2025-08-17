@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto py-8 px-4">
+        <h1 class="text-3xl font-bold text-center mb-8">Features API Test</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">API Status</h2>
+            <div id="api-status" class="mb-4"></div>
+            <button onclick="testAPI()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Test APIs
+            </button>
+        </div>
+        
+        <div id="features-content" class="hidden">
+            <h2 class="text-2xl font-bold mb-6">機能一覧</h2>
+            <div id="features-list" class="space-y-4"></div>
+        </div>
+        
+        <div id="help-content" class="hidden mt-8">
+            <h2 class="text-2xl font-bold mb-6">ヘルプ・FAQ</h2>
+            <div id="help-list" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        async function testAPI() {
+            const statusEl = document.getElementById('api-status');
+            statusEl.innerHTML = '<p class="text-blue-600">Testing APIs...</p>';
+            
+            try {
+                // Test Features API
+                const featuresResponse = await fetch(`${API_BASE}/features`);
+                const featuresData = await featuresResponse.json();
+                
+                // Test Help API
+                const helpResponse = await fetch(`${API_BASE}/help/faqs`);
+                const helpData = await helpResponse.json();
+                
+                if (featuresData.features && helpData.faqs) {
+                    statusEl.innerHTML = `
+                        <div class="text-green-600">
+                            <p>✅ Features API: ${featuresData.features.length} features loaded</p>
+                            <p>✅ Help API: ${helpData.faqs.length} FAQs loaded</p>
+                        </div>
+                    `;
+                    
+                    displayFeatures(featuresData.features);
+                    displayHelp(helpData.faqs);
+                } else {
+                    throw new Error('Invalid API response');
+                }
+                
+            } catch (error) {
+                statusEl.innerHTML = `<p class="text-red-600">❌ API Error: ${error.message}</p>`;
+            }
+        }
+        
+        function displayFeatures(features) {
+            const container = document.getElementById('features-list');
+            const content = document.getElementById('features-content');
+            
+            container.innerHTML = features.map(feature => `
+                <div class="bg-white rounded-lg border p-6">
+                    <h3 class="text-xl font-semibold mb-2">${feature.title}</h3>
+                    <p class="text-gray-600 mb-4">${feature.description}</p>
+                    <ul class="space-y-1">
+                        ${feature.details.map(detail => `
+                            <li class="flex items-center space-x-2">
+                                <span class="w-2 h-2 bg-orange-600 rounded-full"></span>
+                                <span class="text-sm">${detail}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `).join('');
+            
+            content.classList.remove('hidden');
+        }
+        
+        function displayHelp(faqs) {
+            const container = document.getElementById('help-list');
+            const content = document.getElementById('help-content');
+            
+            container.innerHTML = faqs.map(faq => `
+                <div class="bg-white rounded-lg border p-6">
+                    <div class="mb-2">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
+                            ${faq.category}
+                        </span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Q. ${faq.question}</h3>
+                    <p class="text-gray-600">A. ${faq.answer}</p>
+                </div>
+            `).join('');
+            
+            content.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,305 @@
+import React, { useState } from 'react';
+import { X, ChevronRight, ChevronLeft, Ear, Heart, MessageCircle, Users, Sparkles, Brain } from 'lucide-react';
+
+interface AppIntroductionProps {
+  isOpen: boolean;
+  onClose: () => void;
+  showOnlyFeatures?: boolean;
+}
+
+const AppIntroduction: React.FC<AppIntroductionProps> = ({ 
+  isOpen, 
+  onClose, 
+  showOnlyFeatures = false 
+}) => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [activeTab, setActiveTab] = useState<'features' | 'guide'>('features');
+
+  const features = [
+    {
+      icon: <Heart className="w-8 h-8 text-orange-600" />,
+      title: "AIカウンセラー",
+      description: "24時間いつでも相談できる心強いパートナー",
+      details: [
+        "24時間相談チャット",
+        "自己紹介文作成",
+        "過去の相談履歴",
+        "今日のメッセージ"
+      ]
+    },
+    {
+      icon: <MessageCircle className="w-8 h-8 text-orange-600" />,
+      title: "会話練習機能",
+      description: "挨拶から深い会話まで、段階的にスキルアップ",
+      details: [
+        "基本的な挨拶の練習",
+        "相槌・共感スキルの向上",
+        "会話ポイントのコピー機能",
+        "聞く力トレーニング",
+        "フリー会話練習"
+      ]
+    },
+    {
+      icon: <Brain className="w-8 h-8 text-orange-600" />,
+      title: "Marriage MBTI+",
+      description: "あなたに最適なパートナータイプを診断",
+      details: [
+        "MBTI性格診断",
+        "結婚観の詳細分析",
+        "相性の良いパートナータイプ",
+        "恋愛傾向の把握"
+      ]
+    },
+    {
+      icon: <Sparkles className="w-8 h-8 text-orange-600" />,
+      title: "スタイリング提案",
+      description: "魅力を最大限に引き出すトータルサポート",
+      details: [
+        "スキンケア",
+        "ファッション",
+        "ヘアスタイル",
+        "身だしなみ"
+      ]
+    }
+  ];
+
+  const keyPoints = [
+    {
+      icon: <Ear className="w-8 h-8 sm:w-12 sm:h-12 text-orange-600" />,
+      title: "聞くスキルが身につく",
+      subtitle: "話すより、聞く。それが愛される男の条件",
+      description: "多くの男性が勘違いしています。女性は「面白い話」より「私の話を聞いてくれる人」を求めています。"
+    },
+    {
+      icon: <Users className="w-8 h-8 sm:w-12 sm:h-12 text-orange-600" />,
+      title: "共感力を育てる",
+      subtitle: "適切な相槌、共感の言葉、深掘りする質問",
+      description: "これらの「聞くスキル」が、あなたを「また会いたい人」に変えます。"
+    },
+    {
+      icon: <Heart className="w-8 h-8 sm:w-12 sm:h-12 text-orange-600" />,
+      title: "理解される喜び",
+      subtitle: "自分を理解してくれる人を好きになる",
+      description: "自分が思っている感情を理解してくれる、自分自身を理解してくれる人のことを好きになります。"
+    }
+  ];
+
+  const guideSteps = [
+    {
+      step: 1,
+      title: "アプリを開く",
+      description: "ホーム画面から始めましょう",
+      image: "📱"
+    },
+    {
+      step: 2,
+      title: "機能を選択",
+      description: "4つの主要機能から選んでください",
+      image: "🎯"
+    },
+    {
+      step: "3-1",
+      title: "AIカウンセラー",
+      description: "24時間いつでも相談できます",
+      image: "💝"
+    },
+    {
+      step: "3-2",
+      title: "会話練習",
+      description: "レベルに合わせて練習を始めます",
+      image: "💬"
+    },
+    {
+      step: "3-3",
+      title: "Marriage MBTI+",
+      description: "性格診断と結婚観の分析を行います",
+      image: "🧠"
+    },
+    {
+      step: "3-4",
+      title: "スタイリング提案",
+      description: "魅力を引き出すスタイリングサポート",
+      image: "✨"
+    }
+  ];
+
+  if (!isOpen) return null;
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % keyPoints.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + keyPoints.length) % keyPoints.length);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-xl sm:rounded-2xl w-full h-full sm:max-w-4xl sm:w-full sm:max-h-[90vh] sm:h-auto overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+            {showOnlyFeatures ? 'アプリの特徴' : 'アプリ紹介'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors touch-manipulation"
+          >
+            <X className="w-6 h-6 text-gray-600" />
+          </button>
+        </div>
+
+        {!showOnlyFeatures && (
+          <div className="flex border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab('features')}
+              className={`flex-1 py-3 sm:py-4 px-3 sm:px-6 text-center font-medium transition-colors text-sm sm:text-base touch-manipulation ${
+                activeTab === 'features'
+                  ? 'text-orange-600 border-b-2 border-orange-600 bg-orange-50'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              アプリの特徴
+            </button>
+            <button
+              onClick={() => setActiveTab('guide')}
+              className={`flex-1 py-3 sm:py-4 px-3 sm:px-6 text-center font-medium transition-colors text-sm sm:text-base touch-manipulation ${
+                activeTab === 'guide'
+                  ? 'text-orange-600 border-b-2 border-orange-600 bg-orange-50'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              使い方ガイド
+            </button>
+          </div>
+        )}
+
+        <div className="p-4 sm:p-6">
+          {(showOnlyFeatures || activeTab === 'features') && (
+            <div className="space-y-6 sm:space-y-8">
+              {/* Key Points Slider */}
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-800">なぜ聞く力が重要なのか</h3>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={prevSlide}
+                      className="p-1.5 sm:p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow touch-manipulation"
+                    >
+                      <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
+                    </button>
+                    <button
+                      onClick={nextSlide}
+                      className="p-1.5 sm:p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow touch-manipulation"
+                    >
+                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0">
+                      {keyPoints[currentSlide].icon}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">
+                        {keyPoints[currentSlide].title}
+                      </h4>
+                      <p className="text-orange-600 font-medium mb-3 text-sm sm:text-base">
+                        {keyPoints[currentSlide].subtitle}
+                      </p>
+                      <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+                        {keyPoints[currentSlide].description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex justify-center mt-4 space-x-2">
+                  {keyPoints.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors touch-manipulation ${
+                        index === currentSlide ? 'bg-orange-600' : 'bg-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Features Grid */}
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">主要機能</h3>
+                <div className="grid gap-4 sm:gap-6">
+                  {features.map((feature, index) => (
+                    <div key={index} className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 hover:shadow-lg transition-shadow">
+                      <div className="flex items-center space-x-3 mb-4">
+                        {feature.icon}
+                        <h4 className="text-base sm:text-lg font-semibold text-gray-800">
+                          {feature.title}
+                        </h4>
+                      </div>
+                      <p className="text-gray-600 mb-4 text-sm sm:text-base">{feature.description}</p>
+                      <ul className="space-y-2">
+                        {feature.details.map((detail, detailIndex) => (
+                          <li key={detailIndex} className="flex items-center space-x-2 text-sm text-gray-600">
+                            <div className="w-1.5 h-1.5 bg-orange-600 rounded-full flex-shrink-0" />
+                            <span>{detail}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!showOnlyFeatures && activeTab === 'guide' && (
+            <div className="space-y-6">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">アプリの使い方</h3>
+              <div className="space-y-6">
+                {guideSteps.map((step, index) => (
+                  <div key={index} className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 bg-gray-50 rounded-lg">
+                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold text-xs sm:text-sm">
+                      {step.step}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">
+                        {step.title}
+                      </h4>
+                      <p className="text-gray-600 text-sm sm:text-base">{step.description}</p>
+                    </div>
+                    <div className="text-2xl sm:text-3xl">{step.image}</div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <h4 className="font-semibold text-orange-800 mb-2">💡 ヒント</h4>
+                <p className="text-orange-700 text-sm">
+                  最初は基本的な挨拶から始めて、徐々に難しい会話練習に挑戦しましょう。
+                  毎日少しずつでも続けることが上達の秘訣です。
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="border-t border-gray-200 p-4 sm:p-6">
+          <button
+            onClick={onClose}
+            className="w-full bg-orange-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-orange-700 transition-colors touch-manipulation"
+          >
+            始める
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AppIntroduction;

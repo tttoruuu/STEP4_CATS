@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
 import Layout from '../components/Layout';
+import TopQuickLinks from '../components/TopQuickLinks';
 import { MessageSquare, Heart, Palette, User } from 'lucide-react';
 import { authAPI } from '../services/api';
 
@@ -147,7 +148,8 @@ export default function MainPage() {
 
   return (
     <Layout title="ホーム" hideHeader={true}>
-      <main className="max-w-sm mx-auto px-6 py-8 min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
+      <TopQuickLinks />
+      <div className="max-w-sm mx-auto px-6 py-8 min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
       <div className="w-40 h-40 relative mb-4 flex justify-center mx-auto">
               <Image
                 src="/images/logo.png"
@@ -229,7 +231,7 @@ export default function MainPage() {
         >
           ログアウト
         </button>
-      </main>
+      </div>
     </Layout>
   );
 }

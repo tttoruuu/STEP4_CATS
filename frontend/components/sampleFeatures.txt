@@ -1,0 +1,165 @@
+import React from 'react';
+import { Heart, MessageCircle, Brain, Sparkles, Ear, Users, Target } from 'lucide-react';
+
+const AppFeatures: React.FC = () => {
+  const features = [
+    {
+      icon: <Heart className="w-8 h-8 text-orange-600" />,
+      title: "AIカウンセラー",
+      description: "24時間いつでも相談できる心強いパートナー",
+      details: [
+        "24時間相談チャット",
+        "自己紹介文作成サポート",
+        "過去の相談履歴管理",
+        "今日のメッセージ配信"
+      ],
+      color: "bg-red-50 border-red-200"
+    },
+    {
+      icon: <MessageCircle className="w-8 h-8 text-orange-600" />,
+      title: "会話練習機能",
+      description: "挨拶から深い会話まで、段階的にスキルアップ",
+      details: [
+        "基本的な挨拶の練習",
+        "相槌・共感スキルの向上",
+        "会話ポイントのコピー機能",
+        "聞く力トレーニング",
+        "フリー会話練習"
+      ],
+      color: "bg-blue-50 border-blue-200"
+    },
+    {
+      icon: <Brain className="w-8 h-8 text-orange-600" />,
+      title: "Marriage MBTI+",
+      description: "あなたに最適なパートナータイプを診断",
+      details: [
+        "MBTI性格診断",
+        "結婚観の詳細分析",
+        "相性の良いパートナータイプ",
+        "恋愛傾向の把握"
+      ],
+      color: "bg-purple-50 border-purple-200"
+    },
+    {
+      icon: <Sparkles className="w-8 h-8 text-orange-600" />,
+      title: "スタイリング提案",
+      description: "魅力を最大限に引き出すトータルサポート",
+      details: [
+        "スキンケアアドバイス",
+        "ファッション提案",
+        "ヘアスタイル相談",
+        "身だしなみチェック"
+      ],
+      color: "bg-yellow-50 border-yellow-200"
+    }
+  ];
+
+  const keyPoints = [
+    {
+      icon: <Ear className="w-12 h-12 text-orange-600" />,
+      title: "聞くスキルが身につく",
+      subtitle: "話すより、聞く。それが愛される男の条件",
+      description: "多くの男性が勘違いしています。女性は「面白い話」より「私の話を聞いてくれる人」を求めています。"
+    },
+    {
+      icon: <Users className="w-12 h-12 text-orange-600" />,
+      title: "共感力を育てる",
+      subtitle: "適切な相槌、共感の言葉、深掘りする質問",
+      description: "これらの「聞くスキル」が、あなたを「また会いたい人」に変えます。"
+    },
+    {
+      icon: <Target className="w-12 h-12 text-orange-600" />,
+      title: "理解される喜び",
+      subtitle: "自分を理解してくれる人を好きになる",
+      description: "自分が思っている感情を理解してくれる、自分自身を理解してくれる人のことを好きになります。"
+    }
+  ];
+
+  return (
+    <div className="py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl font-bold text-gray-800 mb-6">
+            なぜ聞く力が重要なのか
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            結婚相談所に通うあなたのための、また会いたい人になるアプリ
+          </p>
+        </div>
+
+        {/* Key Points */}
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
+          {keyPoints.map((point, index) => (
+            <div key={index} className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+              <div className="flex justify-center mb-6">
+                {point.icon}
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-3 text-center">
+                {point.title}
+              </h3>
+              <p className="text-orange-600 font-medium mb-4 text-center">
+                {point.subtitle}
+              </p>
+              <p className="text-gray-600 leading-relaxed text-center">
+                {point.description}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Features Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+            4つの主要機能
+          </h2>
+          <div className="grid gap-8">
+            {features.map((feature, index) => (
+              <div key={index} className={`${feature.color} rounded-2xl p-8 border-2`}>
+                <div className="flex items-start space-x-6">
+                  <div className="flex-shrink-0">
+                    {feature.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-gray-800 mb-3">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-600 mb-6 text-lg">
+                      {feature.description}
+                    </p>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {feature.details.map((detail, detailIndex) => (
+                        <div key={detailIndex} className="flex items-center space-x-3">
+                          <div className="w-2 h-2 bg-orange-600 rounded-full flex-shrink-0" />
+                          <span className="text-gray-700">{detail}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-8 text-center text-white">
+          <h2 className="text-3xl font-bold mb-4">
+            今すぐ始めて、理想のパートナーとの出会いを実現しましょう
+          </h2>
+          <p className="text-xl mb-8 text-orange-100">
+            聞く力を中心とした総合的なコミュニケーション向上で、婚活を成功に導きます
+          </p>
+          <button 
+            onClick={() => window.history.back()}
+            className="bg-white text-orange-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors shadow-lg"
+          >
+            ホーム画面に戻る
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AppFeatures;
