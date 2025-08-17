@@ -110,6 +110,11 @@ async def login_user(
                 detail="メールアドレスまたはパスワードが正しくありません"
             )
         
+        # 初回ログイン日時を記録
+        if not user.first_login_at:
+            user.first_login_at = datetime.now()
+            db.commit()
+        
         # アクセストークン生成
         access_token = create_access_token(data={"sub": user.email})
         
@@ -122,7 +127,8 @@ async def login_user(
                 "id": user.id,
                 "email": user.email,
                 "full_name": user.full_name,
-                "username": user.username
+                "username": user.username,
+                "show_service_video": user.show_service_video
             }
         }
         

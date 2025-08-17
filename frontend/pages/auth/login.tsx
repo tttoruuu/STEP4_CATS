@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Heart, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import Link from 'next/link';
 import login from '../../components/login';
+import ServiceVideoModal from '../../components/ui/ServiceVideoModal';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showVideoModal, setShowVideoModal] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -47,10 +49,16 @@ export default function LoginPage() {
             localStorage.setItem('user', JSON.stringify(res.data.user));
           }
         }
-        // リダイレクトパラメータがあるかチェック
-        const redirectTo = router.query.redirect as string;
-        const targetPath = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/';
-        router.push(targetPath);
+        
+        // サービス説明動画を表示するかチェック
+        if (res.data?.user?.show_service_video) {
+          setShowVideoModal(true);
+        } else {
+          // リダイレクトパラメータがあるかチェック
+          const redirectTo = router.query.redirect as string;
+          const targetPath = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/';
+          router.push(targetPath);
+        }
       } else {
         setError(res.error || 'メールアドレスまたはパスワードが間違っています');
       }
@@ -59,6 +67,40 @@ export default function LoginPage() {
       setError('ログインに失敗しました。もう一度お試しください。');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleVideoModalClose = () => {
+    setShowVideoModal(false);
+    // リダイレクトパラメータがあるかチェック
+    const redirectTo = router.query.redirect as string;
+    const targetPath = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/';
+    router.push(targetPath);
+  };
+
+  const handleDontShowAgain = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const response = await fetch(`${apiUrl}/api/user/video-preferences`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ show_service_video: false })
+        });
+
+        if (response.ok) {
+          // ユーザー情報を更新
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          user.show_service_video = false;
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+      }
+    } catch (error) {
+      console.error('Failed to update video preferences:', error);
     }
   };
 
@@ -169,6 +211,13 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      {/* サービス説明動画モーダル */}
+      <ServiceVideoModal
+        isOpen={showVideoModal}
+        onClose={handleVideoModalClose}
+        onDontShowAgain={handleDontShowAgain}
+      />
     </div>
   );
 }

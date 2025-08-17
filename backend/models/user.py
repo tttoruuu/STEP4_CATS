@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, TIMESTAMP, Text
+from sqlalchemy import Column, Integer, String, Date, TIMESTAMP, Text, Boolean
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from database import Base
@@ -23,6 +23,10 @@ class User(Base):
     birth_place = Column(String(255))     # 出身地
     location = Column(String(255))        # 現在の居住地
     weekend_activity = Column(Text)       # 休日の過ごし方
+    
+    # サービス説明動画表示フラグ
+    show_service_video = Column(Boolean, default=True)  # True: 表示する, False: 表示しない
+    first_login_at = Column(TIMESTAMP)  # 初回ログイン日時
     
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

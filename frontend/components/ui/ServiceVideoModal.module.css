@@ -1,0 +1,197 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modalContent {
+  background: #FAF5F2;
+  border-radius: 25px;
+  padding: 35px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 8px 8px 16px rgba(209, 186, 172, 0.5),
+              -8px -8px 16px rgba(255, 255, 255, 0.8);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #FAF5F2;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #636E72;
+  box-shadow: 4px 4px 8px rgba(209, 186, 172, 0.3),
+              -4px -4px 8px rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.closeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 12px rgba(209, 186, 172, 0.4),
+              -6px -6px 12px rgba(255, 255, 255, 0.9);
+}
+
+.closeButton:active {
+  transform: translateY(0);
+  box-shadow: inset 2px 2px 4px rgba(209, 186, 172, 0.3),
+              inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.modalTitle {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2D3436;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.videoContainer {
+  background: #FAF5F2;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 30px;
+  box-shadow: inset 4px 4px 8px rgba(209, 186, 172, 0.3),
+              inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+}
+
+.video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.actionButton {
+  padding: 18px 45px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 8px 8px 16px rgba(209, 186, 172, 0.5),
+              -8px -8px 16px rgba(255, 255, 255, 0.8);
+}
+
+.primaryButton {
+  background: linear-gradient(145deg, #FF6B35, #FFB08A);
+  color: white;
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 10px 10px 20px rgba(209, 186, 172, 0.6),
+              -10px -10px 20px rgba(255, 255, 255, 0.9);
+}
+
+.secondaryButton {
+  background: #FAF5F2;
+  color: #FF6B35;
+}
+
+.secondaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 10px 10px 20px rgba(209, 186, 172, 0.6),
+              -10px -10px 20px rgba(255, 255, 255, 0.9);
+}
+
+.checkboxContainer {
+  display: flex;
+  justify-content: center;
+  padding-top: 15px;
+  border-top: 1px solid rgba(209, 186, 172, 0.3);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #636E72;
+  font-size: 14px;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  cursor: pointer;
+  accent-color: #FF6B35;
+}
+
+.checkboxText {
+  user-select: none;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .modalContent {
+    padding: 25px;
+    margin: 10px;
+  }
+
+  .modalTitle {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .actionButton {
+    padding: 16px 30px;
+    font-size: 15px;
+  }
+
+  .videoContainer {
+    margin-bottom: 20px;
+  }
+
+  .buttonGroup {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+}
