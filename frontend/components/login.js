@@ -6,8 +6,11 @@ export default async function login(email, password){
     
     try {
         const API_BASE_URL = getApiEndpoint();
-        const response = await axios.post(`${API_BASE_URL}/login`, 
-            { username: email, password },
+        console.log('API Base URL:', API_BASE_URL);
+        console.log('Request payload:', { email, password });
+        
+        const response = await axios.post(`${API_BASE_URL}/api/auth/login`, 
+            { email, password },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -16,6 +19,8 @@ export default async function login(email, password){
                 timeout: 10000
             }
         );
+        
+        console.log('Response received:', response);
         
         if (response.data && response.data.access_token) {
             return { 
@@ -31,6 +36,9 @@ export default async function login(email, password){
         
     } catch (error) {
         console.error('Login API error:', error);
+        console.error('Error response:', error.response);
+        console.error('Error request:', error.request);
+        console.error('Error config:', error.config);
         
         if (axios.isAxiosError(error)) {
             if (error.response?.data?.error?.message) {

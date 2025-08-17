@@ -51,7 +51,11 @@ export default function LoginPage() {
         }
         
         // サービス説明動画を表示するかチェック
+        console.log('Login response:', res.data);
+        console.log('show_service_video:', res.data?.user?.show_service_video);
+        
         if (res.data?.user?.show_service_video) {
+          console.log('Showing video modal');
           setShowVideoModal(true);
         } else {
           // リダイレクトパラメータがあるかチェック
