@@ -446,6 +446,18 @@ az containerapp show --name miraim-frontend --resource-group rg-001-gen9 --query
 cd frontend && npm run validate-env:production
 ```
 
+## 🚑 ログイン機能エラー復旧手順
+
+### 即座実行コマンド
+```bash
+# 1. DB接続確認: az containerapp logs show -n miraim-backend -g rg-001-gen9 --tail 50
+# 2. SSL修正: backend/database.py → ssl_args = {"ssl": {"ssl_ca": "/dev/null"}}
+# 3. プール無効化: poolclass=NullPool 追加
+# 4. 環境変数: MYSQL_SSL_DISABLED=false, DATABASE_URL末尾に?ssl_disabled=False
+# 5. 再デプロイ: ./scripts/deploy.sh --backend-only
+# 6. 動作確認: curl https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io/auth/test-db
+```
+
 ## 🔧 環境切り替え問題の根本解決
 
 ### 問題の原因
