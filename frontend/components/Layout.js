@@ -6,8 +6,8 @@ export default function Layout({ children, title = 'アプリケーション', h
   const router = useRouter();
   
   // Footer表示対象ページの判定
-  const showFooterPages = ['/', '/features', '/help'];
-  const shouldShowFooter = !hideFooter && showFooterPages.includes(router.pathname);
+  // すべてのページでフッターを表示（hideFooterが明示的にtrueでない限り）
+  const shouldShowFooter = !hideFooter;
 
   return (
     <div className="flex flex-col min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
