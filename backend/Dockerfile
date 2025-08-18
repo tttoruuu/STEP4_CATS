@@ -18,6 +18,9 @@ ENV FRONTEND_ORIGIN=http://localhost:3000
 # SSL証明書をコピー（Azure MySQL用）- ファイルが存在する場合のみ
 # COPY ./BaltimoreCyberTrustRoot.crt.pem ./BaltimoreCyberTrustRoot.crt.pem
 
+# 環境変数ファイルをコピー（本番環境用）
+COPY ./.env ./
+
 # アプリのコードをすべてコピー
 COPY ./models ./models
 COPY ./routers ./routers
