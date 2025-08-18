@@ -1,7 +1,14 @@
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import Footer from './common/Footer';
 
 export default function Layout({ children, title = 'アプリケーション', hideFooter = false, hideHeader = false }) {
+  const router = useRouter();
+  
+  // Footer表示対象ページの判定
+  const showFooterPages = ['/', '/features', '/help'];
+  const shouldShowFooter = !hideFooter && showFooterPages.includes(router.pathname);
+
   return (
     <div className="flex flex-col min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
       <Head>
@@ -14,7 +21,7 @@ export default function Layout({ children, title = 'アプリケーション', h
         {children}
       </main>
 
-      {!hideFooter && <Footer />}
+      {shouldShowFooter && <Footer />}
     </div>
   );
 } 

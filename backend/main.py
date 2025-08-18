@@ -14,7 +14,8 @@ from models.conversation_partner import ConversationPartner
 from models import schemas
 from auth.password import get_password_hash, verify_password
 from auth.jwt import create_access_token, get_current_user
-from routers import conversation_partners, personality, marriage_mbti, counselor, profile, auth, user_settings
+from routers import conversation_partners, personality, marriage_mbti, counselor, profile, auth, user_settings, features
+from routers import help as help_router
 from fastapi.responses import JSONResponse
 import random
 from urllib.parse import urlparse
@@ -257,6 +258,8 @@ app.include_router(marriage_mbti.router, prefix="/api/marriage-mbti", tags=["mar
 app.include_router(counselor.router)
 app.include_router(profile.router)
 app.include_router(user_settings.router)
+app.include_router(features.router, tags=["features"])
+app.include_router(help_router.router, tags=["help"])
 
 # OpenAI接続テスト用エンドポイント（認証なし）
 @app.get("/test-openai")
