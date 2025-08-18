@@ -5,6 +5,10 @@ from datetime import datetime
 from openai import OpenAI
 import os
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+# 環境変数読み込み
+load_dotenv()
 
 from database import get_db
 from auth.jwt import get_current_user

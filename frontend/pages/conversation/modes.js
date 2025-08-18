@@ -50,7 +50,7 @@ export default function ConversationModes() {
           id: 'free',
           title: 'フリー会話',
           icon: Users,
-          path: '/conversation',
+          path: '/conversation/practice-new',
           step: 5
         }
       ]

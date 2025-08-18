@@ -246,19 +246,17 @@ export default function CounselorChat() {
       });
     } catch (error) {
       console.error('Error sending message:', error);
-      // フォールバック応答
+      // ネットワークエラーメッセージ
       const aiResponse = {
         id: Date.now() + 1,
         type: 'ai',
-        content: generateAIResponse(userMessage.content),
-        timestamp: new Date()
+        content: '⚠️ 申し訳ございません。現在ネットワークの問題により、AIカウンセラーに接続できません。\n\nしばらく時間をおいてから再度お試しください。\n\n【考えられる原因】\n・インターネット接続が不安定\n・サーバーメンテナンス中\n・一時的な通信エラー',
+        timestamp: new Date(),
+        isError: true
       };
       setMessages(prev => {
         const updatedMessages = [...prev, aiResponse];
-        // フォールバック時も保存
-        setTimeout(() => {
-          saveConversationWithMessages(updatedMessages);
-        }, 100);
+        // エラー時は保存しない
         return updatedMessages;
       });
     } finally {
@@ -462,12 +460,14 @@ export default function CounselorChat() {
                   className={`max-w-xs px-4 py-3 rounded-2xl ${
                     message.type === 'user'
                       ? 'bg-[#FF8551] text-white'
-                      : 'bg-white text-gray-800 shadow-sm'
+                      : message.isError 
+                        ? 'bg-red-50 text-red-800 border border-red-200'
+                        : 'bg-white text-gray-800 shadow-sm'
                   }`}
                 >
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                   <p className={`text-xs mt-1 ${
-                    message.type === 'user' ? 'text-orange-100' : 'text-gray-400'
+                    message.type === 'user' ? 'text-orange-100' : message.isError ? 'text-red-400' : 'text-gray-400'
                   }`}>
                     {currentTime || 'loading...'}
                   </p>

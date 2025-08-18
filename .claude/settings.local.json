@@ -92,7 +92,8 @@
       "Bash(npm search mcp)",
       "WebSearch",
       "Bash(GEMINI_API_KEY=test OPENAI_API_KEY=test timeout 2 node mcp-server.js)",
-      "Bash(gh pr view:*)"
+      "Bash(gh pr view:*)",
+      "Bash(source:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits",
