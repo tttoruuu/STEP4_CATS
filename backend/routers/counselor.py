@@ -17,37 +17,6 @@ from models.conversation import Conversation
 
 router = APIRouter(prefix="/api/counselor", tags=["counselor"])
 
-# 開発環境用の簡易認証機能
-async def get_dev_user(db: Session = Depends(get_db)):
-    """開発環境用：認証をバイパスしてテストユーザーを返す"""
-    if os.getenv("ENV") == "development":
-        # 開発環境用: 固定ユーザーを使用
-        user_id = "dev_user_fixed"  # 固定ユーザーID
-        
-        user = db.query(User).filter(User.username == user_id).first()
-        if not user:
-            # 新しい開発ユーザーを作成
-            from datetime import date, datetime
-            current_hour = datetime.now().hour
-            user = User(
-                username=user_id,
-                password_hash="dev_hash",
-                full_name=f"開発ユーザー{current_hour % 10}",
-                email=f"{user_id}@dev.example.com",
-                birth_date=date(1990, 1, 1),
-                hometown="開発環境",
-                hobbies="開発テスト",
-                matchmaking_agency="開発用結婚相談所"
-            )
-            db.add(user)
-            db.commit()
-            db.refresh(user)
-            print(f"Created new dev user: {user_id}")
-        
-        return user
-    # 本番環境では通常の認証を使用（実装時は適切な認証を設定）
-    raise HTTPException(status_code=401, detail="Authentication required")
-
 # リクエスト/レスポンスモデル
 class ChatRequest(BaseModel):
     message: str
@@ -269,7 +238,7 @@ PROFILE_IMPROVEMENT_PROMPT = """
 @router.post("/chat", response_model=ChatResponse)
 async def counselor_chat(
     request: ChatRequest,
-    current_user: User = Depends(get_dev_user),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """AIカウンセラーとのチャット"""
@@ -652,7 +621,7 @@ async def generate_conversation_title(messages: List[dict]) -> str:
 @router.post("/save", response_model=ConversationSaveResponse)
 async def save_conversation(
     request: ConversationSaveRequest,
-    current_user: User = Depends(get_dev_user),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """会話の保存"""
@@ -763,7 +732,7 @@ async def get_current_time():
 
 @router.get("/history")
 async def get_counselor_history(
-    current_user: User = Depends(get_dev_user),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """カウンセリング履歴の取得（会話セッションごとにグループ化）"""
@@ -821,7 +790,7 @@ async def get_counselor_history(
 @router.get("/history/{conversation_id}", response_model=ConversationHistoryResponse)
 async def get_conversation_by_id(
     conversation_id: str,
-    current_user: User = Depends(get_dev_user),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """特定の会話履歴の取得"""
