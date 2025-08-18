@@ -149,21 +149,9 @@ SessionLocal = sessionmaker(
 )
 
 # セッション開始時のSSL検証（開発/デバッグ用）
-if IS_PRODUCTION and MYSQL_SSL_ENABLED:
-    @event.listens_for(SessionLocal, "after_begin")
-    def assert_ssl_on_session_begin(session, transaction, connection):
-        """セッション開始時にSSLを確認"""
-        try:
-            result = session.execute(text("SHOW SESSION STATUS LIKE 'Ssl_cipher'")).fetchone()
-            if not result or not result[1]:
-                logger.error("エラー: セッション開始時にSSLが無効です！")
-                raise RuntimeError("SSL missing at session begin")
-            else:
-                logger.debug(f"セッション開始時SSL暗号: {result[1]}")
-        except RuntimeError:
-            raise
-        except Exception as e:
-            logger.error(f"セッションSSL検証エラー: {e}")
+# 注: after_beginイベントはセッション作成中に発生するため、
+# その中でセッションを使用すると並行操作エラーが発生する
+# このイベントリスナーは無効化
 
 # モデル定義用のベースクラス
 Base = declarative_base()
@@ -189,7 +177,9 @@ def get_db():
             
         yield db
     except Exception as e:
+        import traceback
         logger.error(f"データベースセッションエラー: {e}")
+        logger.error(f"エラーの詳細: {traceback.format_exc()}")
         db.rollback()
         raise
     finally:

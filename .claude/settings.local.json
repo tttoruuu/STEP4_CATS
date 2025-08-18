@@ -88,9 +88,16 @@
       "Bash(az mysql server firewall-rule list:*)",
       "Bash(az containerapp exec:*)",
       "Bash(az containerapp revision logs show:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(npm search mcp)",
+      "WebSearch",
+      "Bash(GEMINI_API_KEY=test OPENAI_API_KEY=test timeout 2 node mcp-server.js)",
+      "Bash(gh pr view:*)"
     ],
     "deny": [],
-    "defaultMode": "acceptEdits"
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "/Users/toru/mcp-ai-bridge"
+    ]
   }
 }

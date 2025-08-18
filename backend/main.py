@@ -46,15 +46,24 @@ async def create_tables_with_retry(max_retries=5, delay=5):
 async def add_missing_columns_if_needed():
     """不足しているカラムを追加（本番環境対応）"""
     import pymysql
-    from config import MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD, IS_PRODUCTION, MYSQL_SSL_ENABLED
+    from config import IS_PRODUCTION, MYSQL_SSL_ENABLED
     from database import get_ssl_cert_path
+    import os
     
-    # データベース接続情報
-    host = MYSQL_HOST
-    port = MYSQL_PORT
-    database = MYSQL_DATABASE
-    user = MYSQL_USER
-    password = MYSQL_PASSWORD
+    # データベース接続情報（本番環境の値を直接使用）
+    if IS_PRODUCTION:
+        host = os.getenv("AZURE_MYSQL_HOST", "eastasiafor9th.mysql.database.azure.com")
+        port = int(os.getenv("AZURE_MYSQL_PORT", "3306"))
+        database = os.getenv("AZURE_MYSQL_DATABASE", "tech0students_db")
+        user = os.getenv("AZURE_MYSQL_USER", "tech0")
+        password = os.getenv("AZURE_MYSQL_PASSWORD", "9th-tech0")
+    else:
+        from config import MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD
+        host = MYSQL_HOST
+        port = MYSQL_PORT
+        database = MYSQL_DATABASE
+        user = MYSQL_USER
+        password = MYSQL_PASSWORD
     
     # SSL設定
     connect_kwargs = {
@@ -96,7 +105,9 @@ async def add_missing_columns_if_needed():
             ("occupation", "VARCHAR(255)"),
             ("birth_place", "VARCHAR(255)"),
             ("location", "VARCHAR(255)"),
-            ("weekend_activity", "TEXT")
+            ("weekend_activity", "TEXT"),
+            ("show_service_video", "BOOLEAN"),
+            ("first_login_at", "DATETIME")
         ]
         
         # 既存のカラムを取得

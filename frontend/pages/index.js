@@ -12,7 +12,9 @@ export default function MainPage() {
   const [user, setUser] = useState({
     firstName: '',
     lastName: '',
-    username: 'テストユーザー' // 🚨 EMERGENCY: 固定値で簡素化
+    username: 'テストユーザー', // 🚨 EMERGENCY: 固定値で簡素化
+    full_name: '',
+    email: ''
   });
   const [loading, setLoading] = useState(false); // 🐛 デバッグ: 初期状態をfalseに変更してローディング画面をスキップ
   const [error, setError] = useState('');
@@ -33,18 +35,23 @@ export default function MainPage() {
           if (storedUser) {
             try {
               const userData = JSON.parse(storedUser);
-              setUser(userData);
+              // full_nameがあればそれを使い、なければemailから@前を使用
+              const displayName = userData.full_name || userData.email?.split('@')[0] || userData.username || 'ユーザー';
+              setUser({
+                ...userData,
+                username: displayName
+              });
               console.log('[Index] ストレージからユーザー情報を復元:', userData);
             } catch (e) {
               console.error('[Index] ユーザー情報の解析エラー:', e);
-              setUser({ username: 'ユーザー' });
+              setUser({ username: 'ユーザー', full_name: '', email: '' });
             }
           } else {
-            setUser({ username: 'ユーザー' });
+            setUser({ username: 'ユーザー', full_name: '', email: '' });
           }
         } else {
           // サーバーサイドではデフォルトユーザーを設定
-          setUser({ username: 'ユーザー' });
+          setUser({ username: 'ユーザー', full_name: '', email: '' });
         }
         
         // 強制的にローディングを解除
@@ -172,14 +179,16 @@ export default function MainPage() {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-medium text-[var(--text-primary)]">{user.username}</span>
-                <span className="text-sm text-[var(--text-secondary)]">ようこそ！</span>
+                <span className="text-sm text-[var(--text-secondary)]">ようこそ</span>
+                <span className="font-medium text-[var(--text-primary)]">{user.username}さん</span>
               </div>
             </div>
             
-            <button className="neo-btn px-4 py-2 text-sm">
-              編集する
-            </button>
+            <Link href="/profile">
+              <button className="neo-btn px-3 py-2 text-sm whitespace-nowrap">
+                編集する
+              </button>
+            </Link>
           </div>
         </div>
 
@@ -188,15 +197,7 @@ export default function MainPage() {
 
         {/* メニューボタン */}
         <nav className="flex flex-col space-y-4">
-          {/* AIカウンセラー */}
-          <Link href="/counselor">
-            <button className="neo-btn neo-btn-primary w-full flex items-center justify-center gap-3 py-4">
-              <User className="w-5 h-5" />
-              <span className="font-medium">AIカウンセラー</span>
-            </button>
-          </Link>
-
-          {/* 会話練習機能 */}
+          {/* 会話練習機能 - 1番目 */}
           <Link href="/conversation/modes">
             <button className="neo-btn w-full flex items-center justify-center gap-3 py-4" style={{background: 'linear-gradient(135deg, var(--light-orange), var(--primary-orange))'}}>
               <MessageSquare className="w-5 h-5 text-white" />
@@ -204,7 +205,15 @@ export default function MainPage() {
             </button>
           </Link>
 
-          {/* MBTI Marriage診断機能 */}
+          {/* AIカウンセラー - 2番目、白地にオレンジスタンプ */}
+          <Link href="/counselor">
+            <button className="neo-btn w-full flex items-center justify-center gap-3 py-4">
+              <User className="w-5 h-5" style={{color: 'var(--primary-orange)'}} />
+              <span className="font-medium">AIカウンセラー</span>
+            </button>
+          </Link>
+
+          {/* MBTI Marriage診断機能 - 3番目 */}
           <Link href="/marriage-mbti-test">
             <button className="neo-btn w-full flex items-center justify-center gap-3 py-4">
               <Heart className="w-5 h-5" style={{color: 'var(--primary-orange)'}} />
@@ -212,7 +221,7 @@ export default function MainPage() {
             </button>
           </Link>
 
-          {/* スタイリング提案機能 */}
+          {/* スタイリング提案機能 - 4番目 */}
           <Link href="/styling">
             <button className="neo-btn neo-btn-secondary w-full flex items-center justify-center gap-3 py-4">
               <Palette className="w-5 h-5" />
