@@ -34,6 +34,7 @@ const ConversationComprehensive: React.FC = () => {
   const [voiceScore, setVoiceScore] = useState({ tempo: 0, silence: 0, overlap: 0 });
   const [isClient, setIsClient] = useState(false);
   const [continuousPlay, setContinuousPlay] = useState(false);
+  const [isSegmentPlaying, setIsSegmentPlaying] = useState(false);
   const timelineRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -81,12 +82,35 @@ const ConversationComprehensive: React.FC = () => {
   const playSegment = (segment: ConversationSegment) => {
     if (!audioRef.current) return;
     
+    // 通し再生を停止
+    if (continuousPlay) {
+      stopContinuousPlay();
+    }
+    
     audioRef.current.currentTime = segment.start;
     audioRef.current.playbackRate = playbackSpeed;
     setCurrentSegment(segment);
     setIsPlaying(true);
+    setIsSegmentPlaying(true);
     
     audioRef.current.play().catch(e => console.error('再生エラー:', e));
+    
+    // セグメント終了時に自動停止
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    
+    intervalRef.current = setInterval(() => {
+      if (audioRef.current && audioRef.current.currentTime >= segment.end) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+        setIsSegmentPlaying(false);
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+      }
+    }, 50);
   };
 
   // 通し再生の開始
@@ -138,6 +162,7 @@ const ConversationComprehensive: React.FC = () => {
     }
     setContinuousPlay(false);
     setIsPlaying(false);
+    setIsSegmentPlaying(false);
     if (audioRef.current) {
       audioRef.current.pause();
     }
@@ -364,11 +389,7 @@ const ConversationComprehensive: React.FC = () => {
                     currentSegment?.id === segment.id ? 'ring-4 ring-[var(--primary-orange)] shadow-xl' : ''
                   }`}
                   onClick={() => {
-                    if (continuousPlay) {
-                      stopContinuousPlay();
-                    }
                     setCurrentSegmentIndex(index);
-                    setCurrentSegment(segment);
                     playSegment(segment);
                   }}
                 >
@@ -378,10 +399,25 @@ const ConversationComprehensive: React.FC = () => {
                       className="text-blue-600 hover:text-blue-800"
                       onClick={(e) => {
                         e.stopPropagation();
-                        playSegment(segment);
+                        if (isSegmentPlaying && currentSegment?.id === segment.id) {
+                          // 再生中のセグメントをクリックしたら停止
+                          if (intervalRef.current) {
+                            clearInterval(intervalRef.current);
+                            intervalRef.current = null;
+                          }
+                          audioRef.current?.pause();
+                          setIsPlaying(false);
+                          setIsSegmentPlaying(false);
+                        } else {
+                          playSegment(segment);
+                        }
                       }}
                     >
-                      <Play size={16} />
+                      {isSegmentPlaying && currentSegment?.id === segment.id ? (
+                        <Pause size={16} />
+                      ) : (
+                        <Play size={16} />
+                      )}
                     </button>
                   </div>
                   <p className="text-[var(--text-dark)]">{segment.text}</p>
