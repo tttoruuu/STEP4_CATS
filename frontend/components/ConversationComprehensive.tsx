@@ -33,6 +33,9 @@ const ConversationComprehensive: React.FC = () => {
   const [reviewNotes, setReviewNotes] = useState('');
   const [voiceScore, setVoiceScore] = useState({ tempo: 0, silence: 0, overlap: 0 });
   const [isClient, setIsClient] = useState(false);
+  const [continuousPlay, setContinuousPlay] = useState(false);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // クライアントサイドでのみ実行
   useEffect(() => {
@@ -74,23 +77,87 @@ const ConversationComprehensive: React.FC = () => {
     setIsPlaying(true);
     
     audioRef.current.play().catch(e => console.error('再生エラー:', e));
+  };
+
+  // 通し再生の開始
+  const startContinuousPlay = () => {
+    if (!audioRef.current) return;
     
-    // セグメント終了を監視
-    const checkEnd = setInterval(() => {
-      if (audioRef.current && audioRef.current.currentTime >= segment.end) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-        clearInterval(checkEnd);
+    setContinuousPlay(true);
+    setIsPlaying(true);
+    audioRef.current.currentTime = 0;
+    audioRef.current.playbackRate = playbackSpeed;
+    audioRef.current.play().catch(e => console.error('再生エラー:', e));
+    
+    // 現在の再生位置を監視して対応するセグメントをハイライト
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    
+    intervalRef.current = setInterval(() => {
+      if (audioRef.current) {
+        const currentTime = audioRef.current.currentTime;
         
-        // 連続再生の場合
-        if (practiceMode === 'listen' || practiceMode === 'shadow') {
-          setTimeout(() => {
-            playNextSegment();
-          }, autoGap);
+        // 現在再生中のセグメントを見つける
+        const activeSegment = segments.find(
+          seg => currentTime >= seg.start && currentTime < seg.end
+        );
+        
+        if (activeSegment && activeSegment.id !== currentSegment?.id) {
+          setCurrentSegment(activeSegment);
+          const index = segments.findIndex(seg => seg.id === activeSegment.id);
+          setCurrentSegmentIndex(index);
+          
+          // セグメントが変わったらスクロール
+          scrollToSegment(activeSegment.id);
+        }
+        
+        // 音声が終了したら停止
+        if (audioRef.current.ended) {
+          stopContinuousPlay();
         }
       }
     }, 100);
   };
+
+  // 通し再生の停止
+  const stopContinuousPlay = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setContinuousPlay(false);
+    setIsPlaying(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+  };
+
+  // セグメントへのスクロール
+  const scrollToSegment = (segmentId: number) => {
+    const element = document.getElementById(`segment-${segmentId}`);
+    if (element && timelineRef.current) {
+      const container = timelineRef.current;
+      const elementTop = element.offsetTop - container.offsetTop;
+      const elementHeight = element.offsetHeight;
+      const containerHeight = container.clientHeight;
+      const scrollPosition = elementTop - (containerHeight / 2) + (elementHeight / 2);
+      
+      container.scrollTo({
+        top: Math.max(0, scrollPosition),
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // クリーンアップ
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   // 次のセグメントを再生
   const playNextSegment = () => {
@@ -193,21 +260,32 @@ const ConversationComprehensive: React.FC = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => {
-                  if (isPlaying) {
-                    audioRef.current?.pause();
-                    setIsPlaying(false);
-                  } else if (currentSegment) {
-                    playSegment(currentSegment);
+                  if (continuousPlay) {
+                    stopContinuousPlay();
+                  } else {
+                    startContinuousPlay();
                   }
                 }}
                 className="p-3 rounded-full bg-[var(--primary-orange)] text-white hover:opacity-80 transition-opacity"
+                title={continuousPlay ? "停止" : "通し再生"}
               >
-                {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                {continuousPlay ? <Pause size={24} /> : <Play size={24} />}
               </button>
+              
+              {currentSegment && !continuousPlay && (
+                <button
+                  onClick={() => playSegment(currentSegment)}
+                  className="p-2 rounded-full bg-gray-200 text-[var(--text-medium)] hover:bg-gray-300 transition-colors"
+                  title="現在のセグメントを再生"
+                >
+                  <Play size={20} />
+                </button>
+              )}
               
               <button
                 onClick={playNextSegment}
                 className="p-2 rounded-full bg-gray-200 text-[var(--text-medium)] hover:bg-gray-300 transition-colors"
+                disabled={continuousPlay}
               >
                 <SkipForward size={20} />
               </button>
@@ -256,21 +334,29 @@ const ConversationComprehensive: React.FC = () => {
         <div className="neo-card">
           <h3 className="text-lg font-semibold mb-4 text-[var(--text-dark)]">会話タイムライン</h3>
           
-          <div className="space-y-4 max-h-96 overflow-y-auto">
+          <div ref={timelineRef} className="space-y-4 max-h-96 overflow-y-auto">
             {segments.map((segment, index) => (
               <div
                 key={segment.id}
+                id={`segment-${segment.id}`}
                 className={`flex ${segment.speaker === 'A' ? 'justify-start' : 'justify-end'}`}
               >
                 <div 
                   className={`max-w-md p-4 rounded-2xl cursor-pointer transition-all ${
                     segment.speaker === 'A' 
-                      ? 'bg-blue-100 hover:bg-blue-200' 
-                      : 'bg-green-100 hover:bg-green-200'
+                      ? currentSegment?.id === segment.id
+                        ? 'bg-blue-200 scale-105'
+                        : 'bg-blue-100 hover:bg-blue-200' 
+                      : currentSegment?.id === segment.id
+                        ? 'bg-green-200 scale-105'
+                        : 'bg-green-100 hover:bg-green-200'
                   } ${
-                    currentSegment?.id === segment.id ? 'ring-2 ring-[var(--primary-orange)]' : ''
+                    currentSegment?.id === segment.id ? 'ring-4 ring-[var(--primary-orange)] shadow-xl' : ''
                   }`}
                   onClick={() => {
+                    if (continuousPlay) {
+                      stopContinuousPlay();
+                    }
                     setCurrentSegmentIndex(index);
                     setCurrentSegment(segment);
                     playSegment(segment);
