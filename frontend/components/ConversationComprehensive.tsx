@@ -136,8 +136,8 @@ const ConversationComprehensive: React.FC = () => {
         </button>
         
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-2">会話練習 総集編</h1>
-          <p className="text-[var(--text-secondary)]">実践的な会話を通じて総合的なスキルを身につける</p>
+          <h1 className="text-3xl font-bold text-[var(--text-dark)] mb-2">会話練習 総集編</h1>
+          <p className="text-[var(--text-medium)]">実践的な会話を通じて総合的なスキルを身につける</p>
         </div>
 
         {/* 練習モード選択 */}
@@ -156,7 +156,7 @@ const ConversationComprehensive: React.FC = () => {
                 className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all ${
                   practiceMode === mode 
                     ? 'bg-[var(--primary-orange)] text-white' 
-                    : 'bg-gray-200 text-[var(--text-secondary)] hover:bg-gray-300'
+                    : 'bg-gray-200 text-[var(--text-medium)] hover:bg-gray-300'
                 }`}
               >
                 <Icon size={18} />
@@ -194,7 +194,7 @@ const ConversationComprehensive: React.FC = () => {
               
               <button
                 onClick={playNextSegment}
-                className="p-2 rounded-full bg-gray-200 text-[var(--text-secondary)] hover:bg-gray-300 transition-colors"
+                className="p-2 rounded-full bg-gray-200 text-[var(--text-medium)] hover:bg-gray-300 transition-colors"
               >
                 <SkipForward size={20} />
               </button>
@@ -202,7 +202,7 @@ const ConversationComprehensive: React.FC = () => {
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-[var(--text-secondary)]">速度:</span>
+                <span className="text-sm text-[var(--text-medium)]">速度:</span>
                 <select 
                   value={playbackSpeed} 
                   onChange={(e) => {
@@ -223,7 +223,7 @@ const ConversationComprehensive: React.FC = () => {
               </div>
               
               <div className="flex items-center gap-2">
-                <span className="text-sm text-[var(--text-secondary)]">間隔:</span>
+                <span className="text-sm text-[var(--text-medium)]">間隔:</span>
                 <input 
                   type="number" 
                   value={autoGap} 
@@ -233,7 +233,7 @@ const ConversationComprehensive: React.FC = () => {
                   max="5000"
                   step="100"
                 />
-                <span className="text-sm text-[var(--text-secondary)]">ms</span>
+                <span className="text-sm text-[var(--text-medium)]">ms</span>
               </div>
             </div>
           </div>
@@ -241,7 +241,7 @@ const ConversationComprehensive: React.FC = () => {
 
         {/* 会話タイムライン */}
         <div className="neo-card">
-          <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">会話タイムライン</h3>
+          <h3 className="text-lg font-semibold mb-4 text-[var(--text-dark)]">会話タイムライン</h3>
           
           <div className="space-y-4 max-h-96 overflow-y-auto">
             {segments.map((segment, index) => (
@@ -275,7 +275,7 @@ const ConversationComprehensive: React.FC = () => {
                       <Play size={16} />
                     </button>
                   </div>
-                  <p className="text-[var(--text-primary)]">{segment.text}</p>
+                  <p className="text-[var(--text-dark)]">{segment.text}</p>
                   
                   {/* ロールプレイモードで役割選択 */}
                   {practiceMode === 'roleplay' && (
@@ -288,7 +288,7 @@ const ConversationComprehensive: React.FC = () => {
                         className={`text-xs px-2 py-1 rounded ${
                           selectedRole === segment.speaker 
                             ? 'bg-[var(--primary-orange)] text-white' 
-                            : 'bg-gray-200 text-[var(--text-secondary)]'
+                            : 'bg-gray-200 text-[var(--text-medium)]'
                         }`}
                       >
                         この役を演じる
@@ -304,8 +304,8 @@ const ConversationComprehensive: React.FC = () => {
         {/* モード別追加UI */}
         {practiceMode === 'shadow' && (
           <div className="neo-card mt-6">
-            <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">シャドーイング練習</h3>
-            <p className="text-[var(--text-secondary)] mb-4">
+            <h3 className="text-lg font-semibold mb-4 text-[var(--text-dark)]">シャドーイング練習</h3>
+            <p className="text-[var(--text-medium)] mb-4">
               音声を聞きながら、同時に声に出して練習しましょう
             </p>
             <button
@@ -324,8 +324,8 @@ const ConversationComprehensive: React.FC = () => {
 
         {practiceMode === 'roleplay' && (
           <div className="neo-card mt-6">
-            <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">ロールプレイ練習</h3>
-            <p className="text-[var(--text-secondary)] mb-4">
+            <h3 className="text-lg font-semibold mb-4 text-[var(--text-dark)]">ロールプレイ練習</h3>
+            <p className="text-[var(--text-medium)] mb-4">
               役割を選んで会話に参加しましょう
             </p>
             {selectedRole && (
@@ -339,7 +339,7 @@ const ConversationComprehensive: React.FC = () => {
 
         {practiceMode === 'check' && (
           <div className="neo-card mt-6">
-            <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">会話チェック</h3>
+            <h3 className="text-lg font-semibold mb-4 text-[var(--text-dark)]">会話チェック</h3>
             <div className="space-y-3">
               <label className="flex items-center gap-3 cursor-pointer">
                 <input 
@@ -374,7 +374,7 @@ const ConversationComprehensive: React.FC = () => {
 
         {practiceMode === 'review' && (
           <div className="neo-card mt-6">
-            <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">振り返り</h3>
+            <h3 className="text-lg font-semibold mb-4 text-[var(--text-dark)]">振り返り</h3>
             
             <div className="mb-6">
               <h4 className="font-medium mb-2">5WHY分析</h4>
