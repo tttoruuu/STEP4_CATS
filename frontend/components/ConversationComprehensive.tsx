@@ -55,8 +55,8 @@ const ConversationComprehensive: React.FC = () => {
 
   const loadSegments = async () => {
     try {
-      // Whisperで文字起こししたデータを読み込む（手動修正版）
-      const response = await fetch('/conversation_segments_corrected.json');
+      // VSCodeで編集可能なデータを読み込む
+      const response = await fetch('/conversation_segments_editable.json');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
