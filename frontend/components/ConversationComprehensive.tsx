@@ -270,6 +270,17 @@ const ConversationComprehensive: React.FC = () => {
     });
     setEditedSegments(updatedSegments);
     setEditingSegmentId(null);
+    
+    // segmentsも更新して即座に反映
+    setSegments(updatedSegments);
+    
+    // currentSegmentも更新
+    if (currentSegment && currentSegment.id === segmentId) {
+      const updatedSegment = updatedSegments.find(s => s.id === segmentId);
+      if (updatedSegment) {
+        setCurrentSegment(updatedSegment);
+      }
+    }
   };
 
   // 編集のキャンセル
@@ -516,7 +527,7 @@ const ConversationComprehensive: React.FC = () => {
                   </div>
                   {editMode && editingSegmentId === segment.id ? (
                     // 編集モード
-                    <div className="space-y-2">
+                    <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center gap-2">
                         <label className="text-sm">話者:</label>
                         <select
@@ -535,10 +546,13 @@ const ConversationComprehensive: React.FC = () => {
                       />
                       <div className="flex gap-2">
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             const speakerSelect = document.getElementById(`speaker-${segment.id}`) as HTMLSelectElement;
                             const textArea = document.getElementById(`text-${segment.id}`) as HTMLTextAreaElement;
-                            saveSegmentEdit(segment.id, speakerSelect.value as 'A' | 'B', textArea.value);
+                            if (speakerSelect && textArea) {
+                              saveSegmentEdit(segment.id, speakerSelect.value as 'A' | 'B', textArea.value);
+                            }
                           }}
                           className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 flex items-center gap-1"
                         >
@@ -546,7 +560,10 @@ const ConversationComprehensive: React.FC = () => {
                           保存
                         </button>
                         <button
-                          onClick={cancelEdit}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            cancelEdit();
+                          }}
                           className="px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-500 flex items-center gap-1"
                         >
                           <X size={16} />
