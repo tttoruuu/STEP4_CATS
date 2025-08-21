@@ -22,6 +22,7 @@ const ConversationComprehensiveSimple: React.FC = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [audioReady, setAudioReady] = useState(false);
 
   // クライアントサイドでのみ実行
   useEffect(() => {
@@ -79,20 +80,45 @@ const ConversationComprehensiveSimple: React.FC = () => {
     // 一度停止
     audioRef.current.pause();
     
+    // 音声の準備ができているか確認
+    if (audioRef.current.readyState < 2) {
+      console.log('音声データを読み込み中...');
+      audioRef.current.load();
+      // 読み込み完了を待つ
+      await new Promise((resolve) => {
+        const checkReady = setInterval(() => {
+          if (audioRef.current && audioRef.current.readyState >= 2) {
+            clearInterval(checkReady);
+            resolve(null);
+          }
+        }, 100);
+      });
+    }
+    
     try {
-      // 再生位置を設定
-      audioRef.current.currentTime = segment.start;
+      // 再生位置を設定（少し手前から開始して自然にする）
+      const startTime = Math.max(0, segment.start - 0.1);
+      audioRef.current.currentTime = startTime;
       setCurrentSegment(segment);
       setIsPlaying(true);
       
+      // 少し待ってから再生開始（位置設定の確実性向上）
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // 再生開始
       await audioRef.current.play();
+      
+      // セグメント開始まで待つ（手前から始めた場合）
+      if (startTime < segment.start) {
+        const waitTime = (segment.start - startTime) * 1000;
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
       
       // セグメント終了時に自動停止
       intervalRef.current = setInterval(() => {
         if (audioRef.current) {
           const currentTime = audioRef.current.currentTime;
-          if (currentTime >= segment.end) {
+          if (currentTime >= segment.end || audioRef.current.paused) {
             audioRef.current.pause();
             setIsPlaying(false);
             setCurrentSegment(null);
@@ -106,6 +132,7 @@ const ConversationComprehensiveSimple: React.FC = () => {
     } catch (error) {
       console.error('再生エラー:', error);
       setIsPlaying(false);
+      setCurrentSegment(null);
     }
   };
 
@@ -199,10 +226,30 @@ const ConversationComprehensiveSimple: React.FC = () => {
       }
     };
 
+    const handleCanPlay = () => {
+      setAudioReady(true);
+    };
+
+    const handleWaiting = () => {
+      console.log('音声バッファリング中...');
+    };
+
+    const handleError = (e: Event) => {
+      console.error('音声エラー:', e);
+      setAudioReady(false);
+      setIsPlaying(false);
+    };
+
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('canplay', handleCanPlay);
+    audio.addEventListener('waiting', handleWaiting);
+    audio.addEventListener('error', handleError);
 
     return () => {
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener('waiting', handleWaiting);
+      audio.removeEventListener('error', handleError);
     };
   }, []);
 
@@ -249,7 +296,10 @@ const ConversationComprehensiveSimple: React.FC = () => {
           />
           
           {/* 再生コントロール */}
-          <div className="flex justify-center">
+          <div className="flex flex-col items-center gap-2">
+            {!audioReady && (
+              <p className="text-sm text-gray-500">音声を読み込み中...</p>
+            )}
             <button
               onClick={() => {
                 if (continuousPlay) {
@@ -258,8 +308,9 @@ const ConversationComprehensiveSimple: React.FC = () => {
                   startContinuousPlay();
                 }
               }}
-              className="p-3 rounded-full bg-[var(--primary-orange)] text-white hover:opacity-80 transition-opacity"
+              className="p-3 rounded-full bg-[var(--primary-orange)] text-white hover:opacity-80 transition-opacity disabled:opacity-50"
               title={continuousPlay ? "停止" : "通し再生"}
+              disabled={!audioReady}
             >
               {continuousPlay ? <Pause size={24} /> : <Play size={24} />}
             </button>
@@ -292,7 +343,18 @@ const ConversationComprehensiveSimple: React.FC = () => {
                     marginTop: currentSegment?.id === segment.id ? '8px' : '0',
                     marginBottom: currentSegment?.id === segment.id ? '8px' : '0'
                   }}
-                  onClick={() => playSegment(segment)}
+                  onClick={async () => {
+                    if (!audioRef.current) return;
+                    
+                    // 既に再生中の同じセグメントの場合は一時停止
+                    if (currentSegment?.id === segment.id && isPlaying) {
+                      audioRef.current.pause();
+                      setIsPlaying(false);
+                    } else {
+                      // 新規再生
+                      await playSegment(segment);
+                    }
+                  }}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`font-semibold text-sm ${
@@ -306,13 +368,20 @@ const ConversationComprehensiveSimple: React.FC = () => {
                       } ${
                         segment.speaker === 'A' ? 'text-[var(--primary-orange)]' : 'text-gray-600'
                       }`}
-                      onClick={(e) => {
+                      disabled={!audioRef.current}
+                      onClick={async (e) => {
                         e.stopPropagation();
+                        e.preventDefault();
+                        
+                        if (!audioRef.current) return;
+                        
                         if (currentSegment?.id === segment.id && isPlaying) {
-                          audioRef.current?.pause();
+                          // 一時停止
+                          audioRef.current.pause();
                           setIsPlaying(false);
                         } else {
-                          playSegment(segment);
+                          // 再生
+                          await playSegment(segment);
                         }
                       }}
                     >
