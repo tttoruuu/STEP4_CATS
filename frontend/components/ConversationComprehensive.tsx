@@ -52,17 +52,14 @@ const ConversationComprehensive: React.FC = () => {
 
   const loadSegments = async () => {
     try {
-      // Whisperで文字起こししたデータを読み込む（話者分離改善版）
-      const response = await fetch('/conversation_segments_improved.json');
-      console.log('Response status:', response.status);
+      // Whisperで文字起こししたデータを読み込む（手動修正版）
+      const response = await fetch('/conversation_segments_corrected.json');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
-      console.log('読み込んだセグメント数:', data.length);
-      console.log('最初のセグメント:', data[0]);
       
       // 話者名を整形
       const formattedSegments = data.map((seg: any) => ({
@@ -89,29 +86,20 @@ const ConversationComprehensive: React.FC = () => {
 
   // セグメント再生
   const playSegment = (segment: ConversationSegment) => {
-    console.log('playSegment called:', segment);
-    if (!audioRef.current) {
-      console.error('audioRef.current is null');
-      return;
-    }
+    if (!audioRef.current) return;
     
     // 通し再生を停止
     if (continuousPlay) {
       stopContinuousPlay();
     }
     
-    console.log('Setting currentTime to:', segment.start);
     audioRef.current.currentTime = segment.start;
     audioRef.current.playbackRate = playbackSpeed;
     setCurrentSegment(segment);
     setIsPlaying(true);
     setIsSegmentPlaying(true);
     
-    audioRef.current.play()
-      .then(() => {
-        console.log('再生開始成功');
-      })
-      .catch(e => console.error('再生エラー:', e));
+    audioRef.current.play().catch(e => console.error('再生エラー:', e));
     
     // セグメント終了時に自動停止
     if (intervalRef.current) {
@@ -120,7 +108,6 @@ const ConversationComprehensive: React.FC = () => {
     
     intervalRef.current = setInterval(() => {
       if (audioRef.current && audioRef.current.currentTime >= segment.end) {
-        console.log('セグメント終了位置に到達');
         audioRef.current.pause();
         setIsPlaying(false);
         setIsSegmentPlaying(false);
@@ -420,9 +407,7 @@ const ConversationComprehensive: React.FC = () => {
                       title={isSegmentPlaying && currentSegment?.id === segment.id ? "停止" : "この部分を再生"}
                       onClick={(e) => {
                         e.stopPropagation();
-                        console.log('再生ボタンクリック:', segment.id, segment.text);
                         if (isSegmentPlaying && currentSegment?.id === segment.id) {
-                          console.log('停止処理');
                           // 再生中のセグメントをクリックしたら停止
                           if (intervalRef.current) {
                             clearInterval(intervalRef.current);
@@ -432,7 +417,6 @@ const ConversationComprehensive: React.FC = () => {
                           setIsPlaying(false);
                           setIsSegmentPlaying(false);
                         } else {
-                          console.log('再生処理開始');
                           playSegment(segment);
                         }
                       }}
