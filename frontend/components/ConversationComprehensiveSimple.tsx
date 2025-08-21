@@ -62,7 +62,6 @@ const ConversationComprehensiveSimple: React.FC = () => {
 
   // 個別セグメント再生
   const playSegment = (segment: ConversationSegment) => {
-    console.log(`再生開始: ID ${segment.id}, ${segment.start}秒 - ${segment.end}秒, "${segment.text}"`);
     if (!audioRef.current) return;
     
     // 通し再生を停止
@@ -76,18 +75,25 @@ const ConversationComprehensiveSimple: React.FC = () => {
       intervalRef.current = null;
     }
     
-    audioRef.current.currentTime = segment.start;
-    setCurrentSegment(segment);
-    setIsPlaying(true);
+    // 一度停止してから開始位置を設定
+    audioRef.current.pause();
     
-    audioRef.current.play().catch(e => console.error('再生エラー:', e));
+    // 少し待ってから再生位置を設定
+    setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.currentTime = segment.start;
+        setCurrentSegment(segment);
+        setIsPlaying(true);
+        
+        audioRef.current.play().catch(e => console.error('再生エラー:', e));
+      }
+    }, 100);
     
     // セグメント終了時に自動停止
     intervalRef.current = setInterval(() => {
       if (audioRef.current) {
         const currentTime = audioRef.current.currentTime;
         if (currentTime >= segment.end) {
-          console.log(`再生終了: ID ${segment.id}`);
           audioRef.current.pause();
           setIsPlaying(false);
           setCurrentSegment(null);
@@ -124,7 +130,14 @@ const ConversationComprehensiveSimple: React.FC = () => {
         );
         
         if (activeSegment) {
-          setCurrentSegment(activeSegment);
+          if (!currentSegment || currentSegment.id !== activeSegment.id) {
+            setCurrentSegment(activeSegment);
+            // ハイライトされたセグメントにスクロール
+            const element = document.getElementById(`segment-${activeSegment.id}`);
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
         } else {
           // セグメント間の隙間にいる場合はnullに設定
           setCurrentSegment(null);
@@ -238,7 +251,7 @@ const ConversationComprehensiveSimple: React.FC = () => {
                     <span className={`font-semibold text-sm ${
                       segment.speaker === 'A' ? 'text-[var(--primary-orange)]' : 'text-gray-700'
                     }`}>
-                      {segment.name} (ID: {segment.id})
+                      {segment.name}
                     </span>
                     <button 
                       className={`p-1 rounded hover:bg-gray-100 transition-colors ${
