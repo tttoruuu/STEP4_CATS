@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { ArrowLeft, Play, Pause, SkipForward, Volume2, Users, Mic, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Play, Pause, SkipForward, Volume2, Users, Mic, CheckCircle, AlertCircle, RefreshCw, Edit2, Save, Download, X, Check } from 'lucide-react';
 
 interface ConversationSegment {
   id: number;
@@ -35,6 +35,9 @@ const ConversationComprehensive: React.FC = () => {
   const [isClient, setIsClient] = useState(false);
   const [continuousPlay, setContinuousPlay] = useState(false);
   const [isSegmentPlaying, setIsSegmentPlaying] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editingSegmentId, setEditingSegmentId] = useState<number | null>(null);
+  const [editedSegments, setEditedSegments] = useState<ConversationSegment[]>([]);
   const timelineRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -68,6 +71,7 @@ const ConversationComprehensive: React.FC = () => {
       }));
       
       setSegments(formattedSegments);
+      setEditedSegments(formattedSegments); // 編集用のコピーを作成
       if (formattedSegments.length > 0) {
         setCurrentSegment(formattedSegments[0]);
       }
@@ -80,6 +84,7 @@ const ConversationComprehensive: React.FC = () => {
         { id: 3, speaker: "A", name: "佐藤 (女性)", start: 12.16, end: 18.54, text: "初対面ってやっぱり緊張しますね そうですねでもお会いできて嬉しいです" }
       ];
       setSegments(fallbackSegments);
+      setEditedSegments(fallbackSegments);
       setCurrentSegment(fallbackSegments[0]);
     }
   };
@@ -239,6 +244,52 @@ const ConversationComprehensive: React.FC = () => {
     });
   };
 
+  // 編集モードの切り替え
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
+    setEditingSegmentId(null);
+  };
+
+  // セグメントの編集開始
+  const startEditingSegment = (segmentId: number) => {
+    setEditingSegmentId(segmentId);
+  };
+
+  // セグメントの編集保存
+  const saveSegmentEdit = (segmentId: number, newSpeaker: 'A' | 'B', newText: string) => {
+    const updatedSegments = editedSegments.map(seg => {
+      if (seg.id === segmentId) {
+        return {
+          ...seg,
+          speaker: newSpeaker,
+          name: newSpeaker === 'A' ? '佐藤 (女性)' : '加藤 (男性)',
+          text: newText
+        };
+      }
+      return seg;
+    });
+    setEditedSegments(updatedSegments);
+    setEditingSegmentId(null);
+  };
+
+  // 編集のキャンセル
+  const cancelEdit = () => {
+    setEditingSegmentId(null);
+  };
+
+  // 編集内容のエクスポート
+  const exportEditedData = () => {
+    const dataStr = JSON.stringify(editedSegments, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = 'conversation_segments_edited.json';
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
   // サーバーサイドレンダリング時は何も表示しない
   if (!isClient) {
     return null;
@@ -259,6 +310,31 @@ const ConversationComprehensive: React.FC = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-[var(--text-dark)] mb-2">会話練習 総集編</h1>
           <p className="text-[var(--text-medium)]">実践的な会話を通じて総合的なスキルを身につける</p>
+          
+          {/* 編集モードボタン */}
+          <div className="mt-4 flex gap-2 justify-center">
+            <button
+              onClick={toggleEditMode}
+              className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+                editMode 
+                  ? 'bg-red-500 text-white hover:bg-red-600' 
+                  : 'bg-gray-200 text-[var(--text-medium)] hover:bg-gray-300'
+              }`}
+            >
+              <Edit2 size={18} />
+              {editMode ? '編集モード終了' : '編集モード'}
+            </button>
+            
+            {editMode && (
+              <button
+                onClick={exportEditedData}
+                className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 flex items-center gap-2 transition-all"
+              >
+                <Download size={18} />
+                エクスポート
+              </button>
+            )}
+          </div>
         </div>
 
         {/* 練習モード選択 */}
@@ -377,7 +453,7 @@ const ConversationComprehensive: React.FC = () => {
           <h3 className="text-lg font-semibold mb-4 text-[var(--text-dark)]">会話タイムライン</h3>
           
           <div ref={timelineRef} className="space-y-4 max-h-96 overflow-y-auto">
-            {segments.map((segment, index) => (
+            {(editMode ? editedSegments : segments).map((segment, index) => (
               <div
                 key={segment.id}
                 id={`segment-${segment.id}`}
@@ -393,16 +469,25 @@ const ConversationComprehensive: React.FC = () => {
                         ? 'bg-green-200 scale-105'
                         : 'bg-green-100 hover:bg-green-200'
                   } ${
-                    currentSegment?.id === segment.id ? 'ring-4 ring-[var(--primary-orange)] shadow-xl' : ''
+                    currentSegment?.id === segment.id && !editMode ? 'ring-4 ring-[var(--primary-orange)] shadow-xl' : ''
+                  } ${
+                    editMode ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''
+                  } ${
+                    editMode && editingSegmentId === segment.id ? 'ring-4 ring-blue-500' : ''
                   }`}
                   onClick={() => {
-                    setCurrentSegmentIndex(index);
-                    playSegment(segment);
+                    if (editMode) {
+                      startEditingSegment(segment.id);
+                    } else {
+                      setCurrentSegmentIndex(index);
+                      playSegment(segment);
+                    }
                   }}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-semibold text-sm">{segment.name}</span>
-                    <button 
+                    {!editMode && (
+                      <button 
                       className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-200 transition-colors"
                       title={isSegmentPlaying && currentSegment?.id === segment.id ? "停止" : "この部分を再生"}
                       onClick={(e) => {
@@ -427,8 +512,51 @@ const ConversationComprehensive: React.FC = () => {
                         <Play size={16} />
                       )}
                     </button>
+                    )}
                   </div>
-                  <p className="text-[var(--text-dark)]">{segment.text}</p>
+                  {editMode && editingSegmentId === segment.id ? (
+                    // 編集モード
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm">話者:</label>
+                        <select
+                          defaultValue={segment.speaker}
+                          className="px-2 py-1 rounded border border-gray-300"
+                          id={`speaker-${segment.id}`}
+                        >
+                          <option value="A">女性（佐藤）</option>
+                          <option value="B">男性（加藤）</option>
+                        </select>
+                      </div>
+                      <textarea
+                        defaultValue={segment.text}
+                        className="w-full p-2 rounded border border-gray-300 min-h-[60px]"
+                        id={`text-${segment.id}`}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            const speakerSelect = document.getElementById(`speaker-${segment.id}`) as HTMLSelectElement;
+                            const textArea = document.getElementById(`text-${segment.id}`) as HTMLTextAreaElement;
+                            saveSegmentEdit(segment.id, speakerSelect.value as 'A' | 'B', textArea.value);
+                          }}
+                          className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 flex items-center gap-1"
+                        >
+                          <Check size={16} />
+                          保存
+                        </button>
+                        <button
+                          onClick={cancelEdit}
+                          className="px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-500 flex items-center gap-1"
+                        >
+                          <X size={16} />
+                          キャンセル
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-[var(--text-dark)]">{segment.text}</p>
+                  )}
                   
                   {/* ロールプレイモードで役割選択 */}
                   {practiceMode === 'roleplay' && (
