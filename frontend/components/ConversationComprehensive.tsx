@@ -54,7 +54,15 @@ const ConversationComprehensive: React.FC = () => {
     try {
       // Whisperで文字起こししたデータを読み込む（話者分離改善版）
       const response = await fetch('/conversation_segments_improved.json');
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
+      console.log('読み込んだセグメント数:', data.length);
+      console.log('最初のセグメント:', data[0]);
       
       // 話者名を整形
       const formattedSegments = data.map((seg: any) => ({
@@ -70,8 +78,9 @@ const ConversationComprehensive: React.FC = () => {
       console.error('セグメントデータの読み込みエラー:', error);
       // フォールバックデータ
       const fallbackSegments: ConversationSegment[] = [
-        { id: 1, speaker: "A", name: "佐藤 (女性)", start: 0.0, end: 5.0, text: "こんにちは、加藤さんですか？お待たせしました。佐藤です。" },
-        { id: 2, speaker: "B", name: "加藤 (男性)", start: 5.0, end: 10.0, text: "はじめまして、加藤です。僕もちょうど着いたところです。" }
+        { id: 1, speaker: "A", name: "佐藤 (女性)", start: 1.0, end: 6.38, text: "こんにちは加藤さんですか お待たせしました佐藤です" },
+        { id: 2, speaker: "B", name: "加藤 (男性)", start: 6.38, end: 11.7, text: "初めまして加藤です僕もちょうど着いたところです よろしくお願いします" },
+        { id: 3, speaker: "A", name: "佐藤 (女性)", start: 12.16, end: 18.54, text: "初対面ってやっぱり緊張しますね そうですねでもお会いできて嬉しいです" }
       ];
       setSegments(fallbackSegments);
       setCurrentSegment(fallbackSegments[0]);
@@ -80,20 +89,29 @@ const ConversationComprehensive: React.FC = () => {
 
   // セグメント再生
   const playSegment = (segment: ConversationSegment) => {
-    if (!audioRef.current) return;
+    console.log('playSegment called:', segment);
+    if (!audioRef.current) {
+      console.error('audioRef.current is null');
+      return;
+    }
     
     // 通し再生を停止
     if (continuousPlay) {
       stopContinuousPlay();
     }
     
+    console.log('Setting currentTime to:', segment.start);
     audioRef.current.currentTime = segment.start;
     audioRef.current.playbackRate = playbackSpeed;
     setCurrentSegment(segment);
     setIsPlaying(true);
     setIsSegmentPlaying(true);
     
-    audioRef.current.play().catch(e => console.error('再生エラー:', e));
+    audioRef.current.play()
+      .then(() => {
+        console.log('再生開始成功');
+      })
+      .catch(e => console.error('再生エラー:', e));
     
     // セグメント終了時に自動停止
     if (intervalRef.current) {
@@ -102,6 +120,7 @@ const ConversationComprehensive: React.FC = () => {
     
     intervalRef.current = setInterval(() => {
       if (audioRef.current && audioRef.current.currentTime >= segment.end) {
+        console.log('セグメント終了位置に到達');
         audioRef.current.pause();
         setIsPlaying(false);
         setIsSegmentPlaying(false);
@@ -288,6 +307,7 @@ const ConversationComprehensive: React.FC = () => {
             src="https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/conversation_full.mp3"
             className="w-full mb-4"
             controls
+            crossOrigin="anonymous"
           />
           
           {/* 再生コントロール */}
@@ -396,10 +416,13 @@ const ConversationComprehensive: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-semibold text-sm">{segment.name}</span>
                     <button 
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-200 transition-colors"
+                      title={isSegmentPlaying && currentSegment?.id === segment.id ? "停止" : "この部分を再生"}
                       onClick={(e) => {
                         e.stopPropagation();
+                        console.log('再生ボタンクリック:', segment.id, segment.text);
                         if (isSegmentPlaying && currentSegment?.id === segment.id) {
+                          console.log('停止処理');
                           // 再生中のセグメントをクリックしたら停止
                           if (intervalRef.current) {
                             clearInterval(intervalRef.current);
@@ -409,6 +432,7 @@ const ConversationComprehensive: React.FC = () => {
                           setIsPlaying(false);
                           setIsSegmentPlaying(false);
                         } else {
+                          console.log('再生処理開始');
                           playSegment(segment);
                         }
                       }}
