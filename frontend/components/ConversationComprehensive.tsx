@@ -50,20 +50,30 @@ const ConversationComprehensive: React.FC = () => {
   }, [isClient]);
 
   const loadSegments = async () => {
-    // 実際のデータ
-    const demoSegments: ConversationSegment[] = [
-      { id: 1, speaker: "A", name: "佐藤 (女性)", start: 0.0, end: 5.0, text: "こんにちは、加藤さんですか？お待たせしました。佐藤です。" },
-      { id: 2, speaker: "B", name: "加藤 (男性)", start: 5.0, end: 10.0, text: "はじめまして、加藤です。僕もちょうど着いたところです。" },
-      { id: 3, speaker: "A", name: "佐藤 (女性)", start: 10.0, end: 18.0, text: "お休みの日はどんなことをされているんですか？" },
-      { id: 4, speaker: "B", name: "加藤 (男性)", start: 18.0, end: 28.0, text: "映画を見たり、カフェでのんびりすることが多いですね。佐藤さんはどうですか？" },
-      { id: 5, speaker: "A", name: "佐藤 (女性)", start: 28.0, end: 38.0, text: "私も映画が好きです！最近はどんな映画を見ましたか？" },
-      { id: 6, speaker: "B", name: "加藤 (男性)", start: 38.0, end: 48.0, text: "先週、新作のアクション映画を見ました。迫力があって面白かったです。" },
-      { id: 7, speaker: "A", name: "佐藤 (女性)", start: 48.0, end: 58.0, text: "いいですね！私はロマンス映画が好きで、感動する作品をよく見ます。" },
-      { id: 8, speaker: "B", name: "加藤 (男性)", start: 58.0, end: 68.0, text: "そうなんですね。今度おすすめの映画があったら教えてください。" }
-    ];
-    setSegments(demoSegments);
-    if (demoSegments.length > 0) {
-      setCurrentSegment(demoSegments[0]);
+    try {
+      // Whisperで文字起こししたデータを読み込む（話者分離改善版）
+      const response = await fetch('/conversation_segments_improved.json');
+      const data = await response.json();
+      
+      // 話者名を整形
+      const formattedSegments = data.map((seg: any) => ({
+        ...seg,
+        name: seg.speaker === 'A' ? '佐藤 (女性)' : '加藤 (男性)'
+      }));
+      
+      setSegments(formattedSegments);
+      if (formattedSegments.length > 0) {
+        setCurrentSegment(formattedSegments[0]);
+      }
+    } catch (error) {
+      console.error('セグメントデータの読み込みエラー:', error);
+      // フォールバックデータ
+      const fallbackSegments: ConversationSegment[] = [
+        { id: 1, speaker: "A", name: "佐藤 (女性)", start: 0.0, end: 5.0, text: "こんにちは、加藤さんですか？お待たせしました。佐藤です。" },
+        { id: 2, speaker: "B", name: "加藤 (男性)", start: 5.0, end: 10.0, text: "はじめまして、加藤です。僕もちょうど着いたところです。" }
+      ];
+      setSegments(fallbackSegments);
+      setCurrentSegment(fallbackSegments[0]);
     }
   };
 
