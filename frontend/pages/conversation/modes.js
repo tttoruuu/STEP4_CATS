@@ -47,11 +47,18 @@ export default function ConversationModes() {
           step: 4
         },
         {
+          id: 'comprehensive',
+          title: '会話練習 総集編',
+          icon: Users,
+          path: '/conversation/comprehensive',
+          step: 5
+        },
+        {
           id: 'free',
           title: 'フリー会話',
           icon: Users,
           path: '/conversation/practice-new',
-          step: 5
+          step: 6
         }
       ]
     }
@@ -80,7 +87,7 @@ export default function ConversationModes() {
         <div className="neo-card mb-6 max-w-md">
           <h3 className="font-semibold mb-4 text-center text-[var(--primary-orange)]">📈 おすすめ学習フロー</h3>
           <div className="flex items-center justify-between mb-2">
-            {[1, 2, 3, 4, 5].map((step, index) => (
+            {[1, 2, 3, 4, 5, 6].map((step, index) => (
               <div key={step} className="flex items-center">
                 <div 
                   className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold"
@@ -91,7 +98,7 @@ export default function ConversationModes() {
                 >
                   {step}
                 </div>
-                {index < 4 && (
+                {index < 5 && (
                   <div 
                     className="w-8 h-0.5 mx-1"
                     style={{backgroundColor: step < 1 ? 'var(--primary-orange)' : 'var(--pale-orange)'}}
