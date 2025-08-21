@@ -62,11 +62,18 @@ const ConversationComprehensiveSimple: React.FC = () => {
 
   // 個別セグメント再生
   const playSegment = (segment: ConversationSegment) => {
+    console.log(`再生開始: ID ${segment.id}, ${segment.start}秒 - ${segment.end}秒, "${segment.text}"`);
     if (!audioRef.current) return;
     
     // 通し再生を停止
     if (continuousPlay) {
       stopContinuousPlay();
+    }
+    
+    // 既存の監視を停止
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
     
     audioRef.current.currentTime = segment.start;
@@ -76,17 +83,18 @@ const ConversationComprehensiveSimple: React.FC = () => {
     audioRef.current.play().catch(e => console.error('再生エラー:', e));
     
     // セグメント終了時に自動停止
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-    
     intervalRef.current = setInterval(() => {
-      if (audioRef.current && audioRef.current.currentTime >= segment.end) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
+      if (audioRef.current) {
+        const currentTime = audioRef.current.currentTime;
+        if (currentTime >= segment.end) {
+          console.log(`再生終了: ID ${segment.id}`);
+          audioRef.current.pause();
+          setIsPlaying(false);
+          setCurrentSegment(null);
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
         }
       }
     }, 50);
@@ -115,9 +123,11 @@ const ConversationComprehensiveSimple: React.FC = () => {
           seg => currentTime >= seg.start && currentTime < seg.end
         );
         
-        if (activeSegment && activeSegment.id !== currentSegment?.id) {
+        if (activeSegment) {
           setCurrentSegment(activeSegment);
-          scrollToSegment(activeSegment.id);
+        } else {
+          // セグメント間の隙間にいる場合はnullに設定
+          setCurrentSegment(null);
         }
         
         // 音声が終了したら停止
@@ -141,22 +151,6 @@ const ConversationComprehensiveSimple: React.FC = () => {
     }
   };
 
-  // セグメントへのスクロール
-  const scrollToSegment = (segmentId: number) => {
-    const element = document.getElementById(`segment-${segmentId}`);
-    if (element && timelineRef.current) {
-      const container = timelineRef.current;
-      const elementTop = element.offsetTop - container.offsetTop;
-      const elementHeight = element.offsetHeight;
-      const containerHeight = container.clientHeight;
-      const scrollPosition = elementTop - (containerHeight / 2) + (elementHeight / 2);
-      
-      container.scrollTo({
-        top: Math.max(0, scrollPosition),
-        behavior: 'smooth'
-      });
-    }
-  };
 
   // クリーンアップ
   useEffect(() => {
@@ -221,7 +215,7 @@ const ConversationComprehensiveSimple: React.FC = () => {
         <div className="neo-card">
           <h3 className="text-lg font-semibold mb-4 text-[var(--text-dark)]">会話タイムライン</h3>
           
-          <div ref={timelineRef} className="space-y-4 max-h-96 overflow-y-auto">
+          <div ref={timelineRef} className="space-y-4">
             {segments.map((segment) => (
               <div
                 key={segment.id}
@@ -244,7 +238,7 @@ const ConversationComprehensiveSimple: React.FC = () => {
                     <span className={`font-semibold text-sm ${
                       segment.speaker === 'A' ? 'text-[var(--primary-orange)]' : 'text-gray-700'
                     }`}>
-                      {segment.name}
+                      {segment.name} (ID: {segment.id})
                     </span>
                     <button 
                       className={`p-1 rounded hover:bg-gray-100 transition-colors ${
