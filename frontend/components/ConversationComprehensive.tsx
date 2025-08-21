@@ -32,11 +32,19 @@ const ConversationComprehensive: React.FC = () => {
   });
   const [reviewNotes, setReviewNotes] = useState('');
   const [voiceScore, setVoiceScore] = useState({ tempo: 0, silence: 0, overlap: 0 });
+  const [isClient, setIsClient] = useState(false);
+
+  // クライアントサイドでのみ実行
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // セグメントデータをロード
   useEffect(() => {
-    loadSegments();
-  }, []);
+    if (isClient) {
+      loadSegments();
+    }
+  }, [isClient]);
 
   const loadSegments = async () => {
     // 実際のデータ
@@ -122,6 +130,11 @@ const ConversationComprehensive: React.FC = () => {
       overlap: Math.floor(Math.random() * 15) + 85
     });
   };
+
+  // サーバーサイドレンダリング時は何も表示しない
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-[var(--bg-color)] p-6">
