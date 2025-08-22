@@ -319,7 +319,7 @@ const ConversationComprehensive: React.FC = () => {
         </button>
         
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[var(--text-dark)] mb-2">会話練習 総合練習</h1>
+          <h1 className="text-3xl font-bold text-[var(--text-dark)] mb-2">総合練習</h1>
           <p className="text-[var(--text-medium)]">実践的な会話を通じて総合的なスキルを身につける</p>
           
           {/* 編集モードボタン */}

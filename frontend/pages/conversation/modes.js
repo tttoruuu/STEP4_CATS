@@ -48,7 +48,7 @@ export default function ConversationModes() {
         },
         {
           id: 'comprehensive',
-          title: '会話練習 総合練習',
+          title: '総合練習',
           icon: Users,
           path: '/conversation/comprehensive',
           step: 5
