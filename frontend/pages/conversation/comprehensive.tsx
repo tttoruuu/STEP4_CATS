@@ -4,7 +4,7 @@ import ConversationComprehensiveSimple from '../../components/ConversationCompre
 
 export default function ComprehensivePracticePage() {
   return (
-    <Layout title="会話練習 総集編 - 実践的な会話で総合力を身につける">
+    <Layout title="会話練習 総合練習 - 実践的な会話で総合力を身につける">
       <ConversationComprehensiveSimple />
     </Layout>
   );
