@@ -293,7 +293,7 @@ export default function LoveTest() {
               onClick={() => router.push('/')}
               className="w-full py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              ホームにもどる
+              ホームに戻る
             </button>
           </div>
         </main>

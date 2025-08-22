@@ -609,7 +609,7 @@ export default function DeepQuestionsQuiz() {
               className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
             >
               <ArrowLeft size={20} />
-              <span>もどる</span>
+              <span>戻る</span>
             </button>
             <div className="text-center">
               <h1 className="font-bold text-gray-800">深堀り質問練習</h1>

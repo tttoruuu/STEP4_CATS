@@ -345,7 +345,7 @@ ${profileData.idealPartner}ような方と、共通の趣味を楽しみなが�
               className="flex items-center gap-2 text-gray-600 hover:text-[#FF8551] transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span className="text-sm">もどる</span>
+              <span className="text-sm">戻る</span>
             </button>
           </div>
           
@@ -590,7 +590,7 @@ ${profileData.idealPartner}ような方と、共通の趣味を楽しみなが�
             className="flex items-center gap-2 text-gray-600 hover:text-[#FF8551] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm">もどる</span>
+            <span className="text-sm">戻る</span>
           </button>
         </div>
         

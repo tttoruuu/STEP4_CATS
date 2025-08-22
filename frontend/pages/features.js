@@ -196,9 +196,9 @@ const FeaturesPage = () => {
             <Link 
               href="/" 
               className="inline-block bg-white text-orange-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors shadow-lg"
-              aria-label="ホームに戻る"
+              aria-label="ホームにもどる"
             >
-              ホーム画面に戻る
+              ホーム画面にもどる
             </Link>
           </div>
         </div>

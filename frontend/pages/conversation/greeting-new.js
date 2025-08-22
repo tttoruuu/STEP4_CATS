@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/Layout';
 import AudioPlayer from '../../components/AudioPlayer';
+import PracticeGuide from '../../components/conversation/PracticeGuide';
 import { ArrowLeft, MessageCircle } from 'lucide-react';
 import { greetingAudioData } from '../../data/audioData';
 
@@ -102,6 +103,9 @@ export default function GreetingPracticeNew() {
                 シナリオ {currentScenarioIndex + 1} / {greetingAudioData.length}
               </div>
             </div>
+
+            {/* 練習方法の説明 */}
+            <PracticeGuide />
 
             {/* 女性の発言表示 */}
             <div className="mb-6">

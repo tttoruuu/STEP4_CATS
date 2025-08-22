@@ -194,9 +194,9 @@ const HelpPage = () => {
               <Link 
                 href="/" 
                 className="inline-block bg-orange-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors"
-                aria-label="ホームにもどる"
+                aria-label="ホームに戻る"
               >
-                ホーム画面にもどる
+                ホーム画面に戻る
               </Link>
             </div>
           </div>

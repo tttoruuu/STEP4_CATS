@@ -104,7 +104,7 @@ export default function CounselorIndex() {
             onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-dark)'}
             onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-light)'}
           >
-            ← ホームに戻る
+            ← ホームにもどる
           </button>
         </div>
       </main>

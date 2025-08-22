@@ -4,9 +4,9 @@ import Layout from '../../components/Layout';
 import ConversationQuiz from '../../components/ConversationQuiz';
 import ShadowingPractice from '../../components/ShadowingPractice';
 import { getScenariosByCategory, getRandomScenario } from '../../data/conversationQuizData';
-import { ArrowLeft, Search } from 'lucide-react';
+import { ArrowLeft, Lightbulb } from 'lucide-react';
 
-export default function DeepenPractice() {
+export default function ElicitPractice() {
   const router = useRouter();
   const [currentView, setCurrentView] = useState('quiz'); // 'quiz' | 'shadowing'
   const [currentScenario, setCurrentScenario] = useState(null);
@@ -14,7 +14,7 @@ export default function DeepenPractice() {
 
   useEffect(() => {
     // 初回ロード時にランダムなシナリオを取得
-    const randomScenario = getRandomScenario('deepen');
+    const randomScenario = getRandomScenario('elicit');
     setCurrentScenario(randomScenario);
   }, []);
 
@@ -25,7 +25,7 @@ export default function DeepenPractice() {
       : completedScenarios;
     
     // 全シナリオを取得
-    const 全シナリオ = getScenariosByCategory('deepen');
+    const 全シナリオ = getScenariosByCategory('elicit');
     
     // 未完了のシナリオを取得
     const 未完了シナリオ = 全シナリオ.filter(
@@ -43,7 +43,7 @@ export default function DeepenPractice() {
     } else {
       // 全て完了した場合はリセット
       setCompletedScenarios([]);
-      const 新シナリオ = getRandomScenario('deepen');
+      const 新シナリオ = getRandomScenario('elicit');
       setCurrentScenario(新シナリオ);
     }
     
@@ -70,7 +70,7 @@ export default function DeepenPractice() {
 
   if (!currentScenario) {
     return (
-      <Layout title="深掘り練習">
+      <Layout title="会話引き出し練習">
         <div className="flex justify-center items-center min-h-screen">
           <div className="text-gray-500">読み込み中...</div>
         </div>
@@ -79,23 +79,23 @@ export default function DeepenPractice() {
   }
 
   return (
-    <Layout title="深掘り練習">
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-purple-100">
+    <Layout title="会話引き出し練習">
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-yellow-100">
         {/* ヘッダー */}
         <div className="w-full max-w-6xl mx-auto pt-8 px-6">
           <button 
             onClick={handleBackToModes}
-            className="text-purple-600 flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
+            className="text-yellow-600 flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
           >
             <ArrowLeft size={18} />
-            <span>モード選択にもどる</span>
+            <span>モード選択に戻る</span>
           </button>
           
           <div className="flex items-center gap-3 mb-6">
-            <Search className="text-purple-600" size={32} />
+            <Lightbulb className="text-yellow-600" size={32} />
             <div>
-              <h1 className="text-2xl font-bold text-purple-600">深掘り練習</h1>
-              <p className="text-gray-600">4択クイズで会話を深める技術を身につけましょう</p>
+              <h1 className="text-2xl font-bold text-yellow-600">会話を引き出す練習</h1>
+              <p className="text-gray-600">4択クイズでコミュニケーションスキルを向上させましょう</p>
             </div>
           </div>
         </div>

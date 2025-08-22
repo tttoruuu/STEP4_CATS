@@ -452,7 +452,7 @@ export default function ConversationPractice() {
             className="text-blue-600 flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
           >
             <ArrowLeft size={18} />
-            <span>ホームに戻る</span>
+            <span>ホームにもどる</span>
           </button>
           
           <div className="text-center mb-8">

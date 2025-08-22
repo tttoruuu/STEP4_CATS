@@ -88,7 +88,7 @@ export default function DeepenPractice() {
             className="text-purple-600 flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
           >
             <ArrowLeft size={18} />
-            <span>モード選択にもどる</span>
+            <span>モード選択に戻る</span>
           </button>
           
           <div className="flex items-center gap-3 mb-6">

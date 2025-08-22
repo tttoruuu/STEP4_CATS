@@ -475,7 +475,7 @@ export default function AuthChat() {
             className="flex items-center space-x-2 text-gray-600 hover:text-orange-600 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>もどる</span>
+            <span>戻る</span>
           </button>
           
           <div className="text-center">

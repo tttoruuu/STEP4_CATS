@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { ArrowLeft, Play, Pause } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Square } from 'lucide-react';
 
 interface ConversationSegment {
   id: number;
@@ -22,6 +22,14 @@ const ConversationComprehensiveSimple: React.FC = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  
+  // セクション定義（会話の区切り）
+  const sections = [
+    { id: 'greeting', name: '挨拶', startId: 1, endId: 10 },
+    { id: 'empathy', name: '相槌・共感', startId: 11, endId: 20 },
+    { id: 'echo', name: '全返し', startId: 21, endId: 30 }
+  ];
 
   // クライアントサイドでのみ実行
   useEffect(() => {
@@ -110,14 +118,19 @@ const ConversationComprehensiveSimple: React.FC = () => {
   };
 
 
-  // 通し再生の開始
-  const startContinuousPlay = async () => {
+  // 通し再生の開始（一時停止位置から再開可能）
+  const startContinuousPlay = async (resumeFromPause = false) => {
     if (!audioRef.current) return;
     
     try {
       setContinuousPlay(true);
       setIsPlaying(true);
-      audioRef.current.currentTime = 0;
+      
+      // 一時停止からの再開でない場合のみ、最初から再生
+      if (!resumeFromPause) {
+        audioRef.current.currentTime = 0;
+      }
+      
       await audioRef.current.play();
       
       // 現在の再生位置を監視して対応するセグメントをハイライト
@@ -170,17 +183,86 @@ const ConversationComprehensiveSimple: React.FC = () => {
     }
   };
 
-  // 通し再生の停止
+  // 通し再生の一時停止（位置を保持）
+  const pauseContinuousPlay = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setIsPlaying(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+  };
+
+  // 通し再生の完全停止（リセット）
   const stopContinuousPlay = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
     setContinuousPlay(false);
+    setCurrentSegment(null);
     setIsPlaying(false);
+    setSelectedSection(null);
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
+  };
+
+  // セクション単位での再生
+  const playSectionSegments = async (sectionId: string) => {
+    const section = sections.find(s => s.id === sectionId);
+    if (!section || !audioRef.current) return;
+    
+    // セクション内のセグメントを取得
+    const sectionSegments = segments.filter(
+      seg => seg.id >= section.startId && seg.id <= section.endId
+    );
+    
+    if (sectionSegments.length === 0) return;
+    
+    setSelectedSection(sectionId);
+    setContinuousPlay(true);
+    setIsPlaying(true);
+    
+    // セクションの最初のセグメントから再生
+    const firstSegment = sectionSegments[0];
+    audioRef.current.currentTime = firstSegment.start;
+    await audioRef.current.play();
+    
+    // セクション終了時に自動停止
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    
+    intervalRef.current = setInterval(() => {
+      if (audioRef.current) {
+        const currentTime = audioRef.current.currentTime;
+        setCurrentTime(currentTime);
+        
+        // 現在のセグメントを更新
+        const activeSegment = sectionSegments.find(
+          seg => currentTime >= seg.start && currentTime < seg.end
+        );
+        
+        if (activeSegment) {
+          setCurrentSegment(activeSegment);
+        }
+        
+        // セクションの最後のセグメントを超えたら停止
+        const lastSegment = sectionSegments[sectionSegments.length - 1];
+        if (currentTime >= lastSegment.end) {
+          audioRef.current.pause();
+          setIsPlaying(false);
+          setContinuousPlay(false);
+          setSelectedSection(null);
+          clearInterval(intervalRef.current!);
+          intervalRef.current = null;
+        }
+      }
+    }, 50);
   };
 
 
@@ -229,7 +311,7 @@ const ConversationComprehensiveSimple: React.FC = () => {
           className="text-[var(--primary-orange)] flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
         >
           <ArrowLeft size={18} />
-          <span>会話練習モード選択に戻る</span>
+          <span>会話練習モード選択にもどる</span>
         </button>
         
         <div className="text-center mb-8">
@@ -248,21 +330,57 @@ const ConversationComprehensiveSimple: React.FC = () => {
             preload="metadata"
           />
           
+          {/* セクション選択ボタン */}
+          <div className="flex justify-center gap-2 mb-4">
+            {sections.map(section => (
+              <button
+                key={section.id}
+                onClick={() => playSectionSegments(section.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  selectedSection === section.id
+                    ? 'bg-[var(--primary-orange)] text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+                title={`${section.name}を再生`}
+              >
+                {section.name}
+              </button>
+            ))}
+          </div>
+          
           {/* 再生コントロール */}
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-3">
             <button
               onClick={() => {
-                if (continuousPlay) {
-                  stopContinuousPlay();
+                if (continuousPlay && isPlaying) {
+                  // 再生中なら一時停止
+                  pauseContinuousPlay();
+                } else if (continuousPlay && !isPlaying) {
+                  // 一時停止中なら再開
+                  startContinuousPlay(true);  // resumeFromPause = true
                 } else {
-                  startContinuousPlay();
+                  // 停止中なら最初から再生
+                  startContinuousPlay(false); // resumeFromPause = false
                 }
               }}
               className="p-3 rounded-full bg-[var(--primary-orange)] text-white hover:opacity-80 transition-opacity"
-              title={continuousPlay ? "停止" : "通し再生"}
+              title={isPlaying ? "一時停止" : (continuousPlay ? "再開" : "通し再生")}
             >
-              {continuousPlay ? <Pause size={24} /> : <Play size={24} />}
+              {isPlaying ? <Pause size={24} /> : <Play size={24} />}
             </button>
+            
+            {/* 停止ボタン（最初に戻る） */}
+            {continuousPlay && (
+              <button
+                onClick={() => {
+                  stopContinuousPlay();
+                }}
+                className="p-3 rounded-full bg-gray-500 text-white hover:opacity-80 transition-opacity"
+                title="停止（最初に戻る）"
+              >
+                <Square size={24} />
+              </button>
+            )}
           </div>
         </div>
 

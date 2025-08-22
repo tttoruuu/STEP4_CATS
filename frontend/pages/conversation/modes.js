@@ -41,7 +41,7 @@ export default function ConversationModes() {
       modes: [
         {
           id: 'integrated-conversation',
-          title: '聞く力トレーニング',
+          title: '深掘りトレーニング',
           icon: TrendingUp,
           path: '/conversation/integrated-practice',
           step: 4

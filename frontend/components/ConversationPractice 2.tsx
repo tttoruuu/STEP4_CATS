@@ -5,8 +5,6 @@ import ConversationQuiz from './ConversationQuiz';
 // @ts-ignore
 import ShadowingPractice from './ShadowingPractice';
 // @ts-ignore
-import DeepDivePracticeGuide from './conversation/DeepDivePracticeGuide';
-// @ts-ignore
 import { conversationQuizData, getScenariosByCategory } from '../data/conversationQuizData';
 import { ArrowLeft, Lightbulb, Search, TrendingUp, Star, Lock } from 'lucide-react';
 
@@ -351,14 +349,15 @@ const ConversationPractice: React.FC = () => {
             className="text-[var(--primary-orange)] flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
           >
             <ArrowLeft size={18} />
-            <span>会話練習モード選択にもどる</span>
+            <span>会話練習モード選択に戻る</span>
           </button>
           
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-2">深掘りトレーニング</h1>
+            <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-2">聞く力トレーニング</h1>
             <p className="text-[var(--text-secondary)]">会話を引き出す・深掘りするためのプログラム</p>
             
           </div>
+
 
           {/* レベル選択 */}
           <div className="grid md:grid-cols-2 gap-6">
@@ -411,7 +410,7 @@ const ConversationPractice: React.FC = () => {
           className="text-[var(--primary-orange)] flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
         >
           <ArrowLeft size={18} />
-          <span>レベル選択にもどる</span>
+          <span>レベル選択に戻る</span>
         </button>
         
         <div className="flex items-center gap-3 mb-6">
@@ -420,15 +419,10 @@ const ConversationPractice: React.FC = () => {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-[var(--text-primary)]">
-              {getLevelInfo(selectedLevel!).title}レベル - 深掘りトレーニング
+              {getLevelInfo(selectedLevel!).title}レベル - 聞く力トレーニング
             </h1>
             <p className="text-[var(--text-secondary)]">{getLevelInfo(selectedLevel!).description}</p>
           </div>
-        </div>
-
-        {/* 練習方法の説明 */}
-        <div className="max-w-6xl mx-auto">
-          <DeepDivePracticeGuide />
         </div>
       </div>
 

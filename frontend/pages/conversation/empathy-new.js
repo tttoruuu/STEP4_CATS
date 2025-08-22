@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/Layout';
 import AudioPlayer from '../../components/AudioPlayer';
+import PracticeGuide from '../../components/conversation/PracticeGuide';
 import { ArrowLeft, Heart, HelpCircle, RotateCcw } from 'lucide-react';
 import { empathyAudioData } from '../../data/audioData';
 
@@ -99,6 +100,9 @@ export default function EmpathyPracticeNew() {
                 シナリオ {currentScenarioIndex + 1} / {empathyAudioData.length}
               </div>
             </div>
+
+            {/* 練習方法の説明 */}
+            <PracticeGuide />
 
             {/* 女性の発言表示 */}
             <div className="mb-6">

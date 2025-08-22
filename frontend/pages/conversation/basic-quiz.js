@@ -256,7 +256,7 @@ export default function BasicConversationQuiz() {
               className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
             >
               <ArrowLeft size={20} />
-              <span>戻る</span>
+              <span>もどる</span>
             </button>
             <div className="text-center">
               <h1 className="font-bold text-gray-800">会話の基本練習</h1>

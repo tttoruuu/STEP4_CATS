@@ -236,7 +236,7 @@ const ProfileEdit: React.FC = () => {
               }}
             >
               <ArrowLeft className="w-5 h-5" />
-              <span>もどる</span>
+              <span>戻る</span>
             </button>
           </div>
           <h1 className="text-2xl font-bold" style={{color: '#2D3436'}}>プロフィール編集</h1>
