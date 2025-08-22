@@ -101,6 +101,22 @@ export const getComprehensiveProfile = async (): Promise<ComprehensiveProfile> =
 
     if (response.data && response.data.success && response.data.profile) {
       console.log('API からプロフィール取得成功:', response.data.profile);
+      
+      // localStorageのユーザー情報も更新（名前情報の同期）
+      if (typeof window !== 'undefined' && response.data.profile.name && response.data.profile.name !== '未入力') {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            const userData = JSON.parse(storedUser);
+            userData.full_name = response.data.profile.name;
+            localStorage.setItem('user', JSON.stringify(userData));
+            console.log('プロフィール取得時にLocalStorage更新:', userData);
+          } catch (e) {
+            console.error('LocalStorage更新エラー:', e);
+          }
+        }
+      }
+      
       return response.data.profile;
     }
 

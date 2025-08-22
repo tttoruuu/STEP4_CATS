@@ -13,7 +13,7 @@ export default function MainPage() {
   const [user, setUser] = useState({
     firstName: '',
     lastName: '',
-    username: 'テストユーザー', // 🚨 EMERGENCY: 固定値で簡素化
+    username: '', // 初期値は空にして、後で設定
     full_name: '',
     email: ''
   });
@@ -36,23 +36,41 @@ export default function MainPage() {
           if (storedUser) {
             try {
               const userData = JSON.parse(storedUser);
-              // full_nameがあればそれを使い、なければemailから@前を使用
-              const displayName = userData.full_name || userData.email?.split('@')[0] || userData.username || 'ユーザー';
+              // full_nameを優先、なければemailから@前を使用、それもなければ「ゲスト」
+              const displayName = userData.full_name || 
+                                 userData.email?.split('@')[0] || 
+                                 userData.username || 
+                                 'ゲスト';
+              
               setUser({
                 ...userData,
-                username: displayName
+                username: displayName,
+                full_name: userData.full_name || ''
               });
-              console.log('[Index] ストレージからユーザー情報を復元:', userData);
+              console.log('[Index] ユーザー情報復元:', {
+                full_name: userData.full_name,
+                email: userData.email,
+                displayName: displayName
+              });
             } catch (e) {
               console.error('[Index] ユーザー情報の解析エラー:', e);
-              setUser({ username: 'ユーザー', full_name: '', email: '' });
+              setUser({ 
+                username: 'ゲスト', 
+                full_name: '', 
+                email: '' 
+              });
             }
           } else {
-            setUser({ username: 'ユーザー', full_name: '', email: '' });
+            // ユーザー情報がない場合はゲストとして扱う
+            setUser({ 
+              username: 'ゲスト', 
+              full_name: '', 
+              email: '' 
+            });
           }
         } else {
           // サーバーサイドではデフォルトユーザーを設定
-          setUser({ username: 'ユーザー', full_name: '', email: '' });
+          setUser({ username: 'ゲスト', full_name: '', email: '' });
         }
         
         // 強制的にローディングを解除

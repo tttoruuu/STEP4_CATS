@@ -150,6 +150,21 @@ const ProfileEdit: React.FC = () => {
       await updateProfile(updateData);
       setSuccess('プロフィールが更新されました！');
       
+      // localStorageのユーザー情報も更新
+      if (typeof window !== 'undefined' && formData.name) {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            const userData = JSON.parse(storedUser);
+            userData.full_name = formData.name;
+            localStorage.setItem('user', JSON.stringify(userData));
+            console.log('LocalStorage更新完了:', userData);
+          } catch (e) {
+            console.error('LocalStorage更新エラー:', e);
+          }
+        }
+      }
+      
       // 3秒後にプロフィール表示ページに戻る
       setTimeout(() => {
         router.push('/profile/comprehensive');
