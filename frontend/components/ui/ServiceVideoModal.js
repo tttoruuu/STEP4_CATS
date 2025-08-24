@@ -55,7 +55,7 @@ const ServiceVideoModal = ({ isOpen, onClose, onDontShowAgain }) => {
             poster="/video-poster.jpg"
           >
             <source 
-              src="https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/one-sided%20talk%20man003.mp4" 
+              src="https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/one-sided%20talk%20man005.mp4" 
               type="video/mp4" 
             />
             お使いのブラウザは動画をサポートしていません。
