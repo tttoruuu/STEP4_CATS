@@ -155,6 +155,70 @@ async def practice_conversation(
             detail=f"会話生成中にエラーが発生しました: {str(e)}"
         )
 
+@router.post("/initialize-default-partners")
+async def initialize_default_partners(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """デフォルトの会話パートナーを初期化"""
+    default_partners = [
+        {
+            "id": 1,
+            "name": "佐藤美咲",
+            "age": 26,
+            "hometown": "東京",
+            "hobbies": "カフェ巡り、ヨガ、読書",
+            "daily_routine": "IT企業で働いています。休日はカフェでゆっくり過ごすのが好きです。"
+        },
+        {
+            "id": 2,
+            "name": "鈴木愛",
+            "age": 24,
+            "hometown": "大阪",
+            "hobbies": "ショッピング、映画鑑賞、料理",
+            "daily_routine": "アパレル関係の仕事をしています。トレンドに敏感で、新しいことが大好き！"
+        },
+        {
+            "id": 3,
+            "name": "田中香織",
+            "age": 28,
+            "hometown": "京都",
+            "hobbies": "茶道、華道、美術館巡り",
+            "daily_routine": "銀行で働いています。日本の伝統文化が好きで、休日は美術館によく行きます。"
+        },
+        {
+            "id": 4,
+            "name": "山田静香",
+            "age": 25,
+            "hometown": "北海道",
+            "hobbies": "読書、ピアノ、散歩",
+            "daily_routine": "図書館司書をしています。静かな環境が好きで、一人の時間を大切にしています。"
+        }
+    ]
+    
+    created_partners = []
+    for partner_data in default_partners:
+        # 既存のパートナーをチェック
+        existing_partner = db.query(ConversationPartner).filter(
+            ConversationPartner.user_id == current_user.id,
+            ConversationPartner.name == partner_data["name"]
+        ).first()
+        
+        if not existing_partner:
+            new_partner = ConversationPartner(
+                user_id=current_user.id,
+                **partner_data
+            )
+            db.add(new_partner)
+            created_partners.append(partner_data["name"])
+    
+    db.commit()
+    
+    return {
+        "message": "デフォルトパートナーを初期化しました",
+        "created": created_partners
+    }
+
 @router.get("/modes")
 async def get_conversation_modes():
     """利用可能な会話モードを取得"""

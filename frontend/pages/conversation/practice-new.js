@@ -62,19 +62,42 @@ export default function ConversationPracticeNew() {
 
   const character = characterId ? getCharacterInfo(characterId) : null;
 
-  // タイマー開始
+  // パートナー初期化と会話開始
   useEffect(() => {
     if (characterId && !sessionStartTime) {
-      setSessionStartTime(Date.now());
-      
-      // 初回挨拶
-      setMessages([{
-        sender: 'partner',
-        text: getInitialGreeting(characterId),
-        timestamp: new Date().toISOString()
-      }]);
+      initializeConversation();
     }
   }, [characterId, sessionStartTime]);
+  
+  const initializeConversation = async () => {
+    setSessionStartTime(Date.now());
+    
+    // デフォルトパートナーを初期化
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/conversation/initialize-default-partners`,
+          {},
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+      }
+    } catch (error) {
+      console.log('パートナー初期化をスキップ:', error);
+    }
+    
+    // 初回挨拶
+    setMessages([{
+      sender: 'partner',
+      text: getInitialGreeting(characterId),
+      timestamp: new Date().toISOString()
+    }]);
+  };
 
   // タイマー更新
   useEffect(() => {
@@ -125,13 +148,24 @@ export default function ConversationPracticeNew() {
 
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/conversation/practice/chat`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/conversation/practice`;
+      
+      // キャラクターIDからパートナーIDにマッピング（仮のID）
+      const partnerIdMap = {
+        misaki: 1,
+        ai: 2,
+        kaori: 3,
+        shizuka: 4
+      };
       
       const response = await axios.post(apiUrl, {
-        character_id: characterId,
+        partner_id: partnerIdMap[characterId] || 1,
         message: inputMessage,
-        conversation_history: messages,
-        session_id: sessionStartTime
+        mode: 'free',
+        conversation_history: messages.map(m => ({
+          role: m.sender === 'user' ? 'user' : 'assistant',
+          content: m.text
+        }))
       }, {
         headers: {
           'Authorization': `Bearer ${token}`,

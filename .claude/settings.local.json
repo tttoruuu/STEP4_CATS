@@ -93,7 +93,8 @@
       "WebSearch",
       "Bash(GEMINI_API_KEY=test OPENAI_API_KEY=test timeout 2 node mcp-server.js)",
       "Bash(gh pr view:*)",
-      "Bash(source:*)"
+      "Bash(source:*)",
+      "mcp__serena__search_for_pattern"
     ],
     "deny": [],
     "defaultMode": "acceptEdits",
