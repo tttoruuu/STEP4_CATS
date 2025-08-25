@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miraim ポスター サンプル5 - ジオメトリック</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #1a1a1a;
+            padding: 20px;
+        }
+        
+        .poster {
+            width: 420px;
+            height: 594px;
+            background: linear-gradient(135deg, #FFF5EB 0%, #FFE4CC 100%);
+            position: relative;
+            box-shadow: 0 30px 100px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+        
+        /* 幾何学的な背景 */
+        .geometric-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+        }
+        
+        .triangle {
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+        
+        .triangle1 {
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-bottom: 173px solid #FF8C42;
+            top: 50px;
+            right: -50px;
+            transform: rotate(25deg);
+        }
+        
+        .triangle2 {
+            border-left: 80px solid transparent;
+            border-right: 80px solid transparent;
+            border-bottom: 138px solid #FFA65D;
+            bottom: 100px;
+            left: -40px;
+            transform: rotate(-45deg);
+        }
+        
+        .triangle3 {
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 104px solid #FFCC99;
+            top: 250px;
+            left: 150px;
+            transform: rotate(60deg);
+        }
+        
+        /* コンポーネント1 - 六角形 */
+        .component-1 {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            width: 150px;
+            height: 130px;
+            position: relative;
+        }
+        
+        .hexagon {
+            width: 150px;
+            height: 86.6px;
+            background: linear-gradient(60deg, #FF6B35, #FF8C42);
+            position: relative;
+            top: 21.65px;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+        }
+        
+        .hexagon::before,
+        .hexagon::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 75px solid transparent;
+            border-right: 75px solid transparent;
+        }
+        
+        .hexagon::before {
+            bottom: 100%;
+            border-bottom: 43.3px solid #FF6B35;
+        }
+        
+        .hexagon::after {
+            top: 100%;
+            border-top: 43.3px solid #FF8C42;
+        }
+        
+        /* コンポーネント2 - 円形グリッド */
+        .component-2 {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            width: 150px;
+            height: 130px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.1),
+                inset 0 0 20px rgba(255, 140, 66, 0.05);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .dot-grid {
+            background: radial-gradient(circle, #FFA65D, #FFE4CC);
+            border-radius: 50%;
+            transform: scale(0.8);
+        }
+        
+        .dot-grid:nth-child(5) {
+            background: #FF6B35;
+            transform: scale(1.2);
+        }
+        
+        /* コンポーネント3 - 波型カード */
+        .component-3 {
+            position: absolute;
+            top: 200px;
+            left: 30px;
+            right: 30px;
+            height: 80px;
+            background: linear-gradient(90deg, #FF8C42, #FFA65D);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(255, 140, 66, 0.3);
+        }
+        
+        .wave-overlay {
+            position: absolute;
+            top: -50%;
+            left: -10%;
+            width: 120%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(-5deg);
+            border-radius: 50% 20% 30% 40%;
+        }
+        
+        .wave-overlay2 {
+            position: absolute;
+            bottom: -50%;
+            right: -10%;
+            width: 120%;
+            height: 200%;
+            background: rgba(255, 107, 53, 0.2);
+            transform: rotate(5deg);
+            border-radius: 30% 50% 20% 40%;
+        }
+        
+        /* コンポーネント4 - パターンボックス */
+        .component-4 {
+            position: absolute;
+            top: 300px;
+            left: 30px;
+            width: 180px;
+            height: 100px;
+            background: 
+                repeating-linear-gradient(45deg,
+                    #FFA65D 0px,
+                    #FFA65D 10px,
+                    #FFCC99 10px,
+                    #FFCC99 20px),
+                white;
+            border-radius: 15px;
+            box-shadow: 
+                0 10px 25px rgba(0, 0, 0, 0.15),
+                inset 0 0 0 3px white;
+            position: relative;
+        }
+        
+        .component-4::after {
+            content: '';
+            position: absolute;
+            inset: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* コンポーネント5 - 3D回転カード */
+        .component-5 {
+            position: absolute;
+            top: 300px;
+            right: 30px;
+            width: 180px;
+            height: 100px;
+            transform-style: preserve-3d;
+            transform: perspective(800px) rotateX(10deg) rotateY(-10deg);
+        }
+        
+        .card-3d {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FFE8D6, white);
+            border-radius: 15px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.2),
+                20px 20px 40px rgba(255, 140, 66, 0.2);
+            position: relative;
+        }
+        
+        .card-3d::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: linear-gradient(45deg, #FF8C42, transparent, #FFA65D);
+            border-radius: 10px;
+            opacity: 0.3;
+        }
+        
+        /* コンポーネント6 - オーバーラップ円 */
+        .component-6 {
+            position: absolute;
+            bottom: 100px;
+            left: 40px;
+            width: 140px;
+            height: 90px;
+            position: relative;
+        }
+        
+        .overlap-circle {
+            position: absolute;
+            border-radius: 50%;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .circle-a {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #FF6B35, #FF8C42);
+            top: 0;
+            left: 0;
+            z-index: 3;
+        }
+        
+        .circle-b {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #FF8C42, #FFA65D);
+            top: 0;
+            right: 0;
+            z-index: 2;
+        }
+        
+        .circle-c {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #FFA65D, #FFCC99);
+            bottom: 0;
+            left: 35px;
+            z-index: 1;
+        }
+        
+        /* コンポーネント7 - アニメーショングラデーション */
+        .component-7 {
+            position: absolute;
+            bottom: 90px;
+            right: 30px;
+            width: 200px;
+            height: 100px;
+            background: linear-gradient(270deg, #FF6B35, #FF8C42, #FFA65D, #FFCC99);
+            background-size: 800% 800%;
+            border-radius: 50px;
+            box-shadow: 
+                0 15px 40px rgba(255, 140, 66, 0.3),
+                inset 0 0 30px rgba(255, 255, 255, 0.2);
+            animation: gradientShift 8s ease infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .component-7::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                transparent, #FF6B35, transparent, #FFA65D, transparent);
+            border-radius: 50px;
+            opacity: 0.5;
+            animation: rotate 4s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .component-7::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            background: linear-gradient(270deg, #FF6B35, #FF8C42, #FFA65D, #FFCC99);
+            background-size: 800% 800%;
+            border-radius: 47px;
+            animation: gradientShift 8s ease infinite;
+        }
+        
+        /* グリッドライン装飾 */
+        .grid-lines {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: 
+                repeating-linear-gradient(90deg, 
+                    transparent, transparent 9px, 
+                    rgba(255, 140, 66, 0.1) 9px, 
+                    rgba(255, 140, 66, 0.1) 10px),
+                repeating-linear-gradient(0deg, 
+                    transparent, transparent 9px, 
+                    rgba(255, 140, 66, 0.1) 9px, 
+                    rgba(255, 140, 66, 0.1) 10px);
+        }
+    </style>
+</head>
+<body>
+    <div class="poster">
+        <div class="geometric-bg">
+            <div class="triangle triangle1"></div>
+            <div class="triangle triangle2"></div>
+            <div class="triangle triangle3"></div>
+        </div>
+        
+        <div class="component-1">
+            <div class="hexagon"></div>
+        </div>
+        
+        <div class="component-2">
+            <div class="dot-grid"></div>
+            <div class="dot-grid"></div>
+            <div class="dot-grid"></div>
+            <div class="dot-grid"></div>
+            <div class="dot-grid"></div>
+            <div class="dot-grid"></div>
+            <div class="dot-grid"></div>
+            <div class="dot-grid"></div>
+            <div class="dot-grid"></div>
+        </div>
+        
+        <div class="component-3">
+            <div class="wave-overlay"></div>
+            <div class="wave-overlay2"></div>
+        </div>
+        
+        <div class="component-4"></div>
+        
+        <div class="component-5">
+            <div class="card-3d"></div>
+        </div>
+        
+        <div class="component-6">
+            <div class="overlap-circle circle-a"></div>
+            <div class="overlap-circle circle-b"></div>
+            <div class="overlap-circle circle-c"></div>
+        </div>
+        
+        <div class="component-7"></div>
+        
+        <div class="grid-lines"></div>
+    </div>
+</body>
+</html>

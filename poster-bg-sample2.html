@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miraim ポスター背景 サンプル2 - 幾何学パターン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #222;
+            padding: 20px;
+        }
+        
+        .poster {
+            width: 420px;
+            height: 594px;
+            position: relative;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+            overflow: hidden;
+            
+            /* ベースグラデーション */
+            background: linear-gradient(170deg, #FFF8F3 0%, #FFE8D6 40%, #FFCC99 70%, #FFB380 100%);
+        }
+        
+        /* 三角形パターン背景 */
+        .triangle-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+        }
+        
+        .triangle {
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+        
+        .tri1 {
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 260px solid rgba(255, 107, 53, 0.3);
+            top: -50px;
+            left: -50px;
+            transform: rotate(15deg);
+        }
+        
+        .tri2 {
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-bottom: 173px solid rgba(255, 140, 66, 0.3);
+            top: 200px;
+            right: -30px;
+            transform: rotate(-30deg);
+        }
+        
+        .tri3 {
+            border-left: 120px solid transparent;
+            border-right: 120px solid transparent;
+            border-bottom: 208px solid rgba(255, 166, 93, 0.25);
+            bottom: -80px;
+            left: 50px;
+            transform: rotate(45deg);
+        }
+        
+        .tri4 {
+            border-left: 80px solid transparent;
+            border-right: 80px solid transparent;
+            border-bottom: 139px solid rgba(255, 204, 153, 0.3);
+            top: 100px;
+            left: 150px;
+            transform: rotate(-60deg);
+        }
+        
+        /* 六角形グリッド */
+        .hexagon-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.08;
+        }
+        
+        .hex-row {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .hex-row:nth-child(1) { top: 10%; left: -30px; }
+        .hex-row:nth-child(2) { top: 30%; left: 0; }
+        .hex-row:nth-child(3) { top: 50%; left: -30px; }
+        .hex-row:nth-child(4) { top: 70%; left: 0; }
+        
+        .hexagon {
+            width: 60px;
+            height: 35px;
+            background: rgba(255, 140, 66, 0.3);
+            position: relative;
+            margin: 17.5px 0;
+        }
+        
+        .hexagon:before,
+        .hexagon:after {
+            content: "";
+            position: absolute;
+            width: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+        }
+        
+        .hexagon:before {
+            bottom: 100%;
+            border-bottom: 17.5px solid rgba(255, 140, 66, 0.3);
+        }
+        
+        .hexagon:after {
+            top: 100%;
+            border-top: 17.5px solid rgba(255, 140, 66, 0.3);
+        }
+        
+        /* 対角線パターン */
+        .diagonal-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 40px,
+                rgba(255, 107, 53, 0.5) 40px,
+                rgba(255, 107, 53, 0.5) 42px
+            );
+        }
+        
+        /* 円形グラデーションオーバーレイ */
+        .radial-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(255, 107, 53, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 70% 60%, rgba(255, 166, 93, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(255, 140, 66, 0.15) 0%, transparent 35%);
+        }
+        
+        /* ドットパターン */
+        .dot-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.06;
+            background-image: 
+                radial-gradient(circle, rgba(255, 140, 66, 0.8) 2px, transparent 2px),
+                radial-gradient(circle, rgba(255, 166, 93, 0.8) 2px, transparent 2px);
+            background-size: 50px 50px, 50px 50px;
+            background-position: 0 0, 25px 25px;
+        }
+        
+        /* 波形境界線 */
+        .wave-border {
+            position: absolute;
+            width: 100%;
+            height: 200px;
+            bottom: 0;
+            background: linear-gradient(180deg, transparent, rgba(255, 140, 66, 0.1));
+            clip-path: polygon(
+                0% 40%,
+                10% 45%, 20% 35%, 30% 40%, 40% 30%,
+                50% 35%, 60% 25%, 70% 30%, 80% 20%,
+                90% 25%, 100% 15%,
+                100% 100%, 0% 100%
+            );
+        }
+        
+        /* 上部装飾パターン */
+        .top-pattern {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(180deg, rgba(255, 107, 53, 0.1), transparent);
+            clip-path: polygon(
+                0% 0%, 100% 0%,
+                100% 60%,
+                90% 65%, 80% 75%, 70% 70%, 60% 80%,
+                50% 75%, 40% 85%, 30% 80%, 20% 90%,
+                10% 85%, 0% 95%
+            );
+        }
+        
+        /* 正方形グリッドオーバーレイ */
+        .square-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            background-image: 
+                linear-gradient(rgba(255, 140, 66, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 140, 66, 0.5) 1px, transparent 1px);
+            background-size: 30px 30px;
+            transform: rotate(15deg) scale(1.5);
+        }
+        
+        /* 中央のフォーカスグロー */
+        .center-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            filter: blur(30px);
+        }
+    </style>
+</head>
+<body>
+    <div class="poster">
+        <div class="triangle-pattern">
+            <div class="triangle tri1"></div>
+            <div class="triangle tri2"></div>
+            <div class="triangle tri3"></div>
+            <div class="triangle tri4"></div>
+        </div>
+        
+        <div class="hexagon-grid">
+            <div class="hex-row">
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+            </div>
+            <div class="hex-row">
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+            </div>
+            <div class="hex-row">
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+            </div>
+            <div class="hex-row">
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+            </div>
+        </div>
+        
+        <div class="diagonal-lines"></div>
+        <div class="radial-overlay"></div>
+        <div class="dot-pattern"></div>
+        <div class="wave-border"></div>
+        <div class="top-pattern"></div>
+        <div class="square-grid"></div>
+        <div class="center-glow"></div>
+    </div>
+</body>
+</html>

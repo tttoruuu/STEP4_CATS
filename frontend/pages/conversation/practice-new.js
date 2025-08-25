@@ -108,34 +108,6 @@ export default function ConversationPracticeNew() {
     return greetings[characterId] || 'はじめまして。よろしくお願いします。';
   };
 
-  // API エラー時のフォールバック応答
-  const getFallbackResponse = (characterId, userMessage) => {
-    const responses = {
-      misaki: [
-        'そうなんですね！もっと詳しく聞かせてください。',
-        'それは素敵ですね。私も興味があります。',
-        'なるほど〜。それってどんな感じなんですか？'
-      ],
-      ai: [
-        'えー！それめっちゃ面白そう！もっと教えて〜！',
-        'へぇ〜！すごいね！私も気になる〜！',
-        'わあ！楽しそう！詳しく聞きたいな〜！'
-      ],
-      kaori: [
-        'そうですか。それは興味深いですね。',
-        'なるほど、そういうことでしたか。',
-        'そのお話、もう少し詳しく伺えますか？'
-      ],
-      shizuka: [
-        '...そうなんですか。',
-        '...なるほど。',
-        '...それは...いいですね。'
-      ]
-    };
-    
-    const characterResponses = responses[characterId] || ['そうですね。'];
-    return characterResponses[Math.floor(Math.random() * characterResponses.length)];
-  };
 
   // メッセージ送信
   const handleSendMessage = async () => {
@@ -177,15 +149,15 @@ export default function ConversationPracticeNew() {
     } catch (error) {
       console.error('メッセージ送信エラー:', error);
       
-      // エラー時のフォールバックメッセージ
-      const fallbackMessage = getFallbackResponse(characterId, inputMessage);
-      const partnerMessage = {
-        sender: 'partner',
-        text: fallbackMessage,
-        timestamp: new Date().toISOString()
+      // エラーメッセージを表示
+      const errorMessage = {
+        sender: 'system',
+        text: '⚠️ 接続エラーが発生しました。サーバーとの通信に失敗しました。しばらく待ってから再度お試しください。',
+        timestamp: new Date().toISOString(),
+        isError: true
       };
       
-      setMessages(prev => [...prev, partnerMessage]);
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setSending(false);
     }
@@ -366,33 +338,47 @@ export default function ConversationPracticeNew() {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
+                className={`flex ${
+                  message.sender === 'system' 
+                    ? 'justify-center' 
+                    : message.sender === 'user' 
+                    ? 'justify-end' 
+                    : 'justify-start'
+                } mb-4`}
               >
-                <div className="flex gap-3 max-w-[85%]">
-                  {message.sender === 'partner' && (
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
-                         style={{ backgroundColor: character.bg }}>
-                      <span className="text-sm font-bold" style={{ color: character.color }}>
-                        {character.initial}
-                      </span>
-                    </div>
-                  )}
-                  <div
-                    className={`px-4 py-3 rounded-2xl ${message.sender === 'user' 
-                      ? 'bg-gradient-to-r from-[#FF8551] to-[#FFA46D] text-white'
-                      : 'bg-white shadow-sm border border-gray-100 text-gray-800'
-                    }`}
-                  >
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                {message.sender === 'system' ? (
+                  <div className="max-w-[85%] px-4 py-3 rounded-lg bg-red-50 border border-red-200">
+                    <p className="text-sm text-red-700 leading-relaxed">
                       {message.text}
                     </p>
                   </div>
-                  {message.sender === 'user' && (
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                      <User size={16} className="text-white" />
+                ) : (
+                  <div className="flex gap-3 max-w-[85%]">
+                    {message.sender === 'partner' && (
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
+                           style={{ backgroundColor: character.bg }}>
+                        <span className="text-sm font-bold" style={{ color: character.color }}>
+                          {character.initial}
+                        </span>
+                      </div>
+                    )}
+                    <div
+                      className={`px-4 py-3 rounded-2xl ${message.sender === 'user' 
+                        ? 'bg-gradient-to-r from-[#FF8551] to-[#FFA46D] text-white'
+                        : 'bg-white shadow-sm border border-gray-100 text-gray-800'
+                      }`}
+                    >
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                        {message.text}
+                      </p>
                     </div>
-                  )}
-                </div>
+                    {message.sender === 'user' && (
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                        <User size={16} className="text-white" />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
             
