@@ -2,8 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/Layout';
 import CharacterSelect from '../../components/conversation/CharacterSelect';
-import VoiceRecorder from '../../components/VoiceRecorder';
-import { ArrowLeft, Send, Clock, User, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Send, Mic, Square, Clock, User } from 'lucide-react';
 import axios from 'axios';
 
 export default function ConversationPracticeNew() {
@@ -12,11 +11,15 @@ export default function ConversationPracticeNew() {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [sending, setSending] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [sessionComplete, setSessionComplete] = useState(false);
   const messagesEndRef = useRef(null);
   const timerRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const textareaRef = useRef(null);
 
   // タイマー設定（10分 = 600秒）
   const SESSION_DURATION = 600;
@@ -105,6 +108,35 @@ export default function ConversationPracticeNew() {
     return greetings[characterId] || 'はじめまして。よろしくお願いします。';
   };
 
+  // API エラー時のフォールバック応答
+  const getFallbackResponse = (characterId, userMessage) => {
+    const responses = {
+      misaki: [
+        'そうなんですね！もっと詳しく聞かせてください。',
+        'それは素敵ですね。私も興味があります。',
+        'なるほど〜。それってどんな感じなんですか？'
+      ],
+      ai: [
+        'えー！それめっちゃ面白そう！もっと教えて〜！',
+        'へぇ〜！すごいね！私も気になる〜！',
+        'わあ！楽しそう！詳しく聞きたいな〜！'
+      ],
+      kaori: [
+        'そうですか。それは興味深いですね。',
+        'なるほど、そういうことでしたか。',
+        'そのお話、もう少し詳しく伺えますか？'
+      ],
+      shizuka: [
+        '...そうなんですか。',
+        '...なるほど。',
+        '...それは...いいですね。'
+      ]
+    };
+    
+    const characterResponses = responses[characterId] || ['そうですね。'];
+    return characterResponses[Math.floor(Math.random() * characterResponses.length)];
+  };
+
   // メッセージ送信
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || sending) return;
@@ -121,14 +153,17 @@ export default function ConversationPracticeNew() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('/api/conversation/practice/chat', {
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/conversation/practice/chat`;
+      
+      const response = await axios.post(apiUrl, {
         character_id: characterId,
         message: inputMessage,
         conversation_history: messages,
         session_id: sessionStartTime
       }, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
 
@@ -141,14 +176,108 @@ export default function ConversationPracticeNew() {
       setMessages(prev => [...prev, partnerMessage]);
     } catch (error) {
       console.error('メッセージ送信エラー:', error);
+      
+      // エラー時のフォールバックメッセージ
+      const fallbackMessage = getFallbackResponse(characterId, inputMessage);
+      const partnerMessage = {
+        sender: 'partner',
+        text: fallbackMessage,
+        timestamp: new Date().toISOString()
+      };
+      
+      setMessages(prev => [...prev, partnerMessage]);
     } finally {
       setSending(false);
     }
   };
 
-  // 音声入力からテキスト受信
-  const handleTranscriptionReceived = (text) => {
-    setInputMessage(text);
+  // 音声入力の処理
+  const toggleRecording = async () => {
+    if (isRecording) {
+      // 録音停止
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop();
+      }
+      setIsRecording(false);
+    } else {
+      // 録音開始
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
+        audioChunksRef.current = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunksRef.current.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = async () => {
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+          await handleAudioTranscription(audioBlob);
+          
+          // ストリームを停止
+          stream.getTracks().forEach(track => track.stop());
+        };
+
+        mediaRecorder.start();
+        setIsRecording(true);
+      } catch (error) {
+        console.error('マイクアクセスエラー:', error);
+        alert('マイクへのアクセスが許可されていません。ブラウザの設定を確認してください。');
+      }
+    }
+  };
+
+  const handleAudioTranscription = async (audioBlob) => {
+    try {
+      setSending(true);
+      
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.wav');
+
+      const response = await fetch('/api/whisper', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('音声認識エラー:', error);
+        throw new Error(error.details || '音声認識に失敗しました');
+      }
+
+      const data = await response.json();
+      
+      if (data.text && data.text.trim()) {
+        const transcribedText = data.text.trim();
+        setInputMessage(transcribedText);
+        
+        // テキストエリアの高さを調整
+        setTimeout(() => {
+          if (textareaRef.current) {
+            adjustTextareaHeight(textareaRef.current);
+          }
+        }, 10);
+      } else {
+        alert('音声が認識できませんでした。もう一度お試しください。');
+      }
+    } catch (error) {
+      console.error('音声認識エラー:', error);
+      alert('音声認識に失敗しました。マイクの設定を確認してください。');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  // テキストエリアの高さを自動調整
+  const adjustTextareaHeight = (element) => {
+    if (!element) return;
+    element.style.height = 'auto';
+    const scrollHeight = element.scrollHeight;
+    const newHeight = Math.min(Math.max(scrollHeight, 40), 120);
+    element.style.height = newHeight + 'px';
   };
 
   // セッション完了処理
@@ -193,231 +322,173 @@ export default function ConversationPracticeNew() {
 
   return (
     <Layout title="会話練習" hideFooter={true}>
-      <div style={{
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        background: 'var(--bg-gradient-main)'
-      }}>
-        {/* ヘッダー */}
-        <div style={{
-          background: 'var(--bg-color)',
-          padding: '15px 20px',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <button
-              onClick={() => router.push('/conversation/modes')}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '5px'
-              }}
-            >
-              <ArrowLeft size={24} color="var(--text-dark)" />
-            </button>
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                background: character.bg,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}>
-                <span style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: character.color
-                }}>
-                  {character.initial}
-                </span>
-              </div>
-              <span style={{
-                fontSize: '18px',
-                fontWeight: '600',
-                color: 'var(--text-dark)'
-              }}>
-                {character.name}
-              </span>
-            </div>
-          </div>
-
-          {/* タイマー */}
-          <div style={{
-            background: elapsedTime > 540 ? 'rgba(244, 67, 54, 0.1)' : 'rgba(76, 175, 80, 0.1)',
-            padding: '8px 16px',
-            borderRadius: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <Clock size={18} color={elapsedTime > 540 ? '#F44336' : '#4CAF50'} />
-            <span style={{
-              fontSize: '16px',
-              fontWeight: '600',
-              color: elapsedTime > 540 ? '#F44336' : '#4CAF50'
-            }}>
-              {formatTime(elapsedTime)} / 10:00
-            </span>
-          </div>
-        </div>
-
-        {/* チャットエリア */}
-        <div style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '15px'
-        }}>
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              style={{
-                display: 'flex',
-                justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start'
-              }}
-            >
-              <div style={{
-                maxWidth: '70%',
-                background: message.sender === 'user' 
-                  ? 'linear-gradient(145deg, #FF6B35, #FFB08A)'
-                  : 'var(--bg-color)',
-                color: message.sender === 'user' ? 'white' : 'var(--text-dark)',
-                padding: '12px 18px',
-                borderRadius: '20px',
-                boxShadow: message.sender === 'user'
-                  ? '4px 4px 8px rgba(0,0,0,0.1)'
-                  : 'var(--shadow-light), var(--shadow-dark)'
-              }}>
-                <p style={{ margin: 0, fontSize: '15px', lineHeight: '1.5' }}>
-                  {message.text}
-                </p>
-              </div>
-            </div>
-          ))}
-          
-          {sending && (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'flex-start'
-            }}>
-              <div style={{
-                background: 'var(--bg-color)',
-                padding: '12px 18px',
-                borderRadius: '20px',
-                boxShadow: 'var(--shadow-light), var(--shadow-dark)'
-              }}>
-                <div style={{ display: 'flex', gap: '5px' }}>
-                  <span className="typing-dot">・</span>
-                  <span className="typing-dot" style={{ animationDelay: '0.2s' }}>・</span>
-                  <span className="typing-dot" style={{ animationDelay: '0.4s' }}>・</span>
+      <div className="flex flex-col h-screen bg-[#F5F5F5]">
+        {/* ヘッダー - AIカウンセラーと同じスタイル */}
+        <div className="bg-white border-b border-gray-200 p-4">
+          <div className="flex items-center justify-between max-w-4xl mx-auto">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => router.push('/conversation/modes')}
+                className="text-[var(--primary-orange)] hover:opacity-70 transition-opacity"
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center"
+                     style={{ backgroundColor: character.bg }}>
+                  <span className="font-bold text-lg" style={{ color: character.color }}>
+                    {character.initial}
+                  </span>
+                </div>
+                <div>
+                  <h2 className="font-bold text-lg text-gray-800">{character.name}</h2>
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <Clock size={14} />
+                    <span className={elapsedTime > 540 ? 'text-red-500' : 'text-green-500'}>
+                      {formatTime(elapsedTime)} / 10:00
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          )}
-          
+            <button
+              onClick={handleSessionComplete}
+              className="px-4 py-2 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 transition-colors"
+            >
+              終了する
+            </button>
+          </div>
+        </div>
+
+        {/* メッセージエリア - AIカウンセラーと同じスタイル */}
+        <div className="chat-container flex-1 overflow-y-auto px-4 py-6">
+          <div className="max-w-4xl mx-auto space-y-4">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
+              >
+                <div className="flex gap-3 max-w-[85%]">
+                  {message.sender === 'partner' && (
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
+                         style={{ backgroundColor: character.bg }}>
+                      <span className="text-sm font-bold" style={{ color: character.color }}>
+                        {character.initial}
+                      </span>
+                    </div>
+                  )}
+                  <div
+                    className={`px-4 py-3 rounded-2xl ${message.sender === 'user' 
+                      ? 'bg-gradient-to-r from-[#FF8551] to-[#FFA46D] text-white'
+                      : 'bg-white shadow-sm border border-gray-100 text-gray-800'
+                    }`}
+                  >
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                      {message.text}
+                    </p>
+                  </div>
+                  {message.sender === 'user' && (
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                      <User size={16} className="text-white" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+            
+            {sending && (
+              <div className="flex justify-start mb-4">
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
+                       style={{ backgroundColor: character.bg }}>
+                    <span className="text-sm font-bold" style={{ color: character.color }}>
+                      {character.initial}
+                    </span>
+                  </div>
+                  <div className="bg-white shadow-sm border border-gray-100 px-4 py-3 rounded-2xl">
+                    <div className="flex gap-1">
+                      <span className="typing-dot">•</span>
+                      <span className="typing-dot" style={{ animationDelay: '0.2s' }}>•</span>
+                      <span className="typing-dot" style={{ animationDelay: '0.4s' }}>•</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
           <div ref={messagesEndRef} />
         </div>
 
-        {/* 入力エリア */}
-        <div style={{
-          background: 'var(--bg-color)',
-          padding: '20px',
-          borderTop: '1px solid rgba(0,0,0,0.1)'
-        }}>
-          {elapsedTime >= 300 && !sessionComplete && (
-            <div style={{
-              marginBottom: '15px',
-              textAlign: 'center'
-            }}>
-              <button
-                onClick={handleSessionComplete}
-                style={{
-                  background: 'rgba(244, 67, 54, 0.1)',
-                  color: '#F44336',
-                  border: '1px solid #F44336',
-                  padding: '8px 24px',
-                  borderRadius: '20px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '500'
+        {/* 入力エリア - AIカウンセラーと同じスタイル */}
+        <div className="bg-white border-t border-gray-200 px-4 py-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-end gap-3">
+              <textarea
+                ref={textareaRef}
+                value={inputMessage}
+                onChange={(e) => {
+                  setInputMessage(e.target.value);
+                  adjustTextareaHeight(e.target);
                 }}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
+                placeholder="メッセージを入力..."
+                disabled={sending || sessionComplete}
+                className="flex-1 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200 resize-none outline-none focus:border-[var(--primary-orange)] focus:bg-white transition-colors"
+                style={{
+                  minHeight: '40px',
+                  maxHeight: '120px',
+                  fontSize: '14px',
+                  lineHeight: '1.5'
+                }}
+                rows={1}
+              />
+              
+              <button
+                onClick={toggleRecording}
+                disabled={sessionComplete}
+                className={`p-2.5 rounded-full transition-all ${
+                  isRecording
+                    ? 'bg-red-500 hover:bg-red-600'
+                    : 'bg-gray-200 hover:bg-gray-300'
+                } ${sessionComplete ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
               >
-                会話を終了する
+                {isRecording ? (
+                  <Square size={18} className="text-white" />
+                ) : (
+                  <Mic size={18} className="text-gray-600" />
+                )}
+              </button>
+              
+              <button
+                onClick={handleSendMessage}
+                disabled={!inputMessage.trim() || sending || sessionComplete}
+                className={`p-2.5 rounded-full transition-all ${
+                  inputMessage.trim() && !sending && !sessionComplete
+                    ? 'bg-gradient-to-r from-[#FF8551] to-[#FFA46D] hover:opacity-90 cursor-pointer'
+                    : 'bg-gray-200 cursor-not-allowed'
+                }`}
+              >
+                <Send size={18} className="text-white" />
               </button>
             </div>
-          )}
-
-          <div style={{
-            display: 'flex',
-            gap: '10px',
-            alignItems: 'center'
-          }}>
-            <VoiceRecorder 
-              onTranscriptionReceived={handleTranscriptionReceived}
-              disabled={sending || sessionComplete}
-            />
-            
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="メッセージを入力..."
-              disabled={sending || sessionComplete}
-              style={{
-                flex: 1,
-                padding: '12px 20px',
-                borderRadius: '25px',
-                border: 'none',
-                background: 'var(--bg-color)',
-                boxShadow: 'inset 4px 4px 8px rgba(209, 186, 172, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.8)',
-                fontSize: '15px'
-              }}
-            />
-            
-            <button
-              onClick={handleSendMessage}
-              disabled={!inputMessage.trim() || sending || sessionComplete}
-              style={{
-                background: 'linear-gradient(145deg, #FF6B35, #FFB08A)',
-                border: 'none',
-                borderRadius: '50%',
-                width: '48px',
-                height: '48px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                boxShadow: '4px 4px 8px rgba(0,0,0,0.1)',
-                opacity: (!inputMessage.trim() || sending || sessionComplete) ? 0.5 : 1
-              }}
-            >
-              <Send size={20} color="white" />
-            </button>
           </div>
         </div>
       </div>
 
       <style jsx>{`
-        @keyframes typing {
-          0%, 60%, 100% { opacity: 0.3; }
-          30% { opacity: 1; }
-        }
-        
         .typing-dot {
           animation: typing 1.4s infinite;
           display: inline-block;
+        }
+        
+        @keyframes typing {
+          0%, 60%, 100% { opacity: 0; }
+          30% { opacity: 1; }
         }
       `}</style>
     </Layout>

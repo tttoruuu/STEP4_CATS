@@ -16,19 +16,27 @@ export const config = {
 
 export default async function handler(req, res) {
   console.log('Whisper API called, method:', req.method);
-  console.log('API Key exists:', !!process.env.OPENAI_API_KEY);
   
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  if (!process.env.OPENAI_API_KEY) {
-    console.error('OPENAI_API_KEY is not set');
-    return res.status(500).json({ error: 'OpenAI API key not configured' });
+  // 環境変数からAPIキーを取得（複数の可能性をチェック）
+  const apiKey = process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+  
+  console.log('API Key exists:', !!apiKey);
+  console.log('API Key length:', apiKey ? apiKey.length : 0);
+  
+  if (!apiKey) {
+    console.error('OPENAI_API_KEY is not set in environment variables');
+    return res.status(500).json({ 
+      error: 'OpenAI API key not configured',
+      details: 'Please set OPENAI_API_KEY environment variable'
+    });
   }
 
   const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: apiKey,
   });
 
   try {
