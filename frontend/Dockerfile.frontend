@@ -2,8 +2,8 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Copy entire project
-COPY . .
+# Copy frontend directory
+COPY frontend/ ./
 
 # Set build-time environment variables
 ARG NEXT_PUBLIC_API_URL
@@ -12,23 +12,18 @@ ENV NODE_ENV=production
 
 # Install dependencies and build
 RUN npm install
-WORKDIR /app/frontend
-RUN npm install
 RUN npm run build
 
 # Production stage  
 FROM node:18-alpine
 WORKDIR /app
 
-# Copy entire frontend directory and node_modules
-COPY --from=builder /app/frontend ./frontend
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
+# Copy built application
+COPY --from=builder /app ./
 
 # Set runtime environment variables
 ENV NODE_ENV=production
 ENV NEXT_PUBLIC_API_URL=https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io
 
-WORKDIR /app/frontend
 EXPOSE 3000
 CMD ["npm", "start"]
