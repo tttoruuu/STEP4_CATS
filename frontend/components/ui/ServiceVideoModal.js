@@ -25,13 +25,14 @@ const ServiceVideoModal = ({ isOpen, onClose, onDontShowAgain }) => {
     onClose();
   };
 
-  const handleConversationPractice = () => {
+  const handleGoToHome = () => {
     handleClose();
-    router.push('/conversation/modes');
+    router.push('/');
   };
 
   const handleHowToUse = () => {
-    window.open('https://astounding-sherbet-06a151.netlify.app/', '_blank');
+    handleClose();
+    router.push('/features');
   };
 
   if (!isOpen) return null;
@@ -55,7 +56,7 @@ const ServiceVideoModal = ({ isOpen, onClose, onDontShowAgain }) => {
             poster="/video-poster.jpg"
           >
             <source 
-              src="https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/one-sided%20talk%20man001.mp4" 
+              src="https://blobeastasiafor9th.blob.core.windows.net/wild-nyatsby-mp3-test/one-sided%20talk%20man005.mp4" 
               type="video/mp4" 
             />
             お使いのブラウザは動画をサポートしていません。
@@ -65,15 +66,15 @@ const ServiceVideoModal = ({ isOpen, onClose, onDontShowAgain }) => {
         <div className={styles.buttonGroup}>
           <button 
             className={`${styles.actionButton} ${styles.primaryButton}`}
-            onClick={handleConversationPractice}
+            onClick={handleGoToHome}
           >
-            会話練習をする
+            ホーム画面にいく
           </button>
           <button 
             className={`${styles.actionButton} ${styles.secondaryButton}`}
             onClick={handleHowToUse}
           >
-            使い方を確認する
+            使い方を見る
           </button>
         </div>
 
