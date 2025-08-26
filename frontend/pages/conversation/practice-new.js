@@ -72,25 +72,6 @@ export default function ConversationPracticeNew() {
   const initializeConversation = async () => {
     setSessionStartTime(Date.now());
     
-    // デフォルトパートナーを初期化
-    try {
-      const token = localStorage.getItem('token');
-      if (token) {
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/conversation/initialize-default-partners`,
-          {},
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-      }
-    } catch (error) {
-      console.log('パートナー初期化をスキップ:', error);
-    }
-    
     // 初回挨拶
     setMessages([{
       sender: 'partner',
@@ -148,24 +129,11 @@ export default function ConversationPracticeNew() {
 
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/conversation/practice`;
-      
-      // キャラクターIDからパートナーIDにマッピング（仮のID）
-      const partnerIdMap = {
-        misaki: 1,
-        ai: 2,
-        kaori: 3,
-        shizuka: 4
-      };
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/conversation/practice/chat`;
       
       const response = await axios.post(apiUrl, {
-        partner_id: partnerIdMap[characterId] || 1,
-        message: inputMessage,
-        mode: 'free',
-        conversation_history: messages.map(m => ({
-          role: m.sender === 'user' ? 'user' : 'assistant',
-          content: m.text
-        }))
+        character_id: characterId,
+        message: inputMessage
       }, {
         headers: {
           'Authorization': `Bearer ${token}`,
