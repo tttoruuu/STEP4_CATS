@@ -953,11 +953,10 @@ export const conversationAPI = {
     try {
       
       const client = getAuthenticatedClient();
-      // /api/conversation/practice エンドポイントを使用
-      const response = await client.post('/api/conversation/practice', {
+      // /api/conversation/practice/chat エンドポイントを使用
+      const response = await client.post('/api/conversation/practice/chat', {
+        character_id: `partner_${partnerId}`,  // character_idに変更
         message: message,
-        partner_id: parseInt(partnerId),
-        mode: 'free',  // フリートークモード
         conversation_history: chatHistory  // 会話履歴を送信
       });
       

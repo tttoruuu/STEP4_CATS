@@ -2,12 +2,14 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/Layout';
 import CharacterSelect from '../../components/conversation/CharacterSelect';
+import FreeTalkGuide from '../../components/conversation/FreeTalkGuide';
 import { ArrowLeft, Send, Mic, Square, Clock, User } from 'lucide-react';
 import axios from 'axios';
 
 export default function ConversationPracticeNew() {
   const router = useRouter();
   const { characterId, characterName } = router.query;
+  const [showGuide, setShowGuide] = useState(true);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [sending, setSending] = useState(false);
@@ -21,8 +23,8 @@ export default function ConversationPracticeNew() {
   const audioChunksRef = useRef([]);
   const textareaRef = useRef(null);
 
-  // タイマー設定（10分 = 600秒）
-  const SESSION_DURATION = 600;
+  // タイマー設定（5分 = 300秒）
+  const SESSION_DURATION = 300;
 
   // キャラクター情報
   const getCharacterInfo = (id) => {
@@ -87,7 +89,7 @@ export default function ConversationPracticeNew() {
         const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
         setElapsedTime(elapsed);
         
-        // 10分経過で自動終了
+        // 5分経過で自動終了
         if (elapsed >= SESSION_DURATION) {
           handleSessionComplete();
         }
@@ -285,6 +287,15 @@ export default function ConversationPracticeNew() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // ガイド画面を表示
+  if (showGuide && !characterId) {
+    return (
+      <Layout title="会話練習">
+        <FreeTalkGuide onStart={() => setShowGuide(false)} />
+      </Layout>
+    );
+  }
+
   // キャラクター選択画面を表示
   if (!characterId) {
     return (
@@ -318,8 +329,8 @@ export default function ConversationPracticeNew() {
                   <h2 className="font-bold text-lg text-gray-800">{character.name}</h2>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Clock size={14} />
-                    <span className={elapsedTime > 540 ? 'text-red-500' : 'text-green-500'}>
-                      {formatTime(elapsedTime)} / 10:00
+                    <span className={elapsedTime > 240 ? 'text-red-500' : 'text-green-500'}>
+                      {formatTime(elapsedTime)} / 5:00
                     </span>
                   </div>
                 </div>

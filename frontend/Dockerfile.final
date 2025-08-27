@@ -1,14 +1,16 @@
 FROM node:18-alpine
 WORKDIR /app
 
-# Copy pre-built application
-COPY .next/standalone ./
-COPY .next/static ./.next/static
-COPY public ./public
+# 最新のビルド済みファイルをコピー
+ADD deploy.tar.gz .
 
+# 必要な依存関係をインストール
+RUN npm install --production
+
+# 環境変数設定
 ENV NEXT_PUBLIC_API_URL=https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io
 ENV NODE_ENV=production
 ENV ENVIRONMENT=production
 
 EXPOSE 3000
-CMD ["node", "server.js"]
+CMD ["npm", "start"]

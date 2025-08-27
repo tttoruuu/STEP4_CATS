@@ -7,6 +7,8 @@ import ShadowingPractice from './ShadowingPractice';
 // @ts-ignore
 import DeepDivePracticeGuide from './conversation/DeepDivePracticeGuide';
 // @ts-ignore
+import IntegratedPracticeGuide from './conversation/IntegratedPracticeGuide';
+// @ts-ignore
 import { conversationQuizData, getScenariosByCategory } from '../data/conversationQuizData';
 import { ArrowLeft, Lightbulb, Search, TrendingUp, Star, Lock } from 'lucide-react';
 
@@ -22,7 +24,7 @@ interface UserProgress {
 
 const ConversationPractice: React.FC = () => {
   const router = useRouter();
-  const [currentView, setCurrentView] = useState<'levelSelect' | 'quiz' | 'shadowing'>('levelSelect');
+  const [currentView, setCurrentView] = useState<'guide' | 'levelSelect' | 'quiz' | 'shadowing'>('guide');
   const [showCompletionDialog, setShowCompletionDialog] = useState<{ show: boolean; type: 'beginner' | 'advanced' | null }>({ show: false, type: null });
   const [selectedLevel, setSelectedLevel] = useState<'beginner' | 'advanced' | null>(null);
   const [currentScenario, setCurrentScenario] = useState(null);
@@ -340,6 +342,10 @@ const ConversationPractice: React.FC = () => {
     };
     return info[level];
   };
+
+  if (currentView === 'guide') {
+    return <IntegratedPracticeGuide onStart={() => setCurrentView('levelSelect')} />;
+  }
 
   if (currentView === 'levelSelect') {
     return (

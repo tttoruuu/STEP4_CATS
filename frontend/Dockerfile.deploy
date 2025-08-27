@@ -1,14 +1,15 @@
 FROM node:18-alpine
 WORKDIR /app
 
-# Copy pre-built application
-COPY .next/standalone ./
-COPY .next/static ./.next/static
+# Copy entire built Next.js application
+COPY .next ./.next
 COPY public ./public
+COPY package.json ./
+COPY node_modules ./node_modules
 
 ENV NEXT_PUBLIC_API_URL=https://miraim-backend.icymoss-273d47c5.australiaeast.azurecontainerapps.io
 ENV NODE_ENV=production
 ENV ENVIRONMENT=production
 
 EXPOSE 3000
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
