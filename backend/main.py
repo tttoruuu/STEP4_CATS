@@ -16,7 +16,7 @@ from auth.password import get_password_hash, verify_password
 from auth.jwt import create_access_token, get_current_user
 from routers import conversation_partners, personality, marriage_mbti, counselor, profile, auth, user_settings, features
 from routers import help as help_router
-from routers import conversation_practice_v2
+from routers import conversation_practice, conversation_practice_v2
 from fastapi.responses import JSONResponse
 import random
 from urllib.parse import urlparse
@@ -261,6 +261,7 @@ app.include_router(profile.router)
 app.include_router(user_settings.router)
 app.include_router(features.router, tags=["features"])
 app.include_router(help_router.router, tags=["help"])
+app.include_router(conversation_practice.router)
 app.include_router(conversation_practice_v2.router)
 
 # OpenAI接続テスト用エンドポイント（認証なし）
