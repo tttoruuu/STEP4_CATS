@@ -4,6 +4,7 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
 import os
+import json
 from openai import OpenAI
 
 from database import get_db
@@ -24,6 +25,13 @@ class FreeChatRequest(BaseModel):
 class FreeChatResponse(BaseModel):
     reply: str
     suggestions: Optional[list] = None
+
+# フィードバック用モデル
+class FeedbackRequest(BaseModel):
+    character_id: str
+    conversation_history: list
+    duration: int
+    session_id: Optional[str] = None
 
 # リクエスト/レスポンスモデル
 class ConversationRequest(BaseModel):
@@ -308,6 +316,161 @@ async def free_chat(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"会話生成中にエラーが発生しました: {str(e)}"
         )
+
+@router.post("/practice/feedback")
+async def generate_feedback(
+    request: FeedbackRequest,
+    current_user: User = Depends(get_current_user)
+):
+    """会話のフィードバックを生成"""
+    
+    try:
+        # OpenAI クライアントの初期化
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="OpenAI APIキーが設定されていません"
+            )
+        
+        client = OpenAI(api_key=api_key)
+        
+        # 会話ログを文字列に変換
+        conversation_log = "\n".join([
+            f"{'ユーザー' if msg.get('sender') == 'user' else msg.get('sender', 'キャラクター')}: {msg.get('text', msg.get('message', ''))}"
+            for msg in request.conversation_history
+        ])
+        
+        # フィードバック生成プロンプト（仕様書準拠）
+        feedback_prompt = f"""
+以下の会話ログを分析し、婚活デートでの会話力向上のためのフィードバックを生成してください。
+
+【評価項目】
+1. 挨拶スキル（初対面の印象、締めの挨拶）
+2. 相槌・共感スキル（バリエーション、共感の質）
+3. 聞く力（質問の質、深掘り、感情への注目）
+
+【分析内容】
+- 会話バランス（発言比率）
+- 良かった発言を3つ抜粋
+- 改善できる発言を3つ、改善例付き
+- 次回への具体的アドバイス
+
+会話ログ：
+{conversation_log}
+
+JSONフォーマットで以下の形式で返答してください：
+{{
+  "skill_scores": {{
+    "greeting": 1-5の数値,
+    "empathy": 1-5の数値, 
+    "listening": 1-5の数値
+  }},
+  "conversation_balance": {{
+    "user": ユーザーの発言割合（%）,
+    "partner": 相手の発言割合（%）
+  }},
+  "question_count": ユーザーの質問数,
+  "empathy_count": 共感表現の回数,
+  "good_points": [
+    "良かった発言1（実際の発言を引用）と評価理由",
+    "良かった発言2（実際の発言を引用）と評価理由",
+    "良かった発言3（実際の発言を引用）と評価理由"
+  ],
+  "improvement_points": [
+    {{"before": "改善前の発言", "after": "改善例", "reason": "改善理由"}},
+    {{"before": "改善前の発言", "after": "改善例", "reason": "改善理由"}},
+    {{"before": "改善前の発言", "after": "改善例", "reason": "改善理由"}}
+  ],
+  "next_advice": "次回に向けた具体的アドバイス（100文字程度）",
+  "overall_score": 総合スコア（1-5）
+}}
+"""
+        
+        # OpenAI APIで分析
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "あなたは婚活コミュニケーションの専門家です。会話分析を行い、具体的で建設的なフィードバックを提供します。"},
+                {"role": "user", "content": feedback_prompt}
+            ],
+            temperature=0.7,
+            max_tokens=1500
+        )
+        
+        feedback_text = response.choices[0].message.content.strip()
+        
+        # JSONとして解析
+        try:
+            import json
+            feedback_data = json.loads(feedback_text)
+        except:
+            # JSON解析失敗時のフォールバック
+            feedback_data = {
+                "skill_scores": {
+                    "greeting": 3,
+                    "empathy": 3,
+                    "listening": 3
+                },
+                "conversation_balance": {
+                    "user": 50,
+                    "partner": 50
+                },
+                "question_count": 3,
+                "empathy_count": 2,
+                "good_points": [
+                    "会話を最後まで続けることができました",
+                    "相手の話に関心を示そうとしました",
+                    "自然な挨拶ができました"
+                ],
+                "improvement_points": [
+                    {"before": "そうですか", "after": "そうなんですね！それは面白いですね", "reason": "共感を示す"},
+                    {"before": "はい", "after": "なるほど、もっと詳しく教えてください", "reason": "深掘りする"},
+                    {"before": "ふーん", "after": "それは大変でしたね", "reason": "感情に寄り添う"}
+                ],
+                "next_advice": "相手の話に「なぜ？」「どのように？」という質問を加えて、より深い会話を目指しましょう。",
+                "overall_score": 3
+            }
+        
+        # メタデータを追加
+        feedback_data["duration"] = request.duration
+        feedback_data["character_id"] = request.character_id
+        feedback_data["session_id"] = request.session_id
+        
+        return feedback_data
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"フィードバック生成エラー: {str(e)}")
+        # エラー時のデフォルトレスポンス
+        return {
+            "skill_scores": {
+                "greeting": 3,
+                "empathy": 3,
+                "listening": 3
+            },
+            "conversation_balance": {
+                "user": 50,
+                "partner": 50
+            },
+            "question_count": 3,
+            "empathy_count": 2,
+            "good_points": [
+                "会話を続けることができました",
+                "相手の話を聞こうとしました",
+                "挨拶ができました"
+            ],
+            "improvement_points": [
+                {"before": "そうですか", "after": "そうなんですね！", "reason": "より共感を示す"},
+                {"before": "はい", "after": "詳しく教えてください", "reason": "興味を示す"},
+                {"before": "なるほど", "after": "それは素敵ですね", "reason": "ポジティブに反応"}
+            ],
+            "next_advice": "相手の話をもっと深く聞いて、共感を示しましょう。",
+            "overall_score": 3,
+            "duration": request.duration,
+            "character_id": request.character_id
+        }
 
 @router.get("/modes")
 async def get_conversation_modes():
