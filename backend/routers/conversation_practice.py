@@ -16,6 +16,15 @@ router = APIRouter(
     tags=["conversation-practice"]
 )
 
+# フリー会話用のシンプルなリクエストモデル
+class FreeChatRequest(BaseModel):
+    character_id: str
+    message: str
+
+class FreeChatResponse(BaseModel):
+    reply: str
+    suggestions: Optional[list] = None
+
 # リクエスト/レスポンスモデル
 class ConversationRequest(BaseModel):
     message: str
@@ -150,6 +159,81 @@ async def practice_conversation(
         raise
     except Exception as e:
         print(f"会話練習エラー: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"会話生成中にエラーが発生しました: {str(e)}"
+        )
+
+@router.post("/practice/chat", response_model=FreeChatResponse)
+async def free_chat(
+    request: FreeChatRequest,
+    current_user: User = Depends(get_current_user)
+):
+    """フリー会話練習（簡易版）"""
+    try:
+        # OpenAI クライアントの初期化
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="OpenAI APIキーが設定されていません"
+            )
+        
+        client = OpenAI(api_key=api_key)
+        
+        # キャラクターごとの設定
+        character_prompts = {
+            "misaki": """あなたは佐藤美咲、28歳の看護師です。
+性格: 優しく穏やか、聞き上手
+趣味: カフェ巡り、ヨガ、読書
+話し方: 丁寧で優しい口調、相手を気遣う""",
+            "ai": """あなたは鈴木愛、26歳のイベントプランナーです。
+性格: 明るく社交的、話し好き  
+趣味: ショッピング、映画鑑賞、料理
+話し方: 明るくフレンドリー、テンポよく話す""",
+            "kaori": """あなたは田中香織、32歳のコンサルタントです。
+性格: 知的で論理的、落ち着いている
+趣味: 茶道、華道、美術館巡り
+話し方: 知的で上品、理路整然としている""",
+            "shizuka": """あなたは山田静香、30歳の図書館司書です。
+性格: 控えめで慎重、思慮深い
+趣味: 読書、ピアノ、散歩
+話し方: 静かで控えめ、言葉を選んで話す"""
+        }
+        
+        # キャラクターのプロンプトを取得（デフォルトは美咲）
+        system_prompt = character_prompts.get(request.character_id, character_prompts["misaki"])
+        system_prompt += "\n\n婚活や恋愛に関する会話をしています。自然な会話を心がけ、返答は簡潔に1-2文程度で答えてください。"
+        
+        # OpenAI APIで応答生成
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": request.message}
+            ],
+            temperature=0.7,
+            max_tokens=150
+        )
+        
+        reply = completion.choices[0].message.content
+        
+        # 会話の提案を生成
+        suggestions = []
+        if "趣味" in request.message or "好き" in request.message:
+            suggestions = ["へー、それは楽しそうですね！", "私も興味があります！", "もっと詳しく教えてください"]
+        elif "仕事" in request.message or "会社" in request.message:
+            suggestions = ["お仕事大変そうですね", "やりがいはありますか？", "休日は何をされているんですか？"]
+        else:
+            suggestions = ["そうなんですね", "なるほど、興味深いです", "もっとお話を聞かせてください"]
+        
+        return FreeChatResponse(
+            reply=reply,
+            suggestions=suggestions
+        )
+        
+    except Exception as e:
+        print(f"フリー会話エラー: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"会話生成中にエラーが発生しました: {str(e)}"
