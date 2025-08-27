@@ -22,7 +22,8 @@ export default function ConversationFeedbackNew() {
       const parsedMessages = JSON.parse(messages);
       
       const token = localStorage.getItem('token');
-      const response = await axios.post('/api/conversation/practice/feedback', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await axios.post(`${apiUrl}/api/conversation/practice/feedback`, {
         character_id: characterId,
         conversation_history: parsedMessages,
         duration: parseInt(duration)
