@@ -13,7 +13,12 @@ const VoiceRecorder = ({ onTranscriptionReceived, disabled }) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      // MediaRecorderのMIMEタイプを明示的に指定
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm') 
+        ? 'audio/webm' 
+        : 'audio/ogg';
+      
+      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType });
       audioChunksRef.current = [];
 
       mediaRecorderRef.current.ondataavailable = (event) => {
@@ -21,8 +26,8 @@ const VoiceRecorder = ({ onTranscriptionReceived, disabled }) => {
       };
 
       mediaRecorderRef.current.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-        await sendAudioToWhisper(audioBlob);
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+        await sendAudioToWhisper(audioBlob, mimeType);
         
         // ストリームを停止
         stream.getTracks().forEach(track => track.stop());
@@ -44,10 +49,12 @@ const VoiceRecorder = ({ onTranscriptionReceived, disabled }) => {
     }
   };
 
-  const sendAudioToWhisper = async (audioBlob) => {
+  const sendAudioToWhisper = async (audioBlob, mimeType) => {
     try {
       const formData = new FormData();
-      formData.append('audio', audioBlob, 'recording.wav');
+      // 拡張子をMIMEタイプに基づいて設定
+      const extension = mimeType.includes('webm') ? 'webm' : 'ogg';
+      formData.append('audio', audioBlob, `recording.${extension}`);
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const token = localStorage.getItem('token');
