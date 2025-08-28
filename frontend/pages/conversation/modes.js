@@ -43,14 +43,14 @@ export default function ConversationModes() {
           id: 'deepen-conversation',
           title: '深掘りトレーニング',
           icon: TrendingUp,
-          path: '/conversation/deepen',
+          path: '/conversation/integrated-practice',
           step: 4
         },
         {
           id: 'integrated-practice',
           title: '総合練習',
           icon: Users,
-          path: '/conversation/integrated-practice',
+          path: '/conversation/integrated-practice-guide',
           step: 5
         },
         {
