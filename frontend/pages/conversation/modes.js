@@ -40,17 +40,17 @@ export default function ConversationModes() {
       description: 'より高度な会話スキルを習得',
       modes: [
         {
-          id: 'integrated-conversation',
+          id: 'deepen-conversation',
           title: '深掘りトレーニング',
           icon: TrendingUp,
-          path: '/conversation/integrated-practice',
+          path: '/conversation/deepen',
           step: 4
         },
         {
-          id: 'comprehensive',
+          id: 'integrated-practice',
           title: '総合練習',
           icon: Users,
-          path: '/conversation/comprehensive',
+          path: '/conversation/integrated-practice',
           step: 5
         },
         {
@@ -65,7 +65,7 @@ export default function ConversationModes() {
   };
 
   return (
-    <Layout title="会話練習モード選択">
+    <Layout title="聴く練習モード選択">
       <div className="flex flex-col items-center min-h-screen px-6 py-4 bg-[var(--bg-color)]">
         <div className="w-full max-w-md mt-8 relative">
           <button 
@@ -80,7 +80,7 @@ export default function ConversationModes() {
         </div>
         
         <h1 className="text-2xl font-bold mt-16 mb-8 text-center text-[var(--primary-orange)]">
-          会話練習モードを選択
+          聴く練習モードを選択
         </h1>
         
         {/* ステップバイステップガイド */}

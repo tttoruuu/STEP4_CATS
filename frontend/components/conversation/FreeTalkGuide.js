@@ -10,7 +10,7 @@ const FreeTalkGuide = ({ onStart }) => {
         {/* タイトル */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-3" style={{ color: '#FF6B35' }}>
-            フリー会話練習
+            フリー聴く練習
           </h1>
           <p className="text-gray-600">
             いろいろなタイプの女性と自由に会話
@@ -142,7 +142,7 @@ const FreeTalkGuide = ({ onStart }) => {
               : '0 4px 15px rgba(255, 107, 53, 0.25)'
           }}
         >
-          会話練習を始める
+          聴く練習を始める
         </button>
       </div>
     </div>

@@ -13,7 +13,7 @@ export default function Layout({ children, title = 'アプリケーション', h
     <div className="flex flex-col min-h-screen" style={{background: 'var(--bg-gradient-main)'}}>
       <Head>
         <title>{title}</title>
-        <meta name="description" content="会話練習アプリケーション" />
+        <meta name="description" content="聴く練習アプリケーション" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

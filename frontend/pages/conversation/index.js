@@ -159,7 +159,7 @@ export default function ConversationIndex() {
   };
 
   return (
-    <Layout title="会話練習">
+    <Layout title="聴く練習">
       <div className="flex flex-col items-center min-h-screen bg-[#F5F5F5] text-gray-800 px-6 py-4">
         <div className="w-full max-w-md mt-8 relative">
           <button 

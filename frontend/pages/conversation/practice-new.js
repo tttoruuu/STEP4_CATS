@@ -290,7 +290,7 @@ export default function ConversationPracticeNew() {
   // ガイド画面を表示
   if (showGuide && !characterId) {
     return (
-      <Layout title="会話練習">
+      <Layout title="聴く練習">
         <FreeTalkGuide onStart={() => setShowGuide(false)} />
       </Layout>
     );
@@ -299,14 +299,14 @@ export default function ConversationPracticeNew() {
   // キャラクター選択画面を表示
   if (!characterId) {
     return (
-      <Layout title="会話練習">
+      <Layout title="聴く練習">
         <CharacterSelect />
       </Layout>
     );
   }
 
   return (
-    <Layout title="会話練習" hideFooter={true}>
+    <Layout title="聴く練習" hideFooter={true}>
       <div className="flex flex-col h-screen bg-[#F5F5F5]">
         {/* ヘッダー - AIカウンセラーと同じスタイル */}
         <div className="bg-white border-b border-gray-200 p-4">

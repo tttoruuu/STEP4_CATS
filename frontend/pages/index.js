@@ -221,7 +221,7 @@ export default function MainPage() {
           <Link href="/conversation/modes">
             <button className="neo-btn w-full flex items-center justify-center gap-3 py-4" style={{background: 'linear-gradient(135deg, var(--light-orange), var(--primary-orange))'}}>
               <MessageSquare className="w-5 h-5 text-white" />
-              <span className="font-medium text-white">会話練習</span>
+              <span className="font-medium text-white">聴く練習</span>
             </button>
           </Link>
 
