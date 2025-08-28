@@ -303,7 +303,7 @@ export default function ConversationPractice() {
 
   if (loading) {
     return (
-      <Layout title="会話練習" hideHeader={true}>
+      <Layout title="聴く練習" hideHeader={true}>
         <div className="flex flex-col items-center justify-center min-h-screen bg-[#F5F5F5] text-gray-800 px-4 sm:px-6 py-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF8551] mx-auto"></div>
           <p className="mt-4">読み込み中...</p>
@@ -314,7 +314,7 @@ export default function ConversationPractice() {
 
   if (!partner) {
     return (
-      <Layout title="会話練習" hideHeader={true}>
+      <Layout title="聴く練習" hideHeader={true}>
         <div className="flex flex-col items-center justify-center min-h-screen bg-[#F5F5F5] text-gray-800 px-4 sm:px-6 py-4">
           <p className="mb-4">会話相手が見つかりませんでした</p>
           <button
@@ -330,7 +330,7 @@ export default function ConversationPractice() {
 
   // 新しい統合型練習への誘導画面を返す
   if (partnerId) {
-    // 既存の会話練習機能
+    // 既存の聴く練習機能
     return (
       <Layout title={`${partner?.name || ''}との会話`} hideHeader={true}>
         <div 
@@ -444,7 +444,7 @@ export default function ConversationPractice() {
 
   // partnerIdがない場合は、練習モード選択画面を表示
   return (
-    <Layout title="会話練習">
+    <Layout title="聴く練習">
       <div className="flex flex-col items-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 text-gray-800 px-4 sm:px-6 py-4">
         <div className="w-full max-w-4xl mt-8">
           <button
@@ -456,7 +456,7 @@ export default function ConversationPractice() {
           </button>
           
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">会話練習</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">聴く練習</h1>
             <p className="text-gray-600">あなたのスキルレベルに合わせて練習方法を選びましょう</p>
           </div>
 
@@ -470,7 +470,7 @@ export default function ConversationPractice() {
                 <div className="p-3 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg">
                   <TrendingUp className="text-white" size={24} />
                 </div>
-                <h2 className="text-xl font-bold">統合型会話練習</h2>
+                <h2 className="text-xl font-bold">統合型聴く練習</h2>
               </div>
               <p className="text-gray-600 mb-4">
                 「会話を引き出す」「深堀りする」スキルを段階的に習得できる統合プログラム。初級・中級・上級のレベル別練習で着実にスキルアップ。

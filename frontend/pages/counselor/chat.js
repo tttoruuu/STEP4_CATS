@@ -392,8 +392,14 @@ export default function CounselorChat() {
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.wav');
 
-      const response = await fetch('/api/whisper', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(`${apiUrl}/speech-to-text`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: formData,
       });
 

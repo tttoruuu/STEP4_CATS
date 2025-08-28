@@ -49,15 +49,42 @@ const VoiceRecorder = ({ onTranscriptionReceived, disabled }) => {
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.wav');
 
-      const response = await fetch('/api/whisper', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(`${apiUrl}/speech-to-text`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: formData,
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Whisper API error details:', errorData);
-        throw new Error(`音声認識に失敗しました: ${errorData.error || 'Unknown error'}`);
+        let errorMessage = 'Unknown error';
+        try {
+          const errorData = await response.json();
+          console.error('Whisper API error details:', errorData);
+          
+          // エラーメッセージの取得を改善
+          if (typeof errorData === 'string') {
+            errorMessage = errorData;
+          } else if (errorData.detail) {
+            errorMessage = errorData.detail;
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          } else if (errorData.error) {
+            if (typeof errorData.error === 'string') {
+              errorMessage = errorData.error;
+            } else if (errorData.error.message) {
+              errorMessage = errorData.error.message;
+            }
+          }
+        } catch (e) {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+        
+        throw new Error(`音声認識に失敗しました: ${errorMessage}`);
       }
 
       const data = await response.json();

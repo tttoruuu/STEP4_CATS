@@ -551,7 +551,7 @@ export default function DeepQuestionsQuiz() {
                   onClick={() => router.push('/conversation')}
                   className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
                 >
-                  会話練習に戻る
+                  聴く練習に戻る
                 </button>
               </div>
             </div>

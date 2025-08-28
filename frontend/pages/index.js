@@ -217,7 +217,7 @@ export default function MainPage() {
 
         {/* メニューボタン */}
         <nav className="flex flex-col space-y-4">
-          {/* 会話練習機能 - 1番目 */}
+          {/* 聴く練習機能 - 1番目 */}
           <Link href="/conversation/modes">
             <button className="neo-btn w-full flex items-center justify-center gap-3 py-4" style={{background: 'linear-gradient(135deg, var(--light-orange), var(--primary-orange))'}}>
               <MessageSquare className="w-5 h-5 text-white" />

@@ -109,7 +109,7 @@ export default function ConversationSetup() {
             </div>
           </div>
           <h1 className="text-2xl font-bold mb-6 text-center text-[#FF8551]">
-            どのように会話練習をしますか？
+            どのように聴く練習をしますか？
           </h1>
           {loading ? (
             <div className="text-center py-4">読み込み中...</div>

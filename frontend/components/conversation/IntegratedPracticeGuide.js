@@ -10,7 +10,7 @@ const IntegratedPracticeGuide = ({ onStart }) => {
         {/* タイトル */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-3" style={{ color: '#FF6B35' }}>
-            会話練習 総合編
+            聴く練習 総合編
           </h1>
           <p className="text-gray-600">
             実践的な会話の流れを体験しながら学ぶ

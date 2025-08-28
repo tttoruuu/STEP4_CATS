@@ -227,14 +227,14 @@ export default function ConversationPracticeNew() {
   // キャラクター選択画面を表示
   if (!characterId) {
     return (
-      <Layout title="会話練習">
+      <Layout title="聴く練習">
         <CharacterSelect />
       </Layout>
     );
   }
 
   return (
-    <Layout title="会話練習" hideFooter={true}>
+    <Layout title="聴く練習" hideFooter={true}>
       <div style={{
         height: '100vh',
         display: 'flex',

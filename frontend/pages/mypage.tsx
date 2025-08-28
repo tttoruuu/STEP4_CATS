@@ -110,7 +110,7 @@ export default function MyPage() {
                     <h3 className="font-semibold text-gray-800 mb-2">利用状況</h3>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">会話練習回数:</span>
+                        <span className="text-gray-600">聴く練習回数:</span>
                         <span className="font-medium">0回</span>
                       </div>
                       <div className="flex justify-between">
@@ -130,7 +130,7 @@ export default function MyPage() {
                     onClick={() => router.push('/conversation')}
                     className="bg-gradient-to-r from-blue-400 to-blue-600 text-white p-4 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 hover:scale-105"
                   >
-                    会話練習を始める
+                    聴く練習を始める
                   </button>
                   
                   <button
