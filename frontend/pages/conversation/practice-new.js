@@ -216,6 +216,14 @@ export default function ConversationPracticeNew() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const token = localStorage.getItem('token');
 
+      // トークンがない場合はログインページへリダイレクト
+      if (!token) {
+        console.error('認証トークンが見つかりません');
+        alert('セッションが切れています。再度ログインしてください。');
+        router.push('/auth/login');
+        return;
+      }
+
       const response = await fetch(`${apiUrl}/speech-to-text`, {
         method: 'POST',
         headers: {
@@ -223,6 +231,14 @@ export default function ConversationPracticeNew() {
         },
         body: formData,
       });
+
+      if (response.status === 401) {
+        console.error('認証エラー: トークンが無効または期限切れです');
+        localStorage.removeItem('token');
+        alert('セッションが切れています。再度ログインしてください。');
+        router.push('/auth/login');
+        return;
+      }
 
       if (!response.ok) {
         const error = await response.json();

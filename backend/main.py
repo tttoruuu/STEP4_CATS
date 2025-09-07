@@ -715,25 +715,8 @@ async def generate_conversation_feedback(
 # 音声認識関連のエンドポイント
 #
 
-@app.post("/speech-to-text")
-async def speech_to_text(
-    audio: UploadFile = File(...),
-    current_user: User = Depends(get_current_user)
-):
-    """
-    音声ファイルをテキストに変換するエンドポイント
-    
-    - **認証**: Bearer トークン認証が必要
-    - **入力データ**:
-        - audio: 音声ファイル (wav, mp3, m4a, webm形式)
-    - **戻り値**: 
-        - text: 変換されたテキスト
-        - duration: 音声の長さ（秒）
-    - **エラー**: 
-        - 401: 認証エラー
-        - 400: 不正なファイル形式
-        - 500: 変換エラー
-    """
+async def _process_speech_to_text(audio: UploadFile, user=None):
+    """音声認識処理の共通関数"""
     import tempfile
     import aiofiles
     import httpx
@@ -825,6 +808,54 @@ async def speech_to_text(
                 os.unlink(tmp_file_path)
         except Exception as e:
             logger.warning(f"一時ファイル削除エラー: {str(e)}")
+
+@app.post("/speech-to-text")
+async def speech_to_text(
+    audio: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    音声ファイルをテキストに変換するエンドポイント
+    
+    - **認証**: Bearer トークン認証が必要
+    - **入力データ**:
+        - audio: 音声ファイル (wav, mp3, m4a, webm形式)
+    - **戻り値**: 
+        - text: 変換されたテキスト
+        - duration: 音声の長さ（秒）
+    - **エラー**: 
+        - 401: 認証エラー
+        - 400: 不正なファイル形式
+        - 500: 変換エラー
+    """
+    logger.info(f"音声認識エンドポイント呼び出し - ユーザー: {current_user.email if current_user else 'Unknown'}")
+    return await _process_speech_to_text(audio, current_user)
+
+@app.post("/speech-to-text-test")
+async def speech_to_text_test(
+    audio: UploadFile = File(...)
+):
+    """
+    音声ファイルをテキストに変換するテストエンドポイント（認証不要）
+    
+    - **入力データ**:
+        - audio: 音声ファイル (wav, mp3, m4a, webm形式)
+    - **戻り値**: 
+        - text: 変換されたテキスト
+        - duration: 音声の長さ（秒）
+    """
+    logger.info("音声認識テストエンドポイント呼び出し - 認証不要")
+    return await _process_speech_to_text(audio, None)
+
+@app.get("/auth/check")
+async def auth_check(current_user: User = Depends(get_current_user)):
+    """認証状態を確認するエンドポイント"""
+    return {
+        "authenticated": True,
+        "user_id": current_user.id,
+        "email": current_user.email,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
 
 @app.post("/api/text-to-speech")
 async def text_to_speech(request: Request):

@@ -22,18 +22,49 @@ const VoiceRecorder = ({ onTranscriptionReceived, disabled }) => {
       audioChunksRef.current = [];
 
       mediaRecorderRef.current.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
+        // データが存在し、サイズが0より大きい場合のみ追加
+        if (event.data && event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
       };
 
       mediaRecorderRef.current.onstop = async () => {
+        // 音声データが収集されていることを確認
+        if (audioChunksRef.current.length === 0) {
+          console.error('音声データが収集されていません');
+          alert('音声が録音されませんでした。もう一度お試しください。');
+          setIsProcessing(false);
+          setIsRecording(false);
+          // ストリームを停止
+          stream.getTracks().forEach(track => track.stop());
+          return;
+        }
+        
         const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+        console.log('音声データ収集完了:', { 
+          chunks: audioChunksRef.current.length, 
+          blobSize: audioBlob.size,
+          mimeType: mimeType 
+        });
+        
+        if (audioBlob.size === 0) {
+          console.error('音声ファイルが空です');
+          alert('音声が録音されませんでした。もう一度お試しください。');
+          setIsProcessing(false);
+          setIsRecording(false);
+          // ストリームを停止
+          stream.getTracks().forEach(track => track.stop());
+          return;
+        }
+        
         await sendAudioToWhisper(audioBlob, mimeType);
         
         // ストリームを停止
         stream.getTracks().forEach(track => track.stop());
       };
 
-      mediaRecorderRef.current.start();
+      // timesliceを指定して定期的にデータを収集
+      mediaRecorderRef.current.start(1000); // 1秒ごとにデータを収集
       setIsRecording(true);
     } catch (error) {
       console.error('音声録音の開始に失敗しました:', error);

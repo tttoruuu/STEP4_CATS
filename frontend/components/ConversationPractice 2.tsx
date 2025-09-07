@@ -349,7 +349,7 @@ const ConversationPractice: React.FC = () => {
             className="text-[var(--primary-orange)] flex items-center gap-1 hover:opacity-80 transition-opacity mb-6"
           >
             <ArrowLeft size={18} />
-            <span>聴く練習モード選択に戻る</span>
+            <span>会話練習モード選択に戻る</span>
           </button>
           
           <div className="text-center mb-8">
